@@ -11,19 +11,20 @@ import style from "./style.module.css"
 
 export default function(props: any) {
 
-    const [dataChunks, setData] = useState([] as any[] | undefined)
+    const [csvDataChunks, setData] = useState([] as any[] | undefined)
     const [scanned, setScanned] = useState(false as boolean | undefined)
     const [metaData, setMetaData] = useState({} as any | undefined)
 
     const [scanner, setScanner] = useState(false)
     const [cardsData, setCardsData] = useState([] as [string, string][])
+    
     function chooseCardsData() {
 
-        if (scanned && dataChunks) {
+        if (scanned && csvDataChunks) {
 
-            Sets.create(dataChunks as string[], metaData as any)
+            Sets.create(csvDataChunks as string[])
 
-            const data = dataChunks
+            const data = csvDataChunks
                 .map(chunk => chunk.split('\n')).flat()
                 .map(line => line.split(',')) as [string, string][]
 
@@ -35,19 +36,13 @@ export default function(props: any) {
             return setCardsData(saved)
     }
 
-    const ActiveScanner = (props: {}) => scanner ? <Scanner
-        id='scanner'
-        done={[scanned, setScanned]}
-        data={[dataChunks, setData]}
-        meta={[metaData, setMetaData]}/> : null
-
     const ExistentCards = (props: {}) => cardsData.length ? <ul className={style.cards}>
         
         {cardsData.map(([x, y], i) => <Card key={i} issue={x} comment={y} />)}
     
     </ul> : null
 
-    useEffect(chooseCardsData, [scanned])
+    useEffect(chooseCardsData, [scanned, csvDataChunks])
 
     return <main className={style.view}>
 
@@ -61,7 +56,11 @@ export default function(props: any) {
             </button>
         </header>
         
-        <ActiveScanner/>
+        {scanner ? <div data-testid='scanner'><Scanner
+            setDone={setScanned}
+            setData={setData}
+            setMeta={setMetaData}/></div> : null}
+
         <ExistentCards/>
 
     </main>

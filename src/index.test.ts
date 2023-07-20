@@ -1,11 +1,12 @@
 // https://github.com/testing-library/jest-dom
-import { createElement, useState } from 'react'
+import { createElement, useState, useEffect } from 'react'
 import App from './components/view'
 
 import '@testing-library/jest-dom'
 
 import { render, screen, fireEvent, waitFor } 
     from '@testing-library/react'
+import exp from 'constants'
 
 
 
@@ -22,40 +23,108 @@ test('clicking scanner button toggles the scanner', async () => {
     fireEvent.click(scannerButton)
 
     scanner = screen.queryByTestId('scanner')
-    await waitFor(() => expect(scanner).not.toBeNull())
+    expect(scanner).not.toBeNull()
     expect(scanner).toBeVisible()
 
 
     fireEvent.click(scannerButton)
     
     scanner = screen.queryByTestId('scanner')
-    await waitFor(() => expect(scanner).toBeNull())
+    expect(scanner).toBeNull()
 })
 
 
 
-test('renders example cards saved in local storage', async () => {
+test('renders example cards saved in local storage', async() => {
 
-    localStorage.setItem('saved-set-temporary', 'ciao,cześć\nhi,siema')
+    const data = [
+        ['ciao', 'cześć'],
+        ['elo', 'siema'],
+    ]
+
+    const 
+        keptString = data.map(row => row.join(',')).join('\n'),
+        expectedContents = data.map(row => row.join(''))
+
+
+    localStorage.setItem('saved-set-temporary', keptString)
+
+
 
     render(createElement(App))
 
-    await waitFor(() => {
-
-        const cards = screen.getAllByTestId('card')
-
-        expect(cards).toHaveLength(2)
-        expect(cards[0]).toHaveTextContent('ciao'+'cześć')
-        expect(cards[1]).toHaveTextContent('hi'+'siema')
-    })
+    const cards = screen.getAllByTestId('card')
+    expect(cards).toHaveLength(data.length)
+    for (let i = 0; i < cards.length; i++)
+        expect(cards[i]).toHaveTextContent(expectedContents[i])
 })
 
 
 
-// no idea how to do it
-// mocking html5-qrcode didn't work
-// don't know how to do it with mocking scanner
-// because it has state shared with it's wrapper
-// gosshshshhshimangryscrewthat
-// it works when i scann with my phone soo
-test.todo('renders words that were scanned')
+test('renders words that were scanned and ignores kept ones', async() => {
+
+    const ignoredData = [
+        ['ciao', 'cześć'],
+        ['elo', 'siema'],
+    ]
+
+    const keptString = ignoredData.map(row => row.join(',')).join('\n')
+        
+    localStorage.setItem('saved-set-temporary', keptString)
+
+
+
+    const dataChunks = [
+        { index: 0, total: 2, data: 'ola,helo\ny,and' },
+        { index: 1, total: 2, data: 'cze,h' }
+    ]
+
+    const expectedContents = dataChunks
+        .map(chunk => chunk.data)
+        .join('\n').split('\n')
+        .map(row => row.split(',').join(''))
+
+
+
+    const html5qr = require('./components/scanner/html5qr')
+    html5qr.default = jest.fn((props: { 
+        onSuccess: (data: string) => void,
+        onError: (data: any) => void
+    }) => {
+    
+        useEffect(() => {
+
+            for (let i = 0; i < dataChunks.length; i++)
+                props.onSuccess(JSON.stringify(dataChunks[i]))
+    
+        }, [])
+        
+        return null
+    })
+
+
+
+    render(createElement(App))
+
+    const scannerButton = screen.getByTestId('scanner-button')
+    
+    let scanner = screen.queryByTestId('scanner')
+    expect(scanner).toBeNull()
+
+
+    fireEvent.click(scannerButton)
+
+    scanner = screen.queryByTestId('scanner')
+    expect(scanner).not.toBeNull()
+    expect(scanner).toBeVisible()
+
+
+    const cards = screen.getAllByTestId('card')
+    expect(cards).toHaveLength(expectedContents.length)
+    for (let i = 0; i < cards.length; i++)
+        expect(cards[i]).toHaveTextContent(expectedContents[i])
+})
+
+
+
+test.todo('progress of scanning is visible')

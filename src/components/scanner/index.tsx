@@ -1,7 +1,6 @@
-import { Html5QrcodeScanner as Scan } from 'html5-qrcode'
+import { useState } from 'react'
 
-import { useEffect, useState } from 'react'
-
+import QR from './html5qr'
 
 
 /**
@@ -20,39 +19,25 @@ import { useEffect, useState } from 'react'
  *          meta={useState({} as any)} />
  * </...>
  */
-export default (props: { 
-    id?: string, 
-    width?: number, 
-    height?: number,
-    data: ReturnType <typeof useState <any[]> >,
-    done: ReturnType <typeof useState <boolean> >,
-    meta: ReturnType <typeof useState <any> >
+export default (props: {
+    setData: ReturnType <typeof useState <any[]> >[1],
+    setDone: ReturnType <typeof useState <boolean> >[1],
+    setMeta: ReturnType <typeof useState <any> >[1]
 }) => {
-
-    const width = (props.width || props.height) || 256
-    const height = (props.height || props.width) || 256
-    const id = props.id || 'qr-scanner'
-
-    const [dataChunks, setData] = props.data
-    const [isDone, setDone] = props.done
-    const [metaData, setMeta] = props.meta
     
-    const [progress, setProgress] = useState(0)
-    const [total, setTotal] = useState(0)
-
     const indices = [] as number[]
+    const 
+        [checked, setChecked] = useState([] as number[]), 
+        [total, setTotal] = useState(0)
 
-    function onScan(decodedText = '') {
-
-        if (indices.length == total) {
-      
-            setDone(true)
-      
-            return
-        }
-      
+    const onScan = (decodedText = '') => {
+        
         let output = JSON.parse(decodedText)
-        if (!isDataChunk(output))
+        const isDataChunk = 
+            output.data !== undefined &&
+            output.index !== undefined &&
+            output.total !== undefined
+        if (!isDataChunk)
             return
   
         const hasBeenRead = indices.includes(output.index)
@@ -61,66 +46,25 @@ export default (props: {
         
         indices.push(output.index)
         
-        setData((prev) => [...prev as any[], output.data as any])
+        props.setData((prev) => [...prev as any[], output.data as any])
         setTotal(output.total)
-        setProgress(indices.length)
+        setChecked(indices)
 
         if (output.meta)
-            setMeta((prev: any) => ({ ...output.meta, ...prev }))
+            props.setMeta((prev: any) => ({ ...output.meta, ...prev }))
+
+        if (indices.length == output.total) {
+      
+            props.setDone(true)
+      
+            return
+        }
     }
 
-    useEffect(() => {
+    return <div>
 
-        const scan = new Scan(id, configure({width,height}), false)
-            
-        scan.render(onScan, console.error)
-
-        return function onUnmount() {
-         
-            scan.clear()
-                .catch(e => console.error("QR clearing failed", e))
-        }
-
-    }, [])
-
-    return <div data-testid={id}>
-
-        <div id={id}></div>
-        <p>
-            <span>{progress.toString()}</span>
-            /
-            <span>{total.toString()}</span>
-        </p>
+        <QR onSuccess={onScan} onError={(e) => console.error(e)}/>
+        { checked.toString() + `${checked.length}/${total}` || 0 }
 
     </div>
-}
-
-
-
-function configure(props: any) {
-    
-    const config = {} as any
-    if (props.fps) 
-        config.fps = props.fps
-    
-    if (props.qrbox) 
-        config.qrbox = props.qrbox
-    
-    if (props.aspectRatio) 
-        config.aspectRatio = props.aspectRatio
-    
-    if (props.disableFlip !== undefined) 
-        config.disableFlip = props.disableFlip
-    
-    return config
-}
-
-
-
-function isDataChunk(obj: any) {
-
-    return obj &&
-        obj.data !== undefined &&
-        obj.index !== undefined &&
-        obj.total !== undefined
 }

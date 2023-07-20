@@ -1,10 +1,13 @@
 .card {
 
-    display: block;
+    display: flex;
+    flex-flow: column;
+    align-items: space-between;
+    justify-content: space-between;
+
     width: 16em;
     height: 16em;
     box-sizing: border-box;
-    
     padding: 1em;
 
     border: solid thin;
@@ -15,4 +18,9 @@
     
     font-size: 2em;
     max-width: 15em;
+}
+
+.comment {
+
+    text-align: right;
 }

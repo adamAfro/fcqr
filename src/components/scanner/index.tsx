@@ -32,13 +32,13 @@ export default (props: {
     const width = (props.width || props.height) || 256
     const height = (props.height || props.width) || 256
     const id = props.id || 'qr-scanner'
-         
+
     const [dataChunks, setData] = props.data
     const [isDone, setDone] = props.done
     const [metaData, setMeta] = props.meta
     
     const [progress, setProgress] = useState(0)
-    const [total, setTotal] = useState(NaN)
+    const [total, setTotal] = useState(0)
 
     const indices = [] as number[]
 
@@ -87,7 +87,9 @@ export default (props: {
 
         <div id={id}></div>
         <p>
-            <span>{progress.toString()}</span>/<span>{total.toString()}</span>
+            <span>{progress.toString()}</span>
+            /
+            <span>{total.toString()}</span>
         </p>
 
     </div>

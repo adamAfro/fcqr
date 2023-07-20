@@ -1,9 +1,13 @@
-import { Sets } from '../utilities/storage'
+import { Sets } from '../../utilities/storage'
 
-import Scanner from "./scanner"
-import Card from './card'
+import Scanner from "../scanner"
+import Card from '../card'
 
 import { useState, useEffect } from 'react'
+
+import style from "./style.module.css"
+
+
 
 export default function(props: any) {
 
@@ -37,7 +41,7 @@ export default function(props: any) {
         data={[dataChunks, setData]}
         meta={[metaData, setMetaData]}/> : null
 
-    const ExistentCards = (props: {}) => cardsData.length ? <ul>
+    const ExistentCards = (props: {}) => cardsData.length ? <ul className={style.cards}>
         
         {cardsData.map(([x, y], i) => <Card key={i} issue={x} comment={y} />)}
     
@@ -45,14 +49,17 @@ export default function(props: any) {
 
     useEffect(chooseCardsData, [scanned])
 
-    return <main>
+    return <main className={style.view}>
 
-        <button data-testid='scanner-button'
-            onClick={click => setScanner(prev => !prev)}>
+        <header>
+            <h1>FCQR</h1>
+            <button data-testid='scanner-button' className={scanner ? style.active : ''}
+                onClick={click => setScanner(prev => !prev)}>
 
-            Scan QR
+                Scan QR
 
-        </button>
+            </button>
+        </header>
         
         <ActiveScanner/>
         <ExistentCards/>

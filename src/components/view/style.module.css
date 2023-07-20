@@ -1,0 +1,33 @@
+.view header {
+    display: flex;
+    gap: 1em;
+}
+
+.view button {
+    display: block;
+    border: none;
+    background: none;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.view button.active {
+
+    text-decoration: line-through;
+}
+
+.cards {
+
+    margin: 0;
+    padding: 0;
+    width: 100%;
+
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+
+    list-style: none;
+}
+
+.cards li { display: block;}

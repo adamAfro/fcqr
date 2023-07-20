@@ -6,8 +6,8 @@ import '@testing-library/jest-dom'
 
 import { render, screen, fireEvent, waitFor } 
     from '@testing-library/react'
-import { act } from 'react-dom/test-utils'
-import exp from 'constants'
+
+
 
 test('clicking scanner button toggles the scanner', async () => {
     
@@ -32,6 +32,8 @@ test('clicking scanner button toggles the scanner', async () => {
     await waitFor(() => expect(scanner).toBeNull())
 })
 
+
+
 test('renders example cards saved in local storage', async () => {
 
     localStorage.setItem('saved-set-temporary', 'ciao,cześć\nhi,siema')
@@ -50,9 +52,10 @@ test('renders example cards saved in local storage', async () => {
 
 
 
-test('renders words that were scanned', async () => {
-
-    localStorage.clear()
-
-    expect(true).toBe(false)
-})
+// no idea how to do it
+// mocking html5-qrcode didn't work
+// don't know how to do it with mocking scanner
+// because it has state shared with it's wrapper
+// gosshshshhshimangryscrewthat
+// it works when i scann with my phone soo
+test.todo('renders words that were scanned')

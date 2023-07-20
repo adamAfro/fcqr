@@ -87,7 +87,7 @@ export default (props: {
 
         <div id={id}></div>
         <p>
-            <span>{progress}</span>/<span>{total}</span>
+            <span>{progress.toString()}</span>/<span>{total.toString()}</span>
         </p>
 
     </div>

@@ -6,6 +6,21 @@ It complements
 [firefox extension :desktop_computer:](https://github.com/adamAfro/browser-fc-maker)
 for making flashcards
 
+## Howto?
+
+- Last scanned set will load automatically
+- Scanning:
+    1. click *scan button*
+    2. ask for camera permissions, click scan button, ignore the error :sweat_smile: and click once more
+    3. scan until all words all scanned
+
+## TODO
+
+- [x] :iphone: scan words and display them, save :floppy_disk: the last loaded set
+- [ ] :evergreen_tree: make app avaible to load completly offline
+- [ ] :floppy_disk: save multiple sets and make it avaible to choose between them
+- [ ] :loud_sound: read words [aloud](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis)
+
 ## Dev and deps
 
 - [react JS](https://reactjs.org/)

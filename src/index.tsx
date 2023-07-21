@@ -6,6 +6,8 @@ import reportWebVitals from './reportWebVitals'
 
 import View from './components/view'
 
+import './globals.css'
+
 const root = ReactDOM
   .createRoot(document.getElementById('root') as Element)
 

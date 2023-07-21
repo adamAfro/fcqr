@@ -2,6 +2,8 @@ import { useState } from 'react'
 
 import QR from './html5qr'
 
+import style from './style.module.css' 
+
 
 /**
  * @example
@@ -27,7 +29,7 @@ export default (props: {
     
     const indices = [] as number[]
     const 
-        [checked, setChecked] = useState([] as number[]), 
+        [checks, setChecks] = useState([] as boolean[]), 
         [total, setTotal] = useState(0)
 
     const onScan = (decodedText = '') => {
@@ -48,7 +50,14 @@ export default (props: {
         
         props.setData((prev) => [...prev as any[], output.data as any])
         setTotal(output.total)
-        setChecked(indices)
+        setChecks(() => {
+
+            const checks = [] as boolean[]
+            for (let i = 0; i < output.total; i++)
+                checks.push(indices.includes(i))
+
+            return checks
+        })
 
         if (output.meta)
             props.setMeta((prev: any) => ({ ...output.meta, ...prev }))
@@ -61,10 +70,15 @@ export default (props: {
         }
     }
 
-    return <div>
+    return <div className={style.scanner}>
 
         <QR onSuccess={onScan} onError={(e) => console.error(e)}/>
-        { checked.toString() + `${checked.length}/${total}` || 0 }
+        {checks.map((state, i) => <div style={{display: 'flex'}}>
+            <span 
+                key={i} className={style.check} 
+                data-checked={state}>
+            </span>
+        </div>)}
 
     </div>
 }

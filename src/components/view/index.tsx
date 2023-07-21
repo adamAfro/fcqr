@@ -38,7 +38,7 @@ export default function(props: any) {
 
     const ExistentCards = (props: {}) => cardsData.length ? <ul className={style.cards}>
         
-        {cardsData.map(([x, y], i) => <Card key={i} issue={x} comment={y} />)}
+        {cardsData.map(([x, y], i) => <li key={i}><Card issue={x} comment={y} /></li>)}
     
     </ul> : null
 
@@ -50,9 +50,7 @@ export default function(props: any) {
             <h1>FCQR</h1>
             <button data-testid='scanner-button' className={scanner ? style.active : ''}
                 onClick={click => setScanner(prev => !prev)}>
-
                 Scan QR
-
             </button>
         </header>
         
@@ -62,6 +60,10 @@ export default function(props: any) {
             setMeta={setMetaData}/></div> : null}
 
         <ExistentCards/>
+
+        <footer>
+            <a target='_blank' href="https://github.com/adamAfro/fcqr">github.com/adamAfro</a>
+        </footer>
 
     </main>
 }

@@ -1,14 +1,33 @@
+.view {
+    background: linear-gradient(45deg, #cfc204, #795800);
+}
+
 .view header {
     display: flex;
     gap: 1em;
+    padding: 0 1em;
+
+    color: white;
 }
 
+.view footer {
+
+    color: white;
+    text-align: center;
+    padding: 1em;
+    padding-top: 5em;
+}
+
+
 .view button {
-    display: block;
+
+    display: inline-block;
     border: none;
-    background: none;
     cursor: pointer;
     text-decoration: underline;
+
+    background: none;
+    color: inherit;
 }
 
 .view button.active {
@@ -30,4 +49,10 @@
     list-style: none;
 }
 
-.cards li { display: block;}
+.cards li { 
+    display: block;
+}
+
+.cards li:nth-child(2n) {
+    margin-left: 6.4em;
+}

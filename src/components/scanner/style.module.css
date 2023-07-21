@@ -1,0 +1,27 @@
+.scanner {
+
+    max-width: 100%;
+    width: 32em;
+    margin: auto;
+}
+
+.scanner > [id] {
+    
+    max-width: 100%;
+    background-color: white;
+}
+
+.check {
+
+    width: 1em;
+    height: 1em;
+    border-radius: 1em;
+    border: thin solid;
+
+    background-color: black;
+}
+
+.check[data-checked="true"] {
+    display: inline-block;
+    background-color: green;
+}

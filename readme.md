@@ -17,7 +17,7 @@ for making flashcards
 ## TODO
 
 - [x] :iphone: scan words and display them, save :floppy_disk: the last loaded set
-- [ ] :evergreen_tree: make app avaible to load completly offline
+- [x] :evergreen_tree: make app avaible to load completly offline
 - [ ] :floppy_disk: save multiple sets and make it avaible to choose between them
 - [ ] :loud_sound: read words [aloud](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis)
 - [ ] :8ball: simple gamefication of flashcards to memorize better

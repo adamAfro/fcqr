@@ -1,14 +1,16 @@
 // https://github.com/testing-library/jest-dom
-import { createElement, useState, useEffect } from 'react'
+import { createElement, useEffect } from 'react'
 import App from './components/view'
 
 import '@testing-library/jest-dom'
 
-import { render, screen, fireEvent, waitFor } 
+import { render, screen, fireEvent } 
     from '@testing-library/react'
-import exp from 'constants'
 
+import * as fakeIDB from 'fake-indexeddb'
+Object.assign(global, fakeIDB)
 
+import * as DB from "./utilities/database"
 
 test('clicking scanner button toggles the scanner', async () => {
     
@@ -128,3 +130,34 @@ test('renders words that were scanned and ignores kept ones', async() => {
 
 
 test.todo('progress of scanning is visible')
+
+
+
+test('database works more or less', async () => {
+
+    const db = await DB.open()
+
+    const deck = {
+      name: 'Test Deck',
+      termLang: 'English',
+      defLang: 'Spanish',
+    }
+    
+    const cards = [
+      { term: 'Hello', def: 'Hola' },
+      { term: 'Goodbye', def: 'Adiós' },
+    ]
+
+    const deckId = await DB.add(deck, cards, db)
+
+    expect(deckId).not.toBeNull()
+
+    const retrievedDeck = await DB.get(deckId, db)
+
+    expect(retrievedDeck).toEqual({ ...deck, id: deckId })
+
+    await DB.remove(deckId, db)
+
+    const removedDeck = await DB.get(deckId, db)
+    expect(removedDeck).toBeUndefined()
+})

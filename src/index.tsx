@@ -1,13 +1,15 @@
 /// <reference types="react-scripts" />
 
 import { register as registerForOffline } 
-  from './serviceWorkerRegistration'
+  from './utilities/serviceWorkerRegistration'
 
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import reportWebVitals from './reportWebVitals'
+import reportWebVitals from './utilities/reportWebVitals'
 
 import View from './components/view'
+
+import { IDBProvider } from './utilities/database'
 
 import './globals.css'
 
@@ -15,7 +17,9 @@ const root = ReactDOM
   .createRoot(document.getElementById('root') as Element)
 
 root.render(<React.StrictMode>
-    <View/>
+    <IDBProvider>
+        <View />
+    </IDBProvider>
 </React.StrictMode>)
 
 // If you want to start measuring performance in your app, pass a function

@@ -22,13 +22,13 @@
     box-shadow: 0 1em 1em;
 }
 
-.issue { 
+.term { 
     
     font-size: 2em;
     max-width: 15em;
 }
 
-.comment {
+.def {
 
     text-align: right;
 }

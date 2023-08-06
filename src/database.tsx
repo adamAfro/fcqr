@@ -13,16 +13,12 @@ export const open = () => openDB(NAME, 1, {
         if (!db.objectStoreNames.contains(Stores.DECKS)) {
 
             const deckStore = db.createObjectStore(Stores.DECKS, { keyPath: 'id', autoIncrement: true })
-            
-            await deckStore.add({ })
         }
     
         if (!db.objectStoreNames.contains(Stores.CARDS)) {
 
             const cardStore = db.createObjectStore(Stores.CARDS, { keyPath: 'id', autoIncrement: true })
             cardStore.createIndex('deckId', 'deckId')
-                
-            await cardStore.add({ deckId: -1 })
         }
     }
 })

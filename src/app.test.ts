@@ -71,7 +71,7 @@ const testDecks = [
             { term: 'Orange (Color)', def: 'Arancione' },
         ],
     },
-]
+] as { deck: Deck.Data, cards: Card.Data[] }[]
 
 function randomTestDeck() {
 
@@ -85,10 +85,10 @@ describe('Indexed DB', function () {
 
         const db = await openDB()
 
-        const lastCardID = (await Card.getLast(db)).id
+        const lastCardID = (await Card.getLast(db))?.id || 0
 
         const { deck, cards } = randomTestDeck()
-        const deckId = await Deck.add(deck, cards, db)
+        const deckId = (await Deck.add(deck, cards, db)).deckId
 
         const retrieved = await Deck.get(deckId, db)
 
@@ -141,33 +141,22 @@ describe('Scanner', function () {
 })
 
 
-async function goToRandomDeck(db: Database) {
+async function goToListedDeck(deck: Deck.Data, db: Database) {
 
-    const { deck } = randomTestDeck()
-
-    const additionID = await Deck.add(deck, [], db)
-
-
-    render(createElement(App))
-
-    expect(screen.queryByTestId('deck-editor')).not.toBeInTheDocument()
+    expect(screen.queryByTestId(`deck-${deck.id}`)).not.toBeInTheDocument()
 
     const nav = await waitFor(() => screen.getByTestId('decks'))
     const link = await waitFor(() => screen.findByText(deck.name))
     const linkHref = link.getAttribute('href') as string    
     const linkID = Number(linkHref.split('$').pop())
-    expect(linkID).toEqual(additionID)
 
     expect(nav).toContainElement(link)
 
     await act(() => fireEvent.click(link))
 
-    const container = await waitFor(() => screen.findByTestId('deck-editor'))
+    const container = await waitFor(() => screen.findByTestId(`deck-${deck.id}`))
 
     expect(container).toBeVisible()
-    expect(container).toHaveAttribute('data-id', linkID.toString())
-
-    return {...deck, id: linkID }
 }
 
 
@@ -198,7 +187,12 @@ describe('Pocket', function () {
 
     test('if there is any deck it is visible and clicking changes view', async () => {
 
-        await goToRandomDeck(await openDB())
+        const db = await openDB()
+        const { deck } = randomTestDeck()
+        deck.id = (await Deck.add(deck, [], db)).deckId
+
+        render(createElement(App))
+        await goToListedDeck(deck, db)
 
         await act(() => history.back())
     })
@@ -211,9 +205,13 @@ describe('Deck', function () {
     afterEach(() => void (history.back()))
 
     test("all deck's properties can be modified", async () => {
-
+        
         const db = await openDB()
-        const deck = await goToRandomDeck(db)
+        const { deck } = randomTestDeck()
+        deck.id = (await Deck.add(deck, [], db)).deckId
+
+        render(createElement(App))
+        await goToListedDeck(deck, db)
 
         const changes = {
             name: 'New Name',
@@ -244,10 +242,65 @@ describe('Deck', function () {
     })
 
 
-    test.todo("deck can be removed")
+    test("deck can be removed", async () => {
+
+        const db = await openDB()
+        const { deck } = randomTestDeck()
+        deck.id = (await Deck.add(deck, [], db)).deckId
+
+        render(createElement(App))
+        await goToListedDeck(deck, db)
+
+        const removalBtn = screen.getByTestId("deck-remove-btn")
+
+        let retrived: Deck.Data | undefined
+
+        retrived = await Deck.getData(deck.id, db)
+        expect(retrived).not.toBeUndefined()
+        
+        await act(() => fireEvent.click(removalBtn))
+
+        retrived = await Deck.getData(deck.id, db)
+        expect(retrived).toBeUndefined()
+    })
+
+    test('cards can be added manually', async () => {
+
+        const db = await openDB()
+        const { deck } = randomTestDeck()
+        deck.id = (await Deck.add(deck, [], db)).deckId
+
+        render(createElement(App))
+        await goToListedDeck(deck, db)
+
+        const addBtn = screen.getByTestId('add-card-btn')
+        const container = screen.getByTestId('added-cards')
+
+        expect(container).toBeEmptyDOMElement()
+        await act(() => fireEvent.click(addBtn))
+        await waitFor(() => expect(container).not.toBeEmptyDOMElement())
+    })
     
-    test.todo('if there are cards in selected deck they are all visible')
+    test('if there are cards in selected deck they are all visible', async () => {
+
+        const db = await openDB()
+        let { deck, cards } = randomTestDeck()
+        const ids = await Deck.add(deck, cards, db)
+        deck.id = ids.deckId
+        cards = cards.map((card, i) => ({ ...card, id: ids.cardsIds[i]}))
+
+        render(createElement(App))
+        await goToListedDeck(deck, db)
+
+        const
+            container = screen.getByTestId('cards'),
+            addContainer = screen.getByTestId('added-cards')
+
+        expect(addContainer).toBeEmptyDOMElement()
+        expect(container).not.toBeEmptyDOMElement()
+        for (const { id } of cards)
+            expect (container).toContainElement(screen.getByTestId(`card-${id}`))
+    })
     
-    test.todo('cards can be added manually')
     test.todo('cards\' properties can be modified')
 })

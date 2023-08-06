@@ -8,7 +8,9 @@ import { Select as LanguageSelect} from './languages'
 
 import { Type as Database, Stores } from '../database'
 
-import { Card, Data as CardData } from '../card'
+import { Editor as CardEditor, Data as CardData } from '../card'
+
+import { Link } from 'react-router-dom'
 
 import style from "./style.module.css"
 
@@ -41,23 +43,71 @@ export function Entry(props: { id: number }) {
 
     }), [])
 
-    return <>{info ? <Deck info={info} cards={cards}/> : null}</>
+    const removal = (event: MouseEvent <HTMLButtonElement>) => {
+
+        if (!database)
+            throw new Error('no database')
+
+        remove(props.id!, database)
+        setInfo(null)
+    }
+
+    return <>{info ? 
+        
+        <Deck info={info} removal={removal}>{cards}</Deck> : 
+        
+        <p>No deck here - <Link to='/'>go back</Link></p>
+
+    }</>
 }
 
-export function Deck(props: { info: Data, cards: CardData[]}) {
+export function Deck(props: {info: Data, children: CardData[]} & { removal: (event: MouseEvent <HTMLButtonElement>) => void }) {
+
+    const { database } = useContext()
+
+    const [addedCards, setAddedCards] = useState([] as CardData[])
+    const additon = (event: MouseEvent <HTMLButtonElement>) => {
+
+        if (!database)
+            throw new Error('no database')
+
+        addCards(props.info.id!, [{ term: '', def: '' }], database)
+            .then(ids => setAddedCards([...addedCards, { 
+                id: Number(ids[0]), term: '', def: '', 
+                deckId: props.info.id! 
+            }]))
+    }
 
     return <div>
         <Editor {...props.info}/>
-        <button data-testid="add-card-btn">Add</button>
-        {props.cards.map(card => <Card key={card.id} {...card}/>)}
+        <button data-testid="deck-remove-btn" onClick={props.removal}>remove deck</button>
+        <button data-testid="add-card-btn" onClick={additon}>Add</button>
+        <ul data-testid='added-cards'>
+            {addedCards.map(card => <CardEditor key={card.id} {...card}/>)}
+        </ul>
+        <ul data-testid='cards'>
+            {props.children.map(card => <CardEditor key={card.id} {...card}/>)}
+        </ul>
     </div>
 }
 
+/** @BUG modifing 2 languages at once makes only 2nd saved */
 function Editor(props: Data) {
 
     const { database } = useContext()
+
+    const 
+        [name, setName] = useState(props.name),
+        [termLang, setTermLang] = useState(props.termLang),
+        [defLang, setDefLang] = useState(props.defLang)
+    const setters = new Map([
+        ['name', setName],
+        ['termLang', setTermLang],
+        ['defLang', setDefLang]
+    ])
+
     const change = (event: ChangeEvent) => {
-        
+
         if (!database)
             throw new Error('no database')
 
@@ -65,21 +115,13 @@ function Editor(props: Data) {
         const key = target.name, value = target.value
 
         modifyData({ ...props, [key]: value } as Data, database)
+        setters.get(key)!(value)
     }
 
-    const removalClick = (event: MouseEvent <HTMLButtonElement>) => {
-
-        if (!database)
-            throw new Error('no database')
-
-        remove(props.id!, database)
-    }
-
-    return <p data-testid="deck-editor" data-id={props.id}>
-        <input name="name" type="text" value={props.name} onChange={change}/>
-        <LanguageSelect name="termLang" defaultValue={props.termLang} onChange={change}/>
-        <LanguageSelect name="defLang" defaultValue={props.defLang} onChange={change}/>
-        <button onClick={removalClick}>remove</button>
+    return <p data-testid={`deck-${props.id}`}>
+        <input name="name" type="text" value={name} onChange={change}/>
+        <LanguageSelect name="termLang" defaultValue={termLang} onChange={change}/>
+        <LanguageSelect name="defLang" defaultValue={defLang} onChange={change}/>
     </p>
 }
 
@@ -95,10 +137,10 @@ export async function add(deck: Data, cards: CardData[], db: Database) {
     
     const additions = cards.map(card => cardStore.add(card))
 
-    await Promise.all(additions)
+    const cardsIds = await Promise.all(additions)
     await transaction.done
 
-    return deckId
+    return { deckId, cardsIds: cardsIds as number[] }
 }
 
 export async function addData(deck: Data, db: Database) {
@@ -110,6 +152,21 @@ export async function addData(deck: Data, db: Database) {
     await transaction.done
 
     return deckId
+}
+
+export async function addCards(deckId: number, card: CardData[], db: Database) {
+
+    const transaction = db.transaction([Stores.CARDS], 'readwrite')
+    const cardStore = transaction.objectStore(Stores.CARDS)
+
+    card = card.map(card => ({ ...card, deckId }))
+    
+    const additions = card.map(card => cardStore.add(card))
+
+    const ids = await Promise.all(additions)
+    await transaction.done
+
+    return ids
 }
 
 export async function get(deckId: number, db: Database) {

@@ -27,7 +27,19 @@ export function Entry(props: { id: number, deckId: number }) {
 
 export function Card(props: Data) {
 
-    return <p className={style.card} data-testid='card'>
+    return <p className={style.card} data-testid={`card-${props.id}`}>
+        <span className={style.term}>
+            <Letters text={props.term}/>
+        </span>
+        <span className={style.def}>    
+            <Letters text={props.def}/>
+        </span>
+    </p>
+}
+
+export function Editor(props: Data) {
+
+    return <p className={style.card} data-testid={`card-${props.id}`}>
         <span className={style.term}>
             <Letters text={props.term}/>
         </span>
@@ -63,7 +75,7 @@ function randInt(min = 0, max = 1) {
     return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
-export async function add(data: Data, db: Database) {
+export async function addData(data: Data, db: Database) {
 
     const transaction = db.transaction([Stores.CARDS], 'readwrite')
     const store = transaction.objectStore(Stores.CARDS)

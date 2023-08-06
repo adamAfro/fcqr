@@ -3,7 +3,7 @@ import { useState }  from 'react'
 
 import { useContext } from '../context'
 
-import { Select as LanguageSelect} from '../languages'
+import { Select as LanguageSelect} from './languages'
 
 
 import { Type as Database, Stores } from '../database'
@@ -75,10 +75,10 @@ function Editor(props: Data) {
         remove(props.id!, database)
     }
 
-    return <p data-testid="deck-editor">
+    return <p data-testid="deck-editor" data-id={props.id}>
         <input name="name" type="text" value={props.name} onChange={change}/>
-        <LanguageSelect name="termLang" selection={props.termLang} onChange={change}/>
-        <LanguageSelect name="defLang" selection={props.defLang} onChange={change}/>
+        <LanguageSelect name="termLang" defaultValue={props.termLang} onChange={change}/>
+        <LanguageSelect name="defLang" defaultValue={props.defLang} onChange={change}/>
         <button onClick={removalClick}>remove</button>
     </p>
 }
@@ -128,6 +128,17 @@ export async function get(deckId: number, db: Database) {
     return { deck, cards }
 }
 
+export async function getData(deckId: number, db: Database) {
+
+    const transaction = db.transaction([Stores.DECKS], 'readwrite')
+    const deckStore = transaction.objectStore(Stores.DECKS)
+
+    const deck = await deckStore.get(deckId) as Data
+    await transaction.done
+
+    return deck
+}
+
 export async function remove(deckId: number, db: Database) {
 
     const transaction = db.transaction([Stores.DECKS, Stores.CARDS], 'readwrite')
@@ -167,4 +178,15 @@ export async function getAllData(db: Database) {
     await transaction.done
 
     return decks
+}
+
+export async function getLast(db: Database) {
+    
+    const transaction = db.transaction(Stores.DECKS, 'readonly')
+    const store = transaction.objectStore(Stores.DECKS)
+
+    const cursor = await store.openCursor(null, "prev")
+    await transaction.done
+    
+    return cursor ? cursor.value : null
 }

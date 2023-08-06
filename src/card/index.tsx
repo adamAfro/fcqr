@@ -63,7 +63,16 @@ function randInt(min = 0, max = 1) {
     return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
+export async function add(data: Data, db: Database) {
 
+    const transaction = db.transaction([Stores.CARDS], 'readwrite')
+    const store = transaction.objectStore(Stores.CARDS)
+
+    const id = Number(await store.add(data))
+    await transaction.done
+
+    return id
+}
 
 export async function getAllData(db: Database) {
 
@@ -74,4 +83,15 @@ export async function getAllData(db: Database) {
     await transaction.done
 
     return decks
+}
+
+export async function getLast(db: Database) {
+    
+    const transaction = db.transaction(Stores.CARDS, 'readonly')
+    const store = transaction.objectStore(Stores.CARDS)
+
+    const cursor = await store.openCursor(null, "prev")
+    await transaction.done
+    
+    return cursor ? cursor.value : null
 }

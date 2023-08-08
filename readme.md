@@ -21,7 +21,14 @@ for making flashcards
 - [x] :floppy_disk: save multiple sets and make it avaible to choose between them
 - [ ] :loud_sound: read words [aloud](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis)
 - [ ] :8ball: simple gamefication of flashcards to memorize better
-- [x] :flags:
+
+### Locations
+
+- [x] :england: English (base)
+- [x] :poland: Polish
+- [ ] :it: Italian
+- [ ] :fr: French
+- [ ] :es: Spanish
 
 ## Dev and deps
 

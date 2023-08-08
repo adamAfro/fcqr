@@ -2,13 +2,14 @@ import { ChangeEvent, MouseEvent, useEffect }  from 'react'
 import { useState }  from 'react'
 
 import { useContext } from '../context'
+import { useTranslation } from 'react-i18next'
 
 import { Select as LanguageSelect} from './languages'
 
-
 import { Type as Database, Stores } from '../database'
 
-import { Editor as CardEditor, Data as CardData } from '../card'
+import { Editor as CardEditor, Data as CardData, removeData as removeCard } 
+    from '../card'
 
 import { Link } from 'react-router-dom'
 
@@ -16,10 +17,16 @@ import style from "./style.module.css"
 
 export function Route() {
 
+    const { t } = useTranslation()
+
     const path = window.location.pathname.split('/').pop()
     const id = Number(path?.split('$').pop())
 
-    return <Entry id={id}/>
+    return <main className={style.route}>
+        <Link role='button' to='/'>{t`go back`}</Link>
+        <h1>{t`your deck`}</h1>
+        <Entry id={id}/>
+    </main>
 }
 
 export interface Data {
@@ -30,6 +37,8 @@ export interface Data {
 }
 
 export function Entry(props: { id: number }) {
+
+    const { t } = useTranslation()
 
     const { database } = useContext()
 
@@ -56,55 +65,61 @@ export function Entry(props: { id: number }) {
         
         <Deck info={info} removal={removal}>{cards}</Deck> : 
         
-        <p>No deck here - <Link to='/'>go back</Link></p>
+        <p>{t`removed deck`}</p>
 
     }</>
 }
 
 export function Deck(props: {info: Data, children: CardData[]} & { removal: (event: MouseEvent <HTMLButtonElement>) => void }) {
 
+    const { t } = useTranslation()
+
     const { database } = useContext()
 
-    const [addedCards, setAddedCards] = useState([] as CardData[])
+    const [cards, setCards] = useState(props.children.reverse() as CardData[])
     const additon = (event: MouseEvent <HTMLButtonElement>) => {
 
         if (!database)
             throw new Error('no database')
 
         addCards(props.info.id!, [{ term: '', def: '' }], database)
-            .then(ids => setAddedCards([...addedCards, { 
+            .then(ids => setCards([...cards, { 
                 id: Number(ids[0]), term: '', def: '', 
                 deckId: props.info.id! 
             }]))
     }
 
-    return <div>
-        <Editor {...props.info}/>
-        <button data-testid="deck-remove-btn" onClick={props.removal}>remove deck</button>
-        <button data-testid="add-card-btn" onClick={additon}>Add</button>
-        <ul data-testid='added-cards'>
-            {addedCards.map(card => <CardEditor key={card.id} {...card}/>)}
+    const remove = (event: MouseEvent <HTMLElement>) => {
+
+        const element = event.target as HTMLElement
+        const id = Number(element.dataset.id)
+        
+        setCards(prev => prev.filter(card => card.id != id))
+        removeCard(id, database!)
+    }
+
+    return <div className={style.deck}>
+        <div className={style.editor}>
+            <Editor {...props.info}/>
+            <button data-testid="add-card-btn" onClick={additon}>{t`add card`}</button>
+        </div>
+        <ul className={style.cardlist} data-testid='cards'>
+            {cards.map((card, i) => <li key={card.id}>
+                <button data-id={card.id} onClick={remove}>{t`remove card`}</button>
+                <CardEditor {...card}/>
+            </li>)}
         </ul>
-        <ul data-testid='cards'>
-            {props.children.map(card => <CardEditor key={card.id} {...card}/>)}
-        </ul>
+        <button data-testid="deck-remove-btn" onClick={props.removal}>{t`remove deck`}</button>
     </div>
 }
 
 function Editor(props: Data) {
 
+    const { t } = useTranslation()
+
     const { database } = useContext()
 
-    const 
-        [name, setName] = useState(props.name),
-        [termLang, setTermLang] = useState(props.termLang),
-        [defLang, setDefLang] = useState(props.defLang)
-    const setters = new Map([
-        ['name', setName],
-        ['termLang', setTermLang],
-        ['defLang', setDefLang]
-    ])
-
+    const [data, setData] = useState(props)
     const change = (event: ChangeEvent) => {
 
         if (!database)
@@ -113,14 +128,14 @@ function Editor(props: Data) {
         const target = event.target as HTMLInputElement | HTMLSelectElement
         const key = target.name, value = target.value
 
-        modifyData({ ...props, [key]: value } as Data, database)
-        setters.get(key)!(value)
+        modifyData({ ...data, [key]: value } as Data, database)
+        setData(prev => ({ ...prev, [key]: value }))
     }
 
     return <p data-testid={`deck-${props.id}`}>
-        <input name="name" type="text" value={name} onChange={change}/>
-        <LanguageSelect name="termLang" defaultValue={termLang} onChange={change}/>
-        <LanguageSelect name="defLang" defaultValue={defLang} onChange={change}/>
+        <input placeholder={t`unnamed deck`} name="name" type="text" value={data.name} onChange={change}/>
+        <LanguageSelect name="termLang" defaultValue={data.termLang} onChange={change}/>
+        <LanguageSelect name="defLang" defaultValue={data.defLang} onChange={change}/>
     </p>
 }
 

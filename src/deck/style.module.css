@@ -1,0 +1,20 @@
+.route {
+
+    padding: 1em;
+}
+
+.deck {
+
+    padding: 1em;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.editor {
+
+    max-width: 24em;
+}
+
+.cardlist {}

@@ -1,0 +1,43 @@
+{
+    "go back": "powrót",
+
+    "deck": "talia",
+    "card": "karta",
+    "decks": "talie",
+    "cards": "karty",
+
+    "removed deck": "tej talii już nie ma",
+    "your deck": "twoja talia",
+    "your decks": "twoje talie",
+    
+    "add deck": "dodaj talię",
+    "remove deck": "usuń talię",
+    "unnamed deck": "talia bez nazwy",
+    
+    "add card": "dodaj kartę",
+    "remove card": "usuń kartę",
+
+    "QR scanner": "skaner kodów QR",
+    "scan QR": "skanuj kod QR",
+
+    "no scans yet": "jeszcze nic nie przeskanowano",
+    "could not find QR": "nie znaleziono kodu QR",
+    "scanned QR code": "znaleziono dane w kodzie QR",
+    "scanned QR chunk with data": "znaleziono dane w kodzie QR",
+    "scanned QR chunk with new data": "kod QR miał nowe dane",
+    "scanning is done": "skanowanie zakończone!",
+
+    "something went wrong": "coś poszło nie tak",
+    
+    "English": "angielski", 
+    "Spanish": "hiszpański", 
+    "French": "francuski", 
+    "German": "niemiecki", 
+    "Italian": "włoski", 
+    "Portuguese": "portugalski",
+    "Russian": "rosyjski",
+    "Chinese": "chiński",
+    "Japanese": "japoński",
+    "Korean": "koreański",
+    "Polish": "polski"
+}

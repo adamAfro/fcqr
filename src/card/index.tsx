@@ -54,7 +54,7 @@ export function Editor(props: Data) {
         const target = event.target as HTMLInputElement | HTMLSelectElement
         const key = target.name, value = target.value
 
-        modifyData({ ...props, [key]: value } as Data, database)
+        modifyData({ ...data, [key]: value } as Data, database)
         setData(prev => ({ ...prev, [key]: value }))
     }
 
@@ -143,4 +143,15 @@ export async function getLast(db: Database) {
     await transaction.done
     
     return cursor ? cursor.value : null
+}
+
+export async function removeData(id: number, db: Database) {
+
+    const transaction = db.transaction([Stores.CARDS], 'readwrite')
+    const store = transaction.objectStore(Stores.CARDS)
+
+    await store.delete(id)
+    await transaction.done
+
+    return
 }

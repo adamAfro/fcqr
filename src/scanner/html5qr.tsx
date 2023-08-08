@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-import { Html5QrcodeScanner, Html5QrcodeSupportedFormats } 
+import { Html5QrcodeScanner as Scanner, Html5QrcodeSupportedFormats as Formats } 
     from 'html5-qrcode'
 
 const qrcodeRegionId = "html5qr-code-full-region"
@@ -12,27 +12,22 @@ export default (props: {
 
     useEffect(() => {
         
-        const verbose = false
-        
-        if (!(props.onScan)) {
-            throw "onScan is required callback."
-        }
+        const scanner = new Scanner(qrcodeRegionId, {
 
-        const html5QrcodeScanner = new Html5QrcodeScanner(qrcodeRegionId, {
-
-            fps: 5,
-            formatsToSupport: [
-                Html5QrcodeSupportedFormats.QR_CODE
-            ]
+            fps: 5, formatsToSupport: [Formats.QR_CODE]
     
-        }, verbose)
-        html5QrcodeScanner.render(props.onScan, props.onError)
+        }, /** verbose */ false)
 
-        return () => {
-            html5QrcodeScanner.clear().catch(error => {
+        scanner.render(props.onScan, props.onError)
+
+        const unmount = () => {
+            scanner.clear().catch(error => {
                 console.error("Failed to clear html5QrcodeScanner. ", error)
             })
         }
+
+        return unmount
+        
     }, [])
 
     return <div id={qrcodeRegionId}></div>

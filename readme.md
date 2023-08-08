@@ -14,13 +14,14 @@ for making flashcards
     2. ask for camera permissions, click scan button, ignore the error :sweat_smile: and click once more
     3. scan until all words all scanned
 
-## TODO
+## Features&TODOs
 
 - [x] :iphone: scan words and display them, save :floppy_disk: the last loaded set
 - [x] :evergreen_tree: make app avaible to load completly offline
-- [ ] :floppy_disk: save multiple sets and make it avaible to choose between them
+- [x] :floppy_disk: save multiple sets and make it avaible to choose between them
 - [ ] :loud_sound: read words [aloud](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis)
 - [ ] :8ball: simple gamefication of flashcards to memorize better
+- [x] :flags:
 
 ## Dev and deps
 
@@ -38,3 +39,4 @@ for making flashcards
         2. `openssl req -new -key server.key -out server.csr` - request self-sign
         3. `openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt` - certificate
         4. then extension needs to be set up with absolute paths to newly created files
+- [pico.css](https://picocss.com/) under MIT license

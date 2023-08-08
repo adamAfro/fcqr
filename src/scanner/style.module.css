@@ -1,12 +1,12 @@
 .scanner {
 
-    max-width: 100%;
-    width: 32em;
-    margin: auto;
+    padding: 1em;
+    position: relative;
 }
 
 .scanner > [id] {
     
+    min-height: 66vh;
     max-width: 100%;
     background-color: white;
 }
@@ -24,4 +24,14 @@
 .checkpoint[data-checked="true"] {
     display: inline-block;
     background-color: green;
+}
+
+.checkpoints {
+
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-items: center;
+    align-items: center;
+    position: absolute;
 }

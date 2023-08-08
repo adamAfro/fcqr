@@ -1,25 +1,33 @@
-.view {
-    background: linear-gradient(45deg, #cfc204, #795800);
+.pocket {
+
+    padding: 1em;
 }
 
-.view header {
+.pocket header {
+
     display: flex;
+    justify-content: start;
+    align-items: center;
     gap: 1em;
     padding: 0 1em;
 
     color: white;
 }
 
-.view footer {
+.pocket header button {
+    width: min-content;
+    white-space: nowrap;
+}
 
-    color: white;
+.pocket footer {
+
     text-align: center;
     padding: 1em;
     padding-top: 5em;
 }
 
 
-.view button {
+.pocket button {
 
     display: inline-block;
     border: none;
@@ -30,7 +38,7 @@
     color: inherit;
 }
 
-.view button.active {
+.pocket button.active {
 
     text-decoration: line-through;
 }

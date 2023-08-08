@@ -1,5 +1,13 @@
 import React from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { initReactI18next as ReactLocalisation } from "react-i18next"
+import { BrowserRouter as Router, Routes, Route } 
+    from 'react-router-dom'
+
+import { default as Localisation } from "i18next"
+
+import LanguageDetector from 'i18next-browser-languagedetector'
+
+import { pl, en } from './localisation'
 
 
 import { Provider as ContextProvider } from './context'
@@ -18,6 +26,16 @@ export const links = {
     cards: '/card/',
     scanner: '/scanner'
 }
+
+
+Localisation.use(ReactLocalisation).use(LanguageDetector).init({
+
+    fallbackLng: "en",
+    resources: {
+        en: { translation: en },
+        pl: { translation: pl }
+    }
+})
 
 
 export default () => <React.StrictMode>

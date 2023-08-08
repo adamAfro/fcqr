@@ -1,5 +1,7 @@
 import { useState, useEffect} 
     from 'react'
+    
+import { useTranslation } from 'react-i18next'
 
 import { useContext } from '../context'
 
@@ -15,10 +17,13 @@ import { Data as DeckData, getAllData as getAllDecksData, addData as addDeckData
 
 export default function(props: any) {
 
+    const { t } = useTranslation()
+
     const [decks, setDecks] = useState([] as DeckData[])
 
     const { database } = useContext()
-    useEffect(() => void getAllDecksData(database!).then(setDecks), [database])
+    useEffect(() => void getAllDecksData(database!)
+        .then(decks => setDecks(decks.reverse())), [database])
 
     const [addedDecks, setAddedDecks] = useState([] as DeckData[])
     const addDeck = () => {
@@ -30,20 +35,22 @@ export default function(props: any) {
 
     const Deck = (props: DeckData) => <p>
 
-        <Link to={'/deck/' + props.name + '$' + props.id!.toString()}>
-            {props.name || 'unnamed deck'}
+        <Link role='button' to={'/deck/' + props.name + '$' + props.id!.toString()}>
+            {props.name || t`unnamed deck`}
         </Link>
 
     </p>
 
 
-    return <main className={style.view} {...props} data-testid="pocket">
+    return <main className={style.pocket} {...props} data-testid="pocket">
 
         <header>
             <h1>FCQR</h1>
-            <Link data-testid="scanner-link" to={links.scanner}>Scan QR</Link>
-            <button data-testid='add-btn' onClick={addDeck}>Add</button>
+            <Link role="button" data-testid="scanner-link" to={links.scanner}>{t`scan QR`}</Link>
+            <button data-testid='add-btn' onClick={addDeck}>{t`add deck`}</button>
         </header>
+
+        <h2>{t`your decks`}</h2>
 
         <ul data-testid="added-decks">
             {addedDecks.map(deck => <li key={deck.id}><Deck {...deck}/></li>)}

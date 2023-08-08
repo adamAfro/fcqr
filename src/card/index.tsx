@@ -1,3 +1,7 @@
+import { ChangeEvent, HTMLInputTypeAttribute, useState } from 'react'
+
+import { useContext } from '../context'
+
 import { Type as Database, Stores } from '../database'
 
 import style from "./style.module.css"
@@ -39,13 +43,24 @@ export function Card(props: Data) {
 
 export function Editor(props: Data) {
 
+    const { database } = useContext()
+
+    const [data, setData] = useState(props)
+    const change = (event: ChangeEvent) => {
+
+        if (!database)
+            throw new Error('no database')
+
+        const target = event.target as HTMLInputElement | HTMLSelectElement
+        const key = target.name, value = target.value
+
+        modifyData({ ...props, [key]: value } as Data, database)
+        setData(prev => ({ ...prev, [key]: value }))
+    }
+
     return <p className={style.card} data-testid={`card-${props.id}`}>
-        <span className={style.term}>
-            <Letters text={props.term}/>
-        </span>
-        <span className={style.def}>    
-            <Letters text={props.def}/>
-        </span>
+        <input className={style.term} name='term' value={data.term} onChange={change}/>
+        <input className={style.def} name='def' value={data.def} onChange={change}/>
     </p>
 }
 
@@ -95,6 +110,28 @@ export async function getAllData(db: Database) {
     await transaction.done
 
     return decks
+}
+
+export async function getData(id: number, db: Database) {
+
+    const transaction = db.transaction(Stores.CARDS, 'readonly')
+    const store = transaction.objectStore(Stores.CARDS)
+
+    const data = await store.get(id) as Data
+    await transaction.done
+
+    return data
+}
+
+export async function modifyData(data: Data, db: Database) {
+
+    const transaction = db.transaction(Stores.CARDS, 'readwrite')
+    const store = transaction.objectStore(Stores.CARDS)
+
+    await store.put(data)
+    await transaction.done
+
+    return true
 }
 
 export async function getLast(db: Database) {

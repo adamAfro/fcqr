@@ -91,7 +91,6 @@ export function Deck(props: {info: Data, children: CardData[]} & { removal: (eve
     </div>
 }
 
-/** @BUG modifing 2 languages at once makes only 2nd saved */
 function Editor(props: Data) {
 
     const { database } = useContext()

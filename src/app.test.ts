@@ -204,7 +204,7 @@ describe('Deck', function () {
     beforeEach(() => void (indexedDB = new IDBFactory()))
     afterEach(() => void (history.back()))
 
-    test("all deck's properties can be modified", async () => {
+    test("all deck's properties can be modified one by one", async () => {
         
         const db = await openDB()
         const { deck } = randomTestDeck()
@@ -239,6 +239,41 @@ describe('Deck', function () {
         await act(() => fireEvent.change(defLangSel, { target: { value: changes.defLang } }))
         savedDeck = await Deck.getData(deck.id, db)
         expect(savedDeck).toEqual({ ...deck, defLang: changes.defLang })
+    })
+
+
+    test.skip("all deck's properties can be modified at once", async () => {
+        
+        const db = await openDB()
+        const { deck } = randomTestDeck()
+        deck.id = (await Deck.add(deck, [], db)).deckId
+
+        render(createElement(App))
+        await goToListedDeck(deck, db)
+
+        const changes = {
+            name: 'New Name',
+            termLang: deck.termLang == 'Spanish' ? 'Polish' : 'Spanish',
+            defLang: deck.defLang == 'Polish' ? 'Italian' : 'Polish',
+        }
+
+        const nameInput = screen.getByDisplayValue(deck.name)
+        const langsSel = screen.getAllByDisplayValue(deck.termLang)
+        const termLangSel = langsSel[0]
+        const defLangSel = langsSel[1] || screen.getByDisplayValue(deck.defLang)
+
+        let savedDeck: Deck.Data | null
+        
+        await act(() => fireEvent.input(nameInput, { target: { value: changes.name } }))
+        await act(() => fireEvent.change(termLangSel, { target: { value: changes.termLang } }))
+        await act(() => fireEvent.change(defLangSel, { target: { value: changes.defLang } }))
+        
+        savedDeck = await Deck.getData(deck.id, db)
+        expect(savedDeck).toEqual({ ...deck, 
+            name: changes.name,
+            termLang: changes.termLang,
+            defLang: changes.defLang,
+        })
     })
 
 
@@ -301,6 +336,73 @@ describe('Deck', function () {
         for (const { id } of cards)
             expect (container).toContainElement(screen.getByTestId(`card-${id}`))
     })
-    
-    test.todo('cards\' properties can be modified')
+
+
+    test('cards\' properties can be modified one by one', async () => {
+        
+        const db = await openDB()
+        let { deck, cards } = randomTestDeck()
+        const ids = await Deck.add(deck, cards, db)
+
+        cards = cards.map((card, i) => ({ ...card, 
+            id: ids.cardsIds[i], deckId: ids.deckId
+        }))
+
+        render(createElement(App))
+        await goToListedDeck(deck, db)
+
+        const changes = {
+            term: 'Test term',
+            def: 'Test def',
+        }
+
+        const card = cards[0]
+        const termInput = screen.getByDisplayValue(card.term)
+        const defInput = screen.getByDisplayValue(card.def)
+
+        let savedCard: Card.Data | null
+
+        await act(() => fireEvent.input(termInput, { target: { value: changes.term } }))
+        savedCard = await Card.getData(card.id!, db)
+        expect(savedCard).toEqual({ ...card, term: changes.term })
+
+        await act(() => fireEvent.input(defInput, { target: { value: changes.def } }))
+        savedCard = await Card.getData(card.id!, db)
+        expect(savedCard).toEqual({ ...card, def: changes.def })
+    })
+
+
+    test.skip('cards\' properties can be modified at once', async () => {
+        
+        const db = await openDB()
+        let { deck, cards } = randomTestDeck()
+        const ids = await Deck.add(deck, cards, db)
+
+        cards = cards.map((card, i) => ({ ...card, 
+            id: ids.cardsIds[i], deckId: ids.deckId
+        }))
+
+        render(createElement(App))
+        await goToListedDeck(deck, db)
+
+        const changes = {
+            term: 'Test term',
+            def: 'Test def',
+        }
+
+        const card = cards[0]
+        const termInput = screen.getByDisplayValue(card.term)
+        const defInput = screen.getByDisplayValue(card.def)
+
+        let savedCard: Card.Data | null
+
+        await act(() => fireEvent.input(termInput, { target: { value: changes.term } }))
+        await act(() => fireEvent.input(defInput, { target: { value: changes.def } }))
+        
+        savedCard = await Card.getData(card.id!, db)
+        expect(savedCard).toEqual({ ...card, 
+            def: changes.def,
+            term: changes.term 
+        })
+    })
 })

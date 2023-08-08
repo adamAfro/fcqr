@@ -4,8 +4,7 @@ import { useState, useEffect}
 import { useContext } from '../context'
 
 import { Link } from 'react-router-dom'
-
-import Scanner from '../scanner'
+import { links } from '../app'
 
 import style from './style.module.css'
 
@@ -20,15 +19,6 @@ export default function(props: any) {
 
     const { database } = useContext()
     useEffect(() => void getAllDecksData(database!).then(setDecks), [database])
-
-
-    const [csvDataChunks, setData] = useState([] as any[] | undefined)
-    const [scanned, setScanned] = useState(false as boolean | undefined)
-    const [metaData, setMetaData] = useState({} as any | undefined)
-
-    const [scanner, setScanner] = useState(false)
-    const [cardsData, setCardsData] = useState([] as [string, string][])
-
 
     const [addedDecks, setAddedDecks] = useState([] as DeckData[])
     const addDeck = () => {
@@ -51,17 +41,9 @@ export default function(props: any) {
 
         <header>
             <h1>FCQR</h1>
-            <button data-testid='scanner-button' className={scanner ? style.active : ''}
-                onClick={click => setScanner(prev => !prev)}>
-                Scan QR
-            </button>
+            <Link data-testid="scanner-link" to={links.scanner}>Scan QR</Link>
             <button data-testid='add-btn' onClick={addDeck}>Add</button>
         </header>
-        
-        {scanner ? <div data-testid='scanner'><Scanner
-            setDone={setScanned}
-            setData={setData}
-            setMeta={setMetaData}/></div> : null}
 
         <ul data-testid="added-decks">
             {addedDecks.map(deck => <li key={deck.id}><Deck {...deck}/></li>)}

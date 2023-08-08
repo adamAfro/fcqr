@@ -1,84 +1,94 @@
 import { useState } from 'react'
 
+import { Link } from 'react-router-dom'
+import { links } from '../app'
+
+import { add } from "../deck"
+import { Type as Database } from "../database"
+import { useContext } from "../context"
+import Chunk from './chunk'
+
 import QR from './html5qr'
 
-import style from './style.module.css' 
+import style from './style.module.css'
 
+async function handleData(data: any[], meta: any, db: Database) {
 
-/**
- * @example
- * // Sender side:
- * showQRDataFrames([ 
- *      { index: 0, total: 2, data: '...' },
- *      { index: 1, total: 2, data: '...' } 
- * ], { milisecondsBetweenFrames: 256, width: 256 })
- *
- * // Receiver's device scans the QR codes  1 by 1
- * import QR from this_file
- * <...>
- *      <QR done={useState([] as any[] | undefined)}
- *          data={useState(false as boolean | undefined)}
- *          meta={useState({} as any)} />
- * </...>
- */
-export default (props: {
-    setData: ReturnType <typeof useState <any[]> >[1],
-    setDone: ReturnType <typeof useState <boolean> >[1],
-    setMeta: ReturnType <typeof useState <any> >[1]
-}) => {
+    const type = (meta.type?.toString() as string || '')
+        .toLocaleUpperCase()
+    if (type == 'CSV' || /* default behaviour */ true) {
+
+        const cardsData = data
+            .map(chunk => chunk.split('\n')).flat()
+            .map(line => line.split(','))
+            .map(([term, def]: [string, string]) => ({ term, def }))
+
+        const deck = {
+            name: meta.name?.toString() as string || 
+                cardsData[0].term + ' - ' + 
+                cardsData[0].def.substring(0, 5) + '...',
+            termLang: meta.termLang?.toString() as string || '',
+            defLang: meta.termLang?.toString() as string || ''
+        }
+
+        const ids = await add(deck, cardsData, db)
+
+        return ids.deckId
+    }
+}
+
+export default (props: {}) => {
+
+    const { database } = useContext()
     
-    const indices = [] as number[]
+    let data: Chunk[] = [], meta: any = {}
+    const indices: number[] = []
     const 
-        [checks, setChecks] = useState([] as boolean[]), 
-        [total, setTotal] = useState(0)
+        [checkPoints, setChecks] = useState([] as boolean[]),
+        [link, setLink] = useState(null as null | string)
 
     const onScan = (decodedText = '') => {
         
-        let output = JSON.parse(decodedText)
-        const isDataChunk = 
-            output.data !== undefined &&
-            output.index !== undefined &&
-            output.total !== undefined
-        if (!isDataChunk)
+        const dataChunk = Chunk.FromDecodedText(decodedText)
+        if (!dataChunk)
             return
   
-        const hasBeenRead = indices.includes(output.index)
+        const hasBeenRead = indices.includes(dataChunk.index)
         if (hasBeenRead)
             return
-        
-        indices.push(output.index)
-        
-        props.setData((prev) => [...prev as any[], output.data as any])
-        setTotal(output.total)
+
+        Object.assign(meta, ...dataChunk.meta)
+        data.push(dataChunk.data)
+
         setChecks(() => {
 
-            const checks = [] as boolean[]
-            for (let i = 0; i < output.total; i++)
-                checks.push(indices.includes(i))
+            const checkPoints = [] as boolean[]
+            for (let i = 0; i < dataChunk.total; i++)
+                checkPoints.push(indices.includes(i))
 
-            return checks
+            return checkPoints
         })
 
-        if (output.meta)
-            props.setMeta((prev: any) => ({ ...output.meta, ...prev }))
+        indices.push(dataChunk.index)
+        if (indices.length == dataChunk.total) {
 
-        if (indices.length == output.total) {
-      
-            props.setDone(true)
-      
-            return
+            handleData(data, meta, database!)
+                .then(id => setLink(links.decks + '$' + id))
+
+            data = []
+            meta = {}
         }
     }
 
     return <div className={style.scanner}>
 
-        <QR onSuccess={onScan} onError={(e) => console.error(e)}/>
-        {checks.map((state, i) => <div style={{display: 'flex'}}>
-            <span 
-                key={i} className={style.check} 
-                data-checked={state}>
-            </span>
+        <QR onScan={onScan} onError={(e) => console.error(e)}/>
+        
+        {checkPoints.map((state, i) => <div style={{display: 'flex'}}>
+            <span key={i} className={style.checkpoint} data-checked={state}></span>
         </div>)}
+
+        {link ? <p><Link data-testid='link' to={link}>Done!</Link></p> : null}
 
     </div>
 }

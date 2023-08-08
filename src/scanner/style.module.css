@@ -11,7 +11,7 @@
     background-color: white;
 }
 
-.check {
+.checkpoint {
 
     width: 1em;
     height: 1em;
@@ -21,7 +21,7 @@
     background-color: black;
 }
 
-.check[data-checked="true"] {
+.checkpoint[data-checked="true"] {
     display: inline-block;
     background-color: green;
 }

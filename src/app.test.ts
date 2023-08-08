@@ -15,68 +15,7 @@ import * as Deck from "./deck"
 import * as Card from "./card"
 import { act } from 'react-dom/test-utils'
 
-const testDecks = [
-    {
-        deck: {
-            name: 'Science Quiz',
-            termLang: 'English',
-            defLang: 'French',
-        },
-        cards: [
-            { term: 'Physics', def: 'Physique' },
-            { term: 'Chemistry', def: 'Chimie' },
-            { term: 'Biology', def: 'Biologie' },
-        ],
-    },
-    {
-        deck: {
-            name: 'Animal Names',
-            termLang: 'English',
-            defLang: 'German',
-        },
-        cards: [
-            { term: 'Dog', def: 'Hund' },
-            { term: 'Cat', def: 'Katze' },
-            { term: 'Bird', def: 'Vogel' },
-            { term: 'Elephant', def: 'Elefant' },
-        ],
-    },
-    {
-        deck: {
-            name: 'Mathematics Basics',
-            termLang: 'English',
-            defLang: 'Spanish',
-        },
-        cards: [
-            { term: 'Addition', def: 'Suma' },
-            { term: 'Subtraction', def: 'Resta' },
-            { term: 'Multiplication', def: 'Multiplicación' },
-            { term: 'Division', def: 'División' },
-            { term: 'Geometry', def: 'Geometría' },
-        ],
-    },
-    {
-        deck: {
-            name: 'Fruits and Colors',
-            termLang: 'English',
-            defLang: 'Italian',
-        },
-        cards: [
-            { term: 'Apple', def: 'Mela' },
-            { term: 'Banana', def: 'Banana' },
-            { term: 'Orange', def: 'Arancia' },
-            { term: 'Grapes', def: 'Uva' },
-            { term: 'Red', def: 'Rosso' },
-            { term: 'Yellow', def: 'Giallo' },
-            { term: 'Orange (Color)', def: 'Arancione' },
-        ],
-    },
-] as { deck: Deck.Data, cards: Card.Data[] }[]
-
-function randomTestDeck() {
-
-    return testDecks[Math.floor(Math.random() * testDecks.length)]
-}
+import { randomDeck as randomTestDeck } from './examples'
 
 
 describe('Indexed DB', function () {
@@ -109,49 +48,26 @@ describe('Indexed DB', function () {
 
 
 describe('Scanner', function () {
+    
+    afterEach(() => void (history.back()))
 
-    test('clicking scanner button toggles the scanner', async () => {
-
-        render(createElement(App))
-
-        await waitFor(() => screen.getByTestId('scanner-button'))
-
-        const scannerButton = screen.getByTestId('scanner-button')
-
-        let scanner = screen.queryByTestId('scanner')
-        expect(scanner).toBeNull()
-
-
-        await act(() => fireEvent.click(scannerButton))
-
-        scanner = screen.queryByTestId('scanner')
-        expect(scanner).not.toBeNull()
-        expect(scanner).toBeVisible()
-
-
-        await act(() => fireEvent.click(scannerButton))
-
-        scanner = screen.queryByTestId('scanner')
-        expect(scanner).toBeNull()
-    })
+    test.todo('clicking scanner button toggles the scanner')
 
     test.todo('progress of scanning is visible')
 
-    test.todo('scanning is successful')
+    test.todo('scanning can be successful')
 })
 
 
 async function goToListedDeck(deck: Deck.Data, db: Database) {
 
-    expect(screen.queryByTestId(`deck-${deck.id}`)).not.toBeInTheDocument()
-
     const nav = await waitFor(() => screen.getByTestId('decks'))
     const link = await waitFor(() => screen.findByText(deck.name))
-    const linkHref = link.getAttribute('href') as string    
-    const linkID = Number(linkHref.split('$').pop())
 
     expect(nav).toContainElement(link)
 
+    expect(screen.queryByTestId(`deck-${deck.id}`)).not.toBeInTheDocument()
+    
     await act(() => fireEvent.click(link))
 
     const container = await waitFor(() => screen.findByTestId(`deck-${deck.id}`))

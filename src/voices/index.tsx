@@ -18,18 +18,18 @@ export function Voices(props: HTMLAttributes<HTMLDivElement>) {
 
     const { languages, setLanguages } = useSettings()
 
-    /** @TODO make it workkk */
-    let lastId = languages.reduce((acc, lang) => Math.max(acc, lang.id ?? 0), 0) || 0
+    const getLastId = () => 
+        languages.reduce((acc, lang) => Math.max(acc, lang.id ?? 0), 0) || 0
     const add = () => {
 
         const updatedLangs = [...languages, {
-            language: t`new language`, id: lastId++
+            language: t`new language`, id: getLastId() + 1
         }]
 
         setLanguages(updatedLangs)
     }
 
-    /** @TODO repair it */
+    /** @BUG removing removes wrong index visibly but good in storage */
     const remove = (event: MouseEvent) => {
 
         const target = event.target as HTMLButtonElement
@@ -39,7 +39,10 @@ export function Voices(props: HTMLAttributes<HTMLDivElement>) {
         if (index === -1)
             return
 
-        setLanguages([...languages.splice(index, 1)])
+        setLanguages([
+            ...languages.slice(0, index),
+            ...languages.slice(index + 1)
+        ])
     }
 
     return <section className={style.panel} {...props}>
@@ -82,8 +85,16 @@ function Editor(props: LanguageConfig) {
 
         const updatedLang = { ...data, [key]: value }
         setData(updatedLang)
+
+        const index = languages.findIndex(lang => lang.id === updatedLang.id)
+        if (index === -1)
+            return
         
-        /** @TODO update settings */
+        setLanguages([
+            ...languages.slice(0, index),
+            updatedLang, 
+            ...languages.slice(index + 1)
+        ])
     }
 
     return <div className={style.buttons}>

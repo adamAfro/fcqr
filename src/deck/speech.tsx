@@ -4,6 +4,7 @@ import { useTranslation } from '../localisation'
 
 import { useSettings } from '../settings'
 
+/** @BUG deck's language change applies only after rerender */
 export default function Speech(props: { 
 	term: string, termLang: string, def?: string, defLang?: string 
 } & ButtonHTMLAttributes<HTMLButtonElement>) {

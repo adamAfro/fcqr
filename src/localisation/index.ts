@@ -25,3 +25,4 @@ export default function localise() {
 }
 
 export { useTranslation } from 'react-i18next'
+export { t } from 'i18next'

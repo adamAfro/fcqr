@@ -1,21 +1,19 @@
-import { ChangeEvent, MouseEvent, useEffect }  from 'react'
 import { useState }  from 'react'
 
-import { useContext } from '../context'
-import { useTranslation } from 'react-i18next'
+import { ChangeEvent, MouseEvent, useEffect }  from 'react'
 
-import { Select as LanguageSelect} from './languages'
+import { links, Link } from '../app'
 
-import { Type as Database, Stores } from '../database'
+import { useTranslation } from '../localisation'
+import { useDatabase, Type as Database, Stores } from "../database"
 
+import * as Card from '../card'
+
+import LanguageSelect from './languages'
 import Speech from './speech'
 
-import { Editor as CardEditor, Data as CardData, removeData as removeCard } 
-    from '../card'
-
-import { Link } from 'react-router-dom'
-
 import style from "./style.module.css"
+
 
 export function Route() {
 
@@ -25,7 +23,7 @@ export function Route() {
     const id = Number(path?.split('$').pop())
 
     return <main className={style.route}>
-        <Link role='button' to='/'>{t`go back`}</Link>
+        <Link role='button' to={links.pocket}>{t`go back`}</Link>
         <h1>{t`your deck`}</h1>
         <Entry id={id}/>
     </main>
@@ -42,10 +40,10 @@ export function Entry(props: { id: number }) {
 
     const { t } = useTranslation()
 
-    const { database } = useContext()
+    const database = useDatabase()
 
     const [info, setInfo] = useState<Data | null>(null)
-    const [cards, setCards] = useState<CardData[]>([])
+    const [cards, setCards] = useState<Card.Data[]>([])
 
     useEffect(() => void get(props.id, database!).then(({deck, cards}) => {
 
@@ -72,13 +70,13 @@ export function Entry(props: { id: number }) {
     }</>
 }
 
-export function Deck(props: {info: Data, children: CardData[]} & { removal: (event: MouseEvent <HTMLButtonElement>) => void }) {
+export function Deck(props: {info: Data, children: Card.Data[]} & { removal: (event: MouseEvent <HTMLButtonElement>) => void }) {
 
     const { t } = useTranslation()
 
-    const { database } = useContext()
+    const database = useDatabase()
 
-    const [cards, setCards] = useState([...props.children].reverse() as CardData[])
+    const [cards, setCards] = useState([...props.children].reverse() as Card.Data[])
     const additon = (event: MouseEvent <HTMLButtonElement>) => {
 
         if (!database)
@@ -97,7 +95,7 @@ export function Deck(props: {info: Data, children: CardData[]} & { removal: (eve
         const id = Number(element.dataset.id)
         
         setCards(prev => prev.filter(card => card.id != id))
-        removeCard(id, database!)
+        Card.removeData(id, database!)
     }
 
     return <div className={style.deck}>
@@ -110,7 +108,7 @@ export function Deck(props: {info: Data, children: CardData[]} & { removal: (eve
         </div>
         <ul className={style.cardlist} data-testid='cards'>
             {cards.map((card, i) => <li key={card.id}>
-                <CardEditor {...card}/>
+                <Card.Editor {...card}/>
                 <div className={style.buttons}>
                     <Speech term={card.term} termLang={props.info.termLang}/>
                     <button data-id={card.id} onClick={remove}>{t`remove card`}</button>
@@ -124,7 +122,7 @@ function Editor(props: Data) {
 
     const { t } = useTranslation()
 
-    const { database } = useContext()
+    const database = useDatabase()
 
     const [data, setData] = useState(props)
     const change = (event: ChangeEvent) => {
@@ -146,7 +144,7 @@ function Editor(props: Data) {
     </p>
 }
 
-export async function add(deck: Data, cards: CardData[], db: Database) {
+export async function add(deck: Data, cards: Card.Data[], db: Database) {
 
     const transaction = db.transaction([Stores.DECKS, Stores.CARDS], 'readwrite')
     const deckStore = transaction.objectStore(Stores.DECKS)
@@ -175,7 +173,7 @@ export async function addData(deck: Data, db: Database) {
     return deckId
 }
 
-export async function addCards(deckId: number, card: CardData[], db: Database) {
+export async function addCards(deckId: number, card: Card.Data[], db: Database) {
 
     const transaction = db.transaction([Stores.CARDS], 'readwrite')
     const cardStore = transaction.objectStore(Stores.CARDS)
@@ -199,7 +197,7 @@ export async function get(deckId: number, db: Database) {
     const deck = await deckStore.get(deckId) as Data
 
     const index = cardStore.index('deckId')
-    const cards = await index.getAll(IDBKeyRange.only(deckId)) as CardData[]
+    const cards = await index.getAll(IDBKeyRange.only(deckId)) as Card.Data[]
     
     await transaction.done
 

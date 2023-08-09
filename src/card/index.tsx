@@ -1,10 +1,12 @@
-import { ChangeEvent, useState } from 'react'
+import { useState } from 'react'
 
-import { useContext } from '../context'
+import { ChangeEvent } from 'react'
 
-import { Type as Database, Stores } from '../database'
+import { useDatabase, Type as Database, Stores } from '../database'
+
 
 import style from "./style.module.css"
+
 
 export interface Data {
     id?: number
@@ -12,7 +14,6 @@ export interface Data {
     term: string
     def: string
 }
-
 
 export function Card(props: Data) {
 
@@ -28,7 +29,7 @@ export function Card(props: Data) {
 
 export function Editor(props: Data) {
 
-    const { database } = useContext()
+    const database = useDatabase()
 
     const [data, setData] = useState(props)
     const change = (event: ChangeEvent) => {

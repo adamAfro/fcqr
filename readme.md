@@ -6,14 +6,6 @@ It complements
 [firefox extension :desktop_computer:](https://github.com/adamAfro/browser-fc-maker)
 for making flashcards
 
-## Howto?
-
-- Last scanned set will load automatically
-- Scanning:
-    1. click *scan button*
-    2. ask for camera permissions, click scan button, ignore the error :sweat_smile: and click once more
-    3. scan until all words all scanned
-
 ## Features&TODOs
 
 - [x] :iphone: scan words
@@ -31,7 +23,7 @@ for making flashcards
 - [ ] :fr: French
 - [ ] :es: Spanish
 
-## Dev and deps
+## Dev&Deps
 
 - [react JS](https://reactjs.org/)
     - `npm start`

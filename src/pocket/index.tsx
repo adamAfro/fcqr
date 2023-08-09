@@ -1,41 +1,37 @@
-import { useState, useEffect} 
-    from 'react'
+import { useState, useEffect} from 'react'
+
+import { links, Link } from '../app'
     
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from '../localisation'
+import { useDatabase } from '../database'
 
-import { useContext } from '../context'
+import * as Deck from '../deck'
 
-import { Link } from 'react-router-dom'
-import { links } from '../app'
 
 import style from './style.module.css'
-
-
-import { Data as DeckData, getAllData as getAllDecksData, addData as addDeckData } 
-    from '../deck'
 
 
 export default function(props: any) {
 
     const { t } = useTranslation()
 
-    const [decks, setDecks] = useState([] as DeckData[])
+    const [decks, setDecks] = useState([] as Deck.Data[])
 
-    const { database } = useContext()
-    useEffect(() => void getAllDecksData(database!)
+    const database = useDatabase()
+    useEffect(() => void Deck.getAllData(database!)
         .then(decks => setDecks(decks.reverse())), [database])
 
-    const [addedDecks, setAddedDecks] = useState([] as DeckData[])
+    const [addedDecks, setAddedDecks] = useState([] as Deck.Data[])
     const addDeck = () => {
 
         const deck = { name: '', termLang: '', defLang: '' }
-        addDeckData(deck, database!)
+        Deck.addData(deck, database!)
             .then(id => setAddedDecks(prev => [...prev, { id, ...deck}]))
     }
 
-    const Deck = (props: DeckData) => <p>
+    const Entry = (props: Deck.Data) => <p>
 
-        <Link role='button' to={links.decks + props.name + '$' + props.id!.toString()}>
+        <Link role='button' to={'/deck/' + props.name + '$' + props.id!.toString()}>
             {props.name || t`unnamed deck`}
         </Link>
 
@@ -53,11 +49,11 @@ export default function(props: any) {
         <h2>{t`your decks`}</h2>
 
         <ul data-testid="added-decks">
-            {addedDecks.map(deck => <li key={deck.id}><Deck {...deck}/></li>)}
+            {addedDecks.map(deck => <li key={deck.id}><Entry {...deck}/></li>)}
         </ul>
 
         <ul data-testid="decks">
-            {decks.map(deck => <li key={deck.id}><Deck {...deck}/></li>)}
+            {decks.map(deck => <li key={deck.id}><Entry {...deck}/></li>)}
         </ul>
 
         <footer>

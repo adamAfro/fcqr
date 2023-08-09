@@ -1,17 +1,18 @@
 import { useState } from 'react'
 
-import { Link } from 'react-router-dom'
-import { links } from '../app'
+import { links, Link } from '../app'
 
-import { add } from "../deck"
-import { Type as Database } from "../database"
-import { useContext } from "../context"
+import { useTranslation } from '../localisation'
+import { useDatabase, Type as Database } from "../database"
+
+import * as Deck from "../deck"
+
+
 import Chunk from './chunk'
-
 import QR from './html5qr'
 
 import style from './style.module.css'
-import { useTranslation } from 'react-i18next'
+
 
 async function handleData(data: any[], meta: any, db: Database) {
 
@@ -32,7 +33,7 @@ async function handleData(data: any[], meta: any, db: Database) {
             defLang: meta.termLang?.toString() as string || ''
         }
 
-        const ids = await add(deck, cardsData, db)
+        const ids = await Deck.add(deck, cardsData, db)
 
         return ids.deckId
     }
@@ -42,7 +43,7 @@ export default (props: {}) => {
 
     const { t } = useTranslation()
 
-    const { database } = useContext()
+    const database = useDatabase()
     const 
         [checkPoints, setCheckpoints] = useState([] as boolean[]),
         [link, setLink] = useState(null as null | string),

@@ -1,6 +1,6 @@
 import { ButtonHTMLAttributes } from 'react'
 
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from '../localisation'
 
 export default function Speech(props: { 
 	term: string, termLang: string, def?: string, defLang?: string 

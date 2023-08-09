@@ -1,6 +1,6 @@
 import { SelectHTMLAttributes } from 'react'
 
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from '../localisation'
 
 const Languages = [
     'English', 'Spanish', 'French', 'German', 'Italian', 
@@ -8,7 +8,7 @@ const Languages = [
     'Polish'
 ]
 
-export function Select(props: SelectHTMLAttributes<HTMLSelectElement>) {
+export default function(props: SelectHTMLAttributes<HTMLSelectElement>) {
 
     const { t } = useTranslation()
 

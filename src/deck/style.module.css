@@ -27,10 +27,27 @@
 
 .cardlist {
     padding: 0; margin: 0;
+    display: flex;
+    flex-flow: column;
+    margin: 5em 0;
+    gap: 5em;
+    transition: gap .5s;
+}
+
+.cardlist[data-scatter=true] {
+    gap: max(10vw, 50vh);
 }
 
 .cardlist li {
 
+    transition: transform .5s;
     list-style: none;
-    margin: 5em 0;
+}
+
+.cardlist[data-scatter=true] li:nth-child(odd) {
+    transform: scale(.8) translate(max(-25vh, -25vw))
+}
+
+.cardlist[data-scatter=true] li:nth-child(even) {
+    transform: scale(.8) translate(min(25vh, 25vw))
 }

@@ -18,6 +18,10 @@
     "remove card": "usuń kartę",
     "read aloud": "odczytaj na głos",
 
+    "shuffle": "przetasuj",
+    "scatter": "rozrzuć",
+    "unscatter": "poukładaj",
+
     "scanner": "skaner",
     "QR scanner": "skaner kodów QR",
     "scan QR": "skanuj kod QR",

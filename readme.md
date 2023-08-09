@@ -12,8 +12,6 @@ for making flashcards
 - [x] :evergreen_tree: make app avaible offline after initial entry
 - [x] :floppy_disk: save multiple sets and let to choose between them
 - [x] :loud_sound: read words [aloud](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis)
-- [ ] :repeat_one: loop mode - view a card and go to the next one
-- [ ] :repeat: view mode - view multiple cards and go the next ones
 
 ### Locations
 

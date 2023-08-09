@@ -250,6 +250,12 @@ describe('Deck', function () {
             term: changes.term 
         })
     })
+
+    test.todo('card can be deleted')
+
+    test.todo('cards can be shuffled')
+
+    test.todo('cards can be scattered')
 })
 
 

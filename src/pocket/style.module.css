@@ -17,8 +17,6 @@
     align-items: center;
     gap: 1em;
     padding: 0 1em;
-
-    color: white;
 }
 
 .pocket header button {
@@ -32,18 +30,6 @@
     padding: 1em;
     padding-top: 5em;
     margin-top: auto;
-}
-
-
-.pocket button {
-
-    display: inline-block;
-    border: none;
-    cursor: pointer;
-    text-decoration: underline;
-
-    background: none;
-    color: inherit;
 }
 
 .pocket button.active {

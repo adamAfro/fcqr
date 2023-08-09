@@ -13,6 +13,7 @@ export interface Data {
     deckId?: number
     term: string
     def: string
+    order?: number
 }
 
 export function Card(props: Data) {

@@ -76,7 +76,11 @@ export function Deck(props: {info: Data, children: Card.Data[]} & { removal: (ev
 
     const database = useDatabase()
 
-    const [cards, setCards] = useState([...props.children].reverse() as Card.Data[])
+    const [scatter, setScatter] = useState(false)
+    const [cards, setCards] = useState([
+        ...props.children
+    ].sort((a, b) => a.order! - b.order!).reverse() as Card.Data[])
+    
     const additon = (event: MouseEvent <HTMLButtonElement>) => {
 
         if (!database)
@@ -98,15 +102,31 @@ export function Deck(props: {info: Data, children: Card.Data[]} & { removal: (ev
         Card.removeData(id, database!)
     }
 
+    const shuffle = (event: MouseEvent <HTMLButtonElement>) => {
+
+        if (!database)
+            throw new Error('no database')
+
+        const shuffled = cards.map(card => ({ ...card, order: Math.random() }))
+            .sort((a, b) => a.order! - b.order!).reverse()
+
+        modify(props.info, shuffled, database)
+        setCards(shuffled)
+    }
+
     return <div className={style.deck}>
         <div className={style.editor}>
             <Editor {...props.info}/>
             <div className={style.buttons}>
                 <button data-testid="deck-remove-btn" onClick={props.removal}>{t`remove deck`}</button>
-                <button data-testid="add-card-btn" onClick={additon}>{t`add card`}</button>
+                <button data-testid="shuffle-cards-btn" onClick={shuffle}>{t`shuffle`}</button>
+                <button data-testid="scatter-cards-btn" onClick={() => setScatter(x => !x)}>{
+                    scatter ? t`unscatter` : t`scatter`
+                }</button>
             </div>
+            <button data-testid="add-card-btn" onClick={additon}>{t`add card`}</button>
         </div>
-        <ul className={style.cardlist} data-testid='cards'>
+        <ul className={style.cardlist} data-testid='cards' data-scatter={scatter}>
             {cards.map((card, i) => <li key={card.id}>
                 <Card.Editor {...card}/>
                 <div className={style.buttons}>
@@ -229,6 +249,22 @@ export async function remove(deckId: number, db: Database) {
     const removals = cards.map(card => cardStore.delete(card.id))
 
     await Promise.all(removals)
+    await transaction.done
+
+    return
+}
+
+export async function modify(modified: Data, cards: Card.Data[], db: Database) {
+    
+    const transaction = db.transaction([Stores.DECKS, Stores.CARDS], 'readwrite')
+    const deckStore = transaction.objectStore(Stores.DECKS)
+    const cardStore = transaction.objectStore(Stores.CARDS)
+
+    await deckStore.put(modified)
+
+    const modifications = cards.map(card => cardStore.put(card))
+    await Promise.all(modifications)
+
     await transaction.done
 
     return

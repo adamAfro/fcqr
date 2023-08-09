@@ -2,17 +2,13 @@ import { SelectHTMLAttributes } from 'react'
 
 import { useTranslation } from '../localisation'
 
-const Languages = [
-    'English', 'Spanish', 'French', 'German', 'Italian', 
-    'Portuguese', 'Russian', 'Chinese', 'Japanese', 'Korean', 
-    'Polish'
-]
+import { useSettings } from '../settings'
 
 export default function(props: SelectHTMLAttributes<HTMLSelectElement>) {
 
-    const { t } = useTranslation()
+    const languages = useSettings().languages
 
-    return <select {...props}>{Languages.map((lang) =>
-        <option key={lang} value={lang}>{t(lang)}</option>
+    return <select {...props}>{languages.map(({ language }, i) =>
+        <option key={i} value={language}>{language}</option>
     )}</select>
 }

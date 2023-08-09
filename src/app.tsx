@@ -4,10 +4,12 @@ import { BrowserRouter as Router, Routes, Route }
 
 import { default as localise, t} from './localisation'
 import { Provider as DatabaseProvider } from './database'
+import { Provider as SettingsProvider } from './settings'
 
 import Scanner from './scanner'
 import Pocket from './pocket'
 import { Route as Deck } from './deck'
+import { Voices } from './voices'
 
 
 import './globals.css'
@@ -19,15 +21,21 @@ export { Link } from 'react-router-dom'
 export const links = {
     pocket: '/',
     decks: `/${t`deck`}/`,
-    scanner: `/${t`scanner`}`
+    scanner: `/${t`scanner`}`,
+    voices: `/${t`voices`}`
 }
 
 export default (props: { basename?: string }) => <React.StrictMode>
+    <SettingsProvider>
     <DatabaseProvider>
+
         <Router basename={props.basename || '/'}><Routes>
             <Route path={links.pocket} element={<Pocket/>} />
             <Route path={links.decks + '*'} element={<Deck />} />
             <Route path={links.scanner} element={<Scanner />} />
+            <Route path={links.voices} element={<Voices />} />
         </Routes></Router>
+    
     </DatabaseProvider>
+    </SettingsProvider>
 </React.StrictMode>

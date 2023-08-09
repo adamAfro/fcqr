@@ -1,5 +1,7 @@
 {
     "go back": "powrót",
+    "add": "dodaj",
+    "remove": "usuń",
 
     "deck": "talia",
     "card": "karta",
@@ -17,6 +19,14 @@
     "add card": "dodaj kartę",
     "remove card": "usuń kartę",
     "read aloud": "odczytaj na głos",
+    
+    "edit voices": "zmień głosy",
+    "voices": "głosy",
+    "voices and languages": "głosy i języki",
+    "add any language name and select voice for it": "dodaj nowy język i wybierz jego głos",
+    "you will be able to use them in decks": "będziesz mógł ich używać w swoich kartach",
+    "new language": "nowy język",
+    "no voice": "bez dźwięku",
 
     "shuffle": "przetasuj",
     "scatter": "rozrzuć",
@@ -45,5 +55,9 @@
     "Chinese": "chiński",
     "Japanese": "japoński",
     "Korean": "koreański",
-    "Polish": "polski"
+    "Polish": "polski",
+
+
+    "look and language": "wygląd i język",
+    "languages and voices": "języki i głos"
 }

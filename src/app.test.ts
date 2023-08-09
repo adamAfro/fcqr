@@ -265,3 +265,13 @@ describe.skip('TTS', function () {
 
     test.todo('clicking on TTS button plays audio')
 })
+
+
+describe.skip('voices', function () {
+
+    test.todo('can add new languages with mocked voices and their are saved')
+
+    test.todo('added languages can be removed')
+
+    test.todo('added languages can be used in decks')
+})

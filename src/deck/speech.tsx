@@ -2,16 +2,20 @@ import { ButtonHTMLAttributes } from 'react'
 
 import { useTranslation } from '../localisation'
 
+import { useSettings } from '../settings'
+
 export default function Speech(props: { 
 	term: string, termLang: string, def?: string, defLang?: string 
 } & ButtonHTMLAttributes<HTMLButtonElement>) {
 
 	const { t } = useTranslation()
 
+	const languages = useSettings().languages
+
 	const { term, termLang, ...rest } = props
 
 	const readAloud = () => speak(term, { 
-		voice: voiceMap.get(termLang) || undefined
+		voice: languages.find(lang => lang.language == termLang)?.voice
 	})
 
 	return <button onClick={readAloud} {...rest}>
@@ -49,8 +53,3 @@ async function speak(text: string, options: SpeakOptions) {
 		msg.onerror = () => er(false)
 	})
 }
-
-const voiceMap = new Map([
-	['English', 'en-US'],
-	['Polish', 'pl-PL'],
-])

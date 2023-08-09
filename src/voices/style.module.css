@@ -1,0 +1,16 @@
+.panel {
+
+    padding: 1em;
+    max-width: 48em;
+    margin: auto;
+
+    min-height: 100vh;
+
+    display: flex;
+    flex-flow: column;
+}
+
+.panel .buttons {
+    display: flex;
+    gap: 1em;
+}

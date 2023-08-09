@@ -19,6 +19,7 @@
     max-width: 24em;
 }
 
+.buttons,
 .cardlist .buttons,
 .editor .buttons {
     display: flex;

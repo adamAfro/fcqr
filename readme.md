@@ -11,7 +11,7 @@ for making flashcards
 - [x] :iphone: scan words
 - [x] :evergreen_tree: make app avaible offline after initial entry
 - [x] :floppy_disk: save multiple sets and let to choose between them
-- [x] :loud_sound: read words [aloud](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis)
+- [x] :loud_sound: read words [aloud](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis) with custom voices setup
 
 ### Locations
 

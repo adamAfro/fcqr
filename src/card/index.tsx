@@ -6,26 +6,11 @@ import { Type as Database, Stores } from '../database'
 
 import style from "./style.module.css"
 
-export function Route() {
-
-    const [deckPath, path] = window.location.pathname.split('/').slice(-2, 2)
-    
-    const deckId = Number(deckPath?.split('$').pop())
-    const id = Number(path?.split('$').pop())
-    
-    return <Entry id={id} deckId={deckId}/>
-}
-
 export interface Data {
     id?: number
     deckId?: number
     term: string
     def: string
-}
-
-export function Entry(props: { id: number, deckId: number }) {
-
-    return <>🚧</>
 }
 
 

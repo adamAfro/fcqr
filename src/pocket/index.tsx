@@ -35,7 +35,7 @@ export default function(props: any) {
 
     const Deck = (props: DeckData) => <p>
 
-        <Link role='button' to={'/deck/' + props.name + '$' + props.id!.toString()}>
+        <Link role='button' to={links.decks + props.name + '$' + props.id!.toString()}>
             {props.name || t`unnamed deck`}
         </Link>
 

@@ -8,6 +8,8 @@ import { Select as LanguageSelect} from './languages'
 
 import { Type as Database, Stores } from '../database'
 
+import Speech from './speech'
+
 import { Editor as CardEditor, Data as CardData, removeData as removeCard } 
     from '../card'
 
@@ -76,17 +78,17 @@ export function Deck(props: {info: Data, children: CardData[]} & { removal: (eve
 
     const { database } = useContext()
 
-    const [cards, setCards] = useState(props.children.reverse() as CardData[])
+    const [cards, setCards] = useState([...props.children].reverse() as CardData[])
     const additon = (event: MouseEvent <HTMLButtonElement>) => {
 
         if (!database)
             throw new Error('no database')
 
         addCards(props.info.id!, [{ term: '', def: '' }], database)
-            .then(ids => setCards([...cards, { 
+            .then(ids => setCards([{ 
                 id: Number(ids[0]), term: '', def: '', 
                 deckId: props.info.id! 
-            }]))
+            }, ...cards]))
     }
 
     const remove = (event: MouseEvent <HTMLElement>) => {
@@ -101,15 +103,20 @@ export function Deck(props: {info: Data, children: CardData[]} & { removal: (eve
     return <div className={style.deck}>
         <div className={style.editor}>
             <Editor {...props.info}/>
-            <button data-testid="add-card-btn" onClick={additon}>{t`add card`}</button>
+            <div className={style.buttons}>
+                <button data-testid="deck-remove-btn" onClick={props.removal}>{t`remove deck`}</button>
+                <button data-testid="add-card-btn" onClick={additon}>{t`add card`}</button>
+            </div>
         </div>
         <ul className={style.cardlist} data-testid='cards'>
             {cards.map((card, i) => <li key={card.id}>
-                <button data-id={card.id} onClick={remove}>{t`remove card`}</button>
                 <CardEditor {...card}/>
+                <div className={style.buttons}>
+                    <Speech term={card.term} termLang={props.info.termLang}/>
+                    <button data-id={card.id} onClick={remove}>{t`remove card`}</button>
+                </div>
             </li>)}
         </ul>
-        <button data-testid="deck-remove-btn" onClick={props.removal}>{t`remove deck`}</button>
     </div>
 }
 

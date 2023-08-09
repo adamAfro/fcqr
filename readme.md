@@ -16,11 +16,12 @@ for making flashcards
 
 ## Features&TODOs
 
-- [x] :iphone: scan words and display them, save :floppy_disk: the last loaded set
-- [x] :evergreen_tree: make app avaible to load completly offline
-- [x] :floppy_disk: save multiple sets and make it avaible to choose between them
-- [ ] :loud_sound: read words [aloud](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis)
-- [ ] :8ball: simple gamefication of flashcards to memorize better
+- [x] :iphone: scan words
+- [x] :evergreen_tree: make app avaible offline after initial entry
+- [x] :floppy_disk: save multiple sets and let to choose between them
+- [x] :loud_sound: read words [aloud](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis)
+- [ ] :repeat_one: loop mode - view a card and go to the next one
+- [ ] :repeat: view mode - view multiple cards and go the next ones
 
 ### Locations
 

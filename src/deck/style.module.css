@@ -1,6 +1,8 @@
 .route {
 
     padding: 1em;
+    max-width: 48em;
+    margin: auto;
 }
 
 .deck {
@@ -17,4 +19,18 @@
     max-width: 24em;
 }
 
-.cardlist {}
+.cardlist .buttons,
+.editor .buttons {
+    display: flex;
+    gap: 1em;
+}
+
+.cardlist {
+    padding: 0; margin: 0;
+}
+
+.cardlist li {
+
+    list-style: none;
+    margin: 5em 0;
+}

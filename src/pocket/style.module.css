@@ -1,6 +1,13 @@
 .pocket {
 
     padding: 1em;
+    max-width: 48em;
+    margin: auto;
+
+    min-height: 100vh;
+
+    display: flex;
+    flex-flow: column;
 }
 
 .pocket header {
@@ -24,6 +31,7 @@
     text-align: center;
     padding: 1em;
     padding-top: 5em;
+    margin-top: auto;
 }
 
 

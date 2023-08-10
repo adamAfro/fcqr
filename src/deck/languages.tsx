@@ -2,7 +2,7 @@ import { SelectHTMLAttributes } from 'react'
 
 import { useTranslation } from '../localisation'
 
-import { useSettings } from '../settings'
+import { useSettings } from '../settings/context'
 
 export default function(props: SelectHTMLAttributes<HTMLSelectElement>) {
 

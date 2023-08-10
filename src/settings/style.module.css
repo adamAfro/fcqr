@@ -14,3 +14,8 @@
     display: flex;
     gap: 1em;
 }
+
+.bug {
+    color: red;
+    opacity: .7;
+}

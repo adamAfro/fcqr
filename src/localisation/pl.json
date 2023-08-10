@@ -20,6 +20,7 @@
     "remove card": "usuń kartę",
     "read aloud": "odczytaj na głos",
     
+    "edit settings": "ustawienia",
     "edit voices": "zmień głosy",
     "voices": "głosy",
     "voices and languages": "głosy i języki",
@@ -29,8 +30,15 @@
     "no voice": "bez dźwięku",
 
     "shuffle": "przetasuj",
+    "extend": "rozsuń",
+    "shrink": "zwiń",
     "scatter": "rozrzuć",
     "unscatter": "poukładaj",
+
+    "settings": "ustawienia",
+
+    "removing may remove wrong language so you may need to refresh this panel after":
+        "usuwanie może nie zadziałać poprawnie - po usunięciu trzeba odświeżyć ten panel, żeby wyglądało to poprawnie",
 
     "scanner": "skaner",
     "QR scanner": "skaner kodów QR",

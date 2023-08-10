@@ -9,7 +9,7 @@ import { Provider as SettingsProvider } from './settings'
 import Scanner from './scanner'
 import Pocket from './pocket'
 import { Route as Deck } from './deck'
-import { Voices } from './voices'
+import { Settings } from './settings'
 
 
 import './globals.css'
@@ -22,7 +22,7 @@ export const links = {
     pocket: '/',
     decks: `/${t`deck`}/`,
     scanner: `/${t`scanner`}`,
-    voices: `/${t`voices`}`
+    settings: `/${t`settings`}`
 }
 
 export default (props: { basename?: string }) => <React.StrictMode>
@@ -33,7 +33,7 @@ export default (props: { basename?: string }) => <React.StrictMode>
             <Route path={links.pocket} element={<Pocket/>} />
             <Route path={links.decks + '*'} element={<Deck />} />
             <Route path={links.scanner} element={<Scanner />} />
-            <Route path={links.voices} element={<Voices />} />
+            <Route path={links.settings} element={<Settings />} />
         </Routes></Router>
     
     </DatabaseProvider>

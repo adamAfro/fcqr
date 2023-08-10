@@ -35,20 +35,25 @@
     transition: gap .5s;
 }
 
-.cardlist[data-scatter=true] {
-    gap: max(10vw, 50vh);
+.cardlist[data-extend=true] {
+    gap: max(10vw, 75vh);
 }
 
 .cardlist li {
 
     transition: transform .5s;
     list-style: none;
+
+    position: relative;
 }
 
-.cardlist[data-scatter=true] li:nth-child(odd) {
-    transform: scale(.8) translate(max(-25vh, -25vw))
-}
 
-.cardlist[data-scatter=true] li:nth-child(even) {
-    transform: scale(.8) translate(min(25vh, 25vw))
+.removal {
+
+    background-color: var(--secondary);
+    position: absolute;
+    bottom: -1em;
+    left: -1em;
+    width: min-content;
+    white-space: nowrap;
 }

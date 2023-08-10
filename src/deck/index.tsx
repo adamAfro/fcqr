@@ -10,7 +10,6 @@ import { useDatabase, Type as Database, Stores } from "../database"
 import * as Card from '../card'
 
 import LanguageSelect from './languages'
-import Speech from './speech'
 
 import style from "./style.module.css"
 
@@ -42,12 +41,12 @@ export function Entry(props: { id: number }) {
 
     const database = useDatabase()
 
-    const [info, setInfo] = useState<Data | null>(null)
+    const [data, setData] = useState<Data | null>(null)
     const [cards, setCards] = useState<Card.Data[]>([])
 
     useEffect(() => void get(props.id, database!).then(({deck, cards}) => {
 
-        setInfo(deck)
+        setData(deck)
         setCards(cards)
 
     }), [])
@@ -58,25 +57,29 @@ export function Entry(props: { id: number }) {
             throw new Error('no database')
 
         remove(props.id!, database)
-        setInfo(null)
+        setData(null)
     }
 
-    return <>{info ? 
+    return <>{data ? 
         
-        <Deck info={info} removal={removal}>{cards}</Deck> : 
+        <Deck data={data} removal={removal}>{cards}</Deck> : 
         
+        /** @TODO loading screen */
         <p>{t`removed deck`}</p>
 
     }</>
 }
 
-export function Deck(props: {info: Data, children: Card.Data[]} & { removal: (event: MouseEvent <HTMLButtonElement>) => void }) {
+export function Deck(props: {
+    data: Data, children: Card.Data[], removal: (event: MouseEvent <HTMLButtonElement>) => void 
+}) {
 
     const { t } = useTranslation()
 
     const database = useDatabase()
 
-    const [scatter, setScatter] = useState(false)
+    const [data, setData] = useState <Data | undefined> (props.data)
+    const [extend, setExtend] = useState(false)
     const [cards, setCards] = useState([
         ...props.children
     ].sort((a, b) => a.order! - b.order!).reverse() as Card.Data[])
@@ -86,10 +89,10 @@ export function Deck(props: {info: Data, children: Card.Data[]} & { removal: (ev
         if (!database)
             throw new Error('no database')
 
-        addCards(props.info.id!, [{ term: '', def: '' }], database)
+        addCards(data?.id!, [{ term: '', def: '' }], database)
             .then(ids => setCards([{ 
                 id: Number(ids[0]), term: '', def: '', 
-                deckId: props.info.id! 
+                deckId: data?.id! 
             }, ...cards]))
     }
 
@@ -110,41 +113,43 @@ export function Deck(props: {info: Data, children: Card.Data[]} & { removal: (ev
         const shuffled = cards.map(card => ({ ...card, order: Math.random() }))
             .sort((a, b) => a.order! - b.order!).reverse()
 
-        modify(props.info, shuffled, database)
+        modify(data!, shuffled, database)
         setCards(shuffled)
     }
 
+    // needed for rerendering Card's Speech after changing languages
+    const CardWrapper = (card: Card.Data) => 
+        <Card.Editor {...card} termLang={data?.termLang!}/>
+
     return <div className={style.deck}>
         <div className={style.editor}>
-            <Editor {...props.info}/>
+            <Editor data={data!} setData={setData}/>
             <div className={style.buttons}>
                 <button data-testid="deck-remove-btn" onClick={props.removal}>{t`remove deck`}</button>
                 <button data-testid="shuffle-cards-btn" onClick={shuffle}>{t`shuffle`}</button>
-                <button data-testid="scatter-cards-btn" onClick={() => setScatter(x => !x)}>{
-                    scatter ? t`unscatter` : t`scatter`
+                <button data-testid="extend-cards-btn" onClick={() => setExtend(x => !x)}>{
+                    extend ? t`shrink` : t`extend`
                 }</button>
             </div>
             <button data-testid="add-card-btn" onClick={additon}>{t`add card`}</button>
         </div>
-        <ul className={style.cardlist} data-testid='cards' data-scatter={scatter}>
+        <ul className={style.cardlist} data-testid='cards' data-extend={extend}>
             {cards.map((card, i) => <li key={card.id}>
-                <Card.Editor {...card}/>
-                <div className={style.buttons}>
-                    <Speech term={card.term} termLang={props.info.termLang}/>
-                    <button data-id={card.id} onClick={remove}>{t`remove card`}</button>
-                </div>
+                <CardWrapper {...card}/>
+                <button className={style.removal} data-id={card.id} onClick={remove}>{t`remove card`}</button>
             </li>)}
         </ul>
     </div>
 }
 
-function Editor(props: Data) {
+function Editor({data, setData}: { data: Data, 
+    setData: ReturnType <typeof useState <Data> >[1],
+}) {
 
     const { t } = useTranslation()
 
     const database = useDatabase()
 
-    const [data, setData] = useState(props)
     const change = (event: ChangeEvent) => {
 
         if (!database)
@@ -154,10 +159,10 @@ function Editor(props: Data) {
         const key = target.name, value = target.value
 
         modifyData({ ...data, [key]: value } as Data, database)
-        setData(prev => ({ ...prev, [key]: value }))
+        setData({ ...data, [key]: value })
     }
 
-    return <p data-testid={`deck-${props.id}`}>
+    return <p data-testid={`deck-${data.id}`}>
         <input placeholder={t`unnamed deck`} name="name" type="text" value={data.name} onChange={change}/>
         <LanguageSelect name="termLang" defaultValue={data.termLang} onChange={change}/>
         <LanguageSelect name="defLang" defaultValue={data.defLang} onChange={change}/>

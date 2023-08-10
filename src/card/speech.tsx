@@ -2,7 +2,7 @@ import { ButtonHTMLAttributes } from 'react'
 
 import { useTranslation } from '../localisation'
 
-import { useSettings } from '../settings'
+import { useSettings } from '../settings/context'
 
 /** @BUG deck's language change applies only after rerender */
 export default function Speech(props: { 

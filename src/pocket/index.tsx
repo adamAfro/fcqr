@@ -42,7 +42,7 @@ export default function(props: any) {
 
         <header>
             <h1>FCQR</h1>
-            <Link role="button" data-testid="preferences-btn" to={links.voices}>{t`edit voices`}</Link>
+            <Link role="button" data-testid="preferences-btn" to={links.settings}>{t`edit settings`}</Link>
             
             <Link role="button" data-testid="scanner-link" to={links.scanner}>{t`scan QR`}</Link>
             <button data-testid='add-btn' onClick={addDeck}>{t`add deck`}</button>

@@ -38,9 +38,8 @@ function storeLanugages(languages: LanguageConfig[]) {
 function restoreLanguages() {
 
     const saved = localStorage.getItem(LANG_KEY)
-    if (!saved) return {
-        languages: []
-    }
+    if (!saved) 
+        return []
 
     return JSON.parse(saved) as LanguageConfig[]
 }

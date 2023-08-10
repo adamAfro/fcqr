@@ -2,17 +2,15 @@ import { useState } from 'react';
 
 import { MouseEvent, ChangeEvent, HTMLAttributes } from 'react'
 
-import { links, Link } from '../app'
-
 import { useTranslation } from '../localisation'
 
-import { LanguageConfig, useSettings } from '../settings'
+import { LanguageConfig, useSettings } from './context'
 
 
 import style from './style.module.css'
 
 
-export function Voices(props: HTMLAttributes<HTMLDivElement>) {
+export default function Voices(props: HTMLAttributes<HTMLDivElement>) {
 
     const { t } = useTranslation()
 
@@ -29,7 +27,6 @@ export function Voices(props: HTMLAttributes<HTMLDivElement>) {
         setLanguages(updatedLangs)
     }
 
-    /** @BUG removing removes wrong index visibly but good in storage */
     const remove = (event: MouseEvent) => {
 
         const target = event.target as HTMLButtonElement
@@ -45,16 +42,18 @@ export function Voices(props: HTMLAttributes<HTMLDivElement>) {
         ])
     }
 
-    return <section className={style.panel} {...props}>
+    return <section {...props}>
 
-        <Link role='button' to={links.pocket}>{t`go back`}</Link>
-
-        <h1>{t`voices and languages`}</h1>
+        <h2>{t`voices and languages`}</h2>
 
         <p>
             {t`add any language name and select voice for it`}
             {' - '}
             {t`you will be able to use them in decks`}
+        </p>
+
+        <p className={style.bug}>
+            🐛{t`removing may remove wrong language so you may need to refresh this panel after`} 
         </p>
 
         <button onClick={add}>{t`add`}</button>

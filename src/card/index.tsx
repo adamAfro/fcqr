@@ -5,6 +5,8 @@ import { ChangeEvent } from 'react'
 import { useDatabase, Type as Database, Stores } from '../database'
 
 
+import Speech from '../card/speech'
+
 import style from "./style.module.css"
 
 
@@ -28,7 +30,7 @@ export function Card(props: Data) {
     </p>
 }
 
-export function Editor(props: Data) {
+export function Editor(props: Data & { termLang: string }) {
 
     const database = useDatabase()
 
@@ -47,6 +49,7 @@ export function Editor(props: Data) {
 
     return <p className={style.card} data-testid={`card-${props.id}`}>
         <input className={style.term} name='term' value={data.term} onChange={change}/>
+        <Speech term={data.term} termLang={data.termLang}/>
         <textarea className={style.def} name='def' value={data.def} onChange={change}/>
     </p>
 }

@@ -14,8 +14,6 @@ a:active {
     text-decoration: line-through;
 }
 
-
-
 /**
  * React Router's Link - based on pico.css button
  */
@@ -71,7 +69,9 @@ a[role=button]:not([href]) {
 
 
 
-
+button, [role=button] {
+    white-space: nowrap;
+}
 
 p::first-letter, 
 h1::first-letter,

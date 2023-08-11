@@ -1,0 +1,47 @@
+.panel {
+
+    position: relative;
+    max-width: 48em;
+    min-height: 100vh;
+    padding: 1em;
+    margin: auto;
+
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+}
+
+.headline {
+
+    display: flex;
+    
+    justify-content: space-between;
+    align-items: baseline;
+
+    width: 100%;
+}
+
+    .headline [role=button] {
+        width: min-content;
+    }
+
+.quickaccess {
+    
+    display: flex;
+    align-items: baseline;
+    gap: 1em;
+    
+    position: fixed;
+    bottom: 0;
+    z-index: 10;
+    
+    padding: 0 2em;
+    
+    white-space: nowrap;
+}
+
+button.removal {
+    background-color: transparent;
+    color: inherit;
+    filter: contrast(.5)
+}

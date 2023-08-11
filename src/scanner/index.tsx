@@ -1,53 +1,30 @@
-import { useState } from 'react'
-
-import { links, Link } from '../app'
+import { HTMLAttributes, useState } from 'react'
 
 import { useTranslation } from '../localisation'
 import { useDatabase, Type as Database } from "../database"
 
-import * as Deck from "../deck"
-
-
 import Chunk from './chunk'
 import QR from './html5qr'
+
 
 import style from './style.module.css'
 
 
-async function handleData(data: any[], meta: any, db: Database) {
-
-    const type = (meta.type?.toString() as string || '')
-        .toLocaleUpperCase()
-    if (type == 'CSV' || /* default behaviour */ true) {
-
-        const cardsData = data
-            .map(chunk => chunk.split('\n')).flat()
-            .map(line => line.split(','))
-            .map(([term, def]: [string, string]) => ({ term, def }))
-
-        const deck = {
-            name: meta.name?.toString() as string || 
-                cardsData[0].term + ' - ' + 
-                cardsData[0].def.substring(0, 5) + '...',
-            termLang: meta.termLang?.toString() as string || '',
-            defLang: meta.termLang?.toString() as string || ''
-        }
-
-        const ids = await Deck.add(deck, cardsData, db)
-
-        return ids.deckId
-    }
+enum Status {
+    NOT_FOUND = 0, 
+    FOUND, READ, ADDED
 }
 
-export default (props: {}) => {
+export default (props: { 
+    handleData?: (data: string, meta: any, db: Database) => void
+} & HTMLAttributes <HTMLDivElement>) => {
 
     const { t } = useTranslation()
 
     const database = useDatabase()
     const 
         [checkPoints, setCheckpoints] = useState([] as boolean[]),
-        [link, setLink] = useState(null as null | string),
-        [status, setStatus] = useState(t`no scans yet`)
+        [status, setStatus] = useState(Status.NOT_FOUND)
 
     let data: Chunk[] = [], 
         meta: any = {}, 
@@ -55,19 +32,17 @@ export default (props: {}) => {
     
     const onScan = (decodedText = '') => {
 
-        setStatus(t`scanned QR code`)
+        setStatus(Status.FOUND)
         
         const dataChunk = Chunk.FromDecodedText(decodedText)
         if (!dataChunk)
             return
 
-        setStatus(t`scanned QR chunk with data` + ` ${dataChunk.index}/${dataChunk.total} `)
+        setStatus(Status.READ)
 
         const hasBeenRead = indices.includes(dataChunk.index)
         if (hasBeenRead)
             return
-
-        setStatus(t`scanned QR chunk with new data` + ` ${indices.toString()} `)
 
         indices.push(dataChunk.index)
         if (dataChunk.meta)
@@ -77,13 +52,15 @@ export default (props: {}) => {
 
         if (indices.length == dataChunk.total) {
 
-            handleData(data, meta, database!)
-                .then(id => setLink(links.decks + '$' + id))
+            if (props.handleData)
+                props.handleData(data.sort((a,b) => a.index - b.index).join(''), meta, database!)
 
             data = []
             meta = {}
             indices = []
         }
+
+        setStatus(Status.ADDED)
 
         setCheckpoints(prev => {
 
@@ -95,27 +72,20 @@ export default (props: {}) => {
         })
     }
 
-    const onError = () => void ({}) // setStatus(t`could not find QR`)
+    const onError = () => void (setStatus(Status.NOT_FOUND))
 
-    return <main className={style.scanner}>
+    const Checkpoints = () => <div className={style.checkpoints}>
+        {checkPoints.map((state, i) => <div style={{display: 'flex'}}>
+            <input key={i} type="checkbox" disabled defaultChecked={state}/>
+        </div>)}
+    </div>
 
-        <Link role='button' to='/'>{t`go back`}</Link>
+    return <div className={style.scanner}>
 
-        <h2>{t`QR scanner`}</h2>
+        <QR className={style.camera} data-status={status} 
+            onScan={onScan} onError={onError}/>
 
-        {!link ? <>
+        <Checkpoints />
 
-            <p>{status}</p>
-        
-            <QR onScan={onScan} onError={onError}/>
-        
-            <div className={style.checkpoints}>
-                {checkPoints.map((state, i) => <div style={{display: 'flex'}}>
-                    <span key={i} className={style.checkpoint} data-checked={state}></span>
-                </div>)}
-            </div>
-            
-        </> : <p><Link data-testid='link' to={link}>{t`scanning is done`}</Link></p>}
-
-    </main>
+    </div>
 }

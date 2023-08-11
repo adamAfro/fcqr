@@ -9,6 +9,7 @@ import * as Deck from '../deck'
 
 
 import style from './style.module.css'
+import ux from '../style.module.css'
 
 
 export default function(props: any) {
@@ -38,29 +39,31 @@ export default function(props: any) {
     </p>
 
 
-    return <main className={style.pocket} {...props} data-testid="pocket">
+    return <main className={ux.panel} {...props} data-testid="pocket">
 
-        <header>
-            <h1>FCQR</h1>
+        <header className={ux.headline}>
+            <div>
+                <h1 style={{margin:0}}>FCQR</h1>
+                <a target='_blank' href="https://github.com/adamAfro/fcqr">
+                    by adamAfro
+                </a>
+            </div>
             <Link role="button" data-testid="preferences-btn" to={links.settings}>{t`edit settings`}</Link>
-            
-            <Link role="button" data-testid="scanner-link" to={links.scanner}>{t`scan QR`}</Link>
-            <button data-testid='add-btn' onClick={addDeck}>{t`add deck`}</button>
         </header>
 
         <h2>{t`your decks`}</h2>
 
-        <ul data-testid="added-decks">
+        <ul className={style.decklist} data-testid="added-decks">
             {addedDecks.map(deck => <li key={deck.id}><Entry {...deck}/></li>)}
         </ul>
 
-        <ul data-testid="decks">
+        <ul className={style.decklist} data-testid="decks">
             {decks.map(deck => <li key={deck.id}><Entry {...deck}/></li>)}
         </ul>
 
-        <footer>
-            <a target='_blank' href="https://github.com/adamAfro/fcqr">github.com/adamAfro</a>
-        </footer>
+        <nav className={ux.quickaccess}>
+            <button data-testid='add-btn' onClick={addDeck}>{t`add deck`}</button>
+        </nav>
 
     </main>
 }

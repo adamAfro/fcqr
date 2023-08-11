@@ -1,32 +1,20 @@
-import { useState }  from 'react'
+import { HTMLAttributes, useState }  from 'react'
 
 import { ChangeEvent, MouseEvent, useEffect }  from 'react'
-
-import { links, Link } from '../app'
 
 import { useTranslation } from '../localisation'
 import { useDatabase, Type as Database, Stores } from "../database"
 
+
+import Scanner from '../scanner'
 import * as Card from '../card'
 
 import LanguageSelect from './languages'
 
+
+import ui from "../style.module.css"
 import style from "./style.module.css"
 
-
-export function Route() {
-
-    const { t } = useTranslation()
-
-    const path = window.location.pathname.split('/').pop()
-    const id = Number(path?.split('$').pop())
-
-    return <main className={style.route}>
-        <Link role='button' to={links.pocket}>{t`go back`}</Link>
-        <h1>{t`your deck`}</h1>
-        <Entry id={id}/>
-    </main>
-}
 
 export interface Data {
     id?: number
@@ -35,16 +23,23 @@ export interface Data {
     defLang: string
 }
 
-export function Entry(props: { id: number }) {
+export function Entry({ id }: { id?: number }) {
 
     const { t } = useTranslation()
+
+    if (!id) {
+        
+        const path = window.location.pathname.split('/').pop()
+        
+        id = Number(path?.split('$').pop())
+    }
 
     const database = useDatabase()
 
     const [data, setData] = useState<Data | null>(null)
     const [cards, setCards] = useState<Card.Data[]>([])
 
-    useEffect(() => void get(props.id, database!).then(({deck, cards}) => {
+    useEffect(() => void get(id!, database!).then(({deck, cards}) => {
 
         setData(deck)
         setCards(cards)
@@ -56,7 +51,7 @@ export function Entry(props: { id: number }) {
         if (!database)
             throw new Error('no database')
 
-        remove(props.id!, database)
+        remove(id!, database)
         setData(null)
     }
 
@@ -77,12 +72,12 @@ export function Deck(props: {
     const { t } = useTranslation()
 
     const database = useDatabase()
+    const 
+        [data, setData] = useState <Data | undefined> (props.data),
+        [cards, setCards] = useState([...props.children].sort((a, b) => a.order! - b.order!).reverse() as Card.Data[])
 
-    const [data, setData] = useState <Data | undefined> (props.data)
-    const [extend, setExtend] = useState(false)
-    const [cards, setCards] = useState([
-        ...props.children
-    ].sort((a, b) => a.order! - b.order!).reverse() as Card.Data[])
+    const [spread, setSpread] = useState(false)
+    const [scanning, setScanning] = useState(false)
     
     const additon = (event: MouseEvent <HTMLButtonElement>) => {
 
@@ -117,26 +112,63 @@ export function Deck(props: {
         setCards(shuffled)
     }
 
+    async function handleScannerData(scanned: string, meta: any, db: Database) {
+
+        setScanning(false)
+        const type = (meta.type?.toString() as string || '')
+            .toLocaleUpperCase()
+
+        if (type == 'CSV' || /* default behaviour */ true) {
+    
+            const { separator = ',', endline = '\n' } = meta?.characters || {}
+    
+            let cardsData = scanned.split(endline)
+                .map(line => line.split(separator) as [string, string])
+                .map(([term, def = '']: [string, string]) => ({ term, def }))
+    
+            const ids = await addCards(data?.id!, cardsData, db)
+            cardsData.map((card, i) => ({ ...card, id: ids[i] }))
+
+            setCards(prev => [...cardsData.reverse(), ...prev])
+        }
+    }
+
     // needed for rerendering Card's Speech after changing languages
     const CardWrapper = (card: Card.Data) => 
         <Card.Editor {...card} termLang={data?.termLang!}/>
 
     return <div className={style.deck}>
-        <div className={style.editor}>
+
+        <div className={style.properties}>
             <Editor data={data!} setData={setData}/>
+
+            {scanning ? <Scanner handleData={handleScannerData}/> : null}
             <div className={style.buttons}>
-                <button data-testid="deck-remove-btn" onClick={props.removal}>{t`remove deck`}</button>
-                <button data-testid="shuffle-cards-btn" onClick={shuffle}>{t`shuffle`}</button>
-                <button data-testid="extend-cards-btn" onClick={() => setExtend(x => !x)}>{
-                    extend ? t`shrink` : t`extend`
-                }</button>
+                <button data-testid="scan-btn" onClick={() => setScanning(prev => !prev)}>
+                    {scanning ? t`close scanner` : t`scan QR`}
+                </button>
+                <button className={ui.removal} data-testid="deck-remove-btn" 
+                    onClick={props.removal}>{t`remove deck`}</button>
             </div>
-            <button data-testid="add-card-btn" onClick={additon}>{t`add card`}</button>
         </div>
-        <ul className={style.cardlist} data-testid='cards' data-extend={extend}>
-            {cards.map((card, i) => <li key={card.id}>
+
+        <div className={ui.quickaccess}>
+            
+            <button className={style.shuffle} data-testid="shuffle-cards-btn" 
+                onClick={shuffle}>{t`shuffle`}</button>
+
+            <button className={style.spread}data-testid="spread-cards-btn" onClick={() => setSpread(x => !x)}>{
+                spread ? t`shrink` : t`spread`
+            }</button>
+            
+            <button className={style.additon} data-testid="add-card-btn" 
+                onClick={additon}>{t`add card`}</button>
+        </div>
+        
+        <ul className={style.cardlist} data-testid='cards' data-spread={spread}>
+            {cards.map(card => <li key={card.id}>
                 <CardWrapper {...card}/>
-                <button className={style.removal} data-id={card.id} onClick={remove}>{t`remove card`}</button>
+                <button className={ui.removal} data-id={card.id} onClick={remove}>{t`remove card`}</button>
             </li>)}
         </ul>
     </div>
@@ -144,7 +176,7 @@ export function Deck(props: {
 
 function Editor({data, setData}: { data: Data, 
     setData: ReturnType <typeof useState <Data> >[1],
-}) {
+} & HTMLAttributes <HTMLParagraphElement>) {
 
     const { t } = useTranslation()
 
@@ -164,8 +196,10 @@ function Editor({data, setData}: { data: Data,
 
     return <p data-testid={`deck-${data.id}`}>
         <input placeholder={t`unnamed deck`} name="name" type="text" value={data.name} onChange={change}/>
-        <LanguageSelect name="termLang" defaultValue={data.termLang} onChange={change}/>
-        <LanguageSelect name="defLang" defaultValue={data.defLang} onChange={change}/>
+        <div className={style.buttons}>
+            <LanguageSelect name="termLang" defaultValue={data.termLang} onChange={change}/>
+            <LanguageSelect name="defLang" defaultValue={data.defLang} onChange={change}/>
+        </div>
     </p>
 }
 

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, HTMLAttributes } from 'react'
 
 import { Html5QrcodeScanner as Scanner, Html5QrcodeSupportedFormats as Formats } 
     from 'html5-qrcode'
@@ -8,7 +8,9 @@ const qrcodeRegionId = "html5qr-code-full-region"
 export default (props: {
     onScan: (dataString: string) => void, 
     onError: (error: any) => void
-}) => {
+} & HTMLAttributes <HTMLDivElement>) => {
+
+    const { onScan, onError, ...attrs } = props
 
     useEffect(() => {
         
@@ -18,7 +20,7 @@ export default (props: {
     
         }, /** verbose */ false)
 
-        scanner.render(props.onScan, props.onError)
+        scanner.render(onScan, onError)
 
         const unmount = () => {
             scanner.clear().catch(error => {
@@ -30,5 +32,5 @@ export default (props: {
         
     }, [])
 
-    return <div id={qrcodeRegionId}></div>
+    return <div {...attrs} id={qrcodeRegionId}></div>
 }

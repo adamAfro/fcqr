@@ -10,7 +10,7 @@
     flex-flow: column;
 }
 
-.panel .buttons {
+.buttons {
     display: flex;
     gap: 1em;
 }

@@ -30,7 +30,7 @@
     "no voice": "bez dźwięku",
 
     "shuffle": "przetasuj",
-    "extend": "rozsuń",
+    "spread": "rozsuń",
     "shrink": "zwiń",
     "scatter": "rozrzuć",
     "unscatter": "poukładaj",
@@ -43,6 +43,7 @@
     "scanner": "skaner",
     "QR scanner": "skaner kodów QR",
     "scan QR": "skanuj kod QR",
+    "close scanner": "zamknij skaner",
 
     "no scans yet": "jeszcze nic nie przeskanowano",
     "could not find QR": "nie znaleziono kodu QR",

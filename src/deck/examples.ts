@@ -1,9 +1,26 @@
-import * as Deck from './deck'
-import * as Card from './card'
+import * as Deck from '.'
+import * as Card from '../card'
 
 export const decks = [
+
     {
-        deck: {
+        data: {
+            name: '',
+            termLang: '',
+            defLang: '',
+        },
+        cards: [],
+    },
+    {
+        data: {
+            name: 'Deck without cards',
+            termLang: 'English',
+            defLang: 'French',
+        },
+        cards: [],
+    },
+    {
+        data: {
             name: 'Science Quiz',
             termLang: 'English',
             defLang: 'French',
@@ -15,7 +32,7 @@ export const decks = [
         ],
     },
     {
-        deck: {
+        data: {
             name: 'Animal Names',
             termLang: 'English',
             defLang: 'German',
@@ -28,7 +45,7 @@ export const decks = [
         ],
     },
     {
-        deck: {
+        data: {
             name: 'Mathematics Basics',
             termLang: 'English',
             defLang: 'Spanish',
@@ -42,7 +59,7 @@ export const decks = [
         ],
     },
     {
-        deck: {
+        data: {
             name: 'Fruits and Colors',
             termLang: 'English',
             defLang: 'Italian',
@@ -57,9 +74,25 @@ export const decks = [
             { term: 'Orange (Color)', def: 'Arancione' },
         ],
     },
-] as { deck: Deck.Data, cards: Card.Data[] }[]
+] as { data: Deck.Data, cards: Card.Data[] }[]
 
-export function randomDeck() {
 
-    return decks[Math.floor(Math.random() * decks.length)]
+
+class MockSpeechSynthesisVoice {
+    localService = true
+    default = false
+    lang: string
+    name: string
+    voiceURI = 'tts'
+
+    constructor(name: string, lang: string) { 
+        this.name = name
+        this.lang = lang 
+    }
 }
+
+export const voices = [
+    new MockSpeechSynthesisVoice("Polish", 'pl-PL'),
+    new MockSpeechSynthesisVoice("English", 'en-GB'),
+    new MockSpeechSynthesisVoice("English US", 'en-US')
+]

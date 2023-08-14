@@ -51,6 +51,7 @@
       "react-app/jest"
     ]
   },
+  "jest": {"testMatch": ["**/*/test.tsx"]},
   "browserslist": {
     "production": [
       ">0.2%",

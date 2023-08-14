@@ -33,6 +33,9 @@ interface SpeakOptions {
 }
 
 async function speak(text: string, options: SpeakOptions) {
+
+	if (!speechSynthesis)
+		return Promise.reject(false)
 	
 	const msg = new SpeechSynthesisUtterance(text)
 

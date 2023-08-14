@@ -39,9 +39,9 @@ export function Entry({ id }: { id?: number }) {
     const [data, setData] = useState<Data | null>(null)
     const [cards, setCards] = useState<Card.Data[]>([])
 
-    useEffect(() => void get(id!, database!).then(({deck, cards}) => {
+    useEffect(() => void get(id!, database!).then(({data, cards}) => {
 
-        setData(deck)
+        setData(data)
         setCards(cards)
 
     }), [])
@@ -60,7 +60,7 @@ export function Entry({ id }: { id?: number }) {
         <Deck data={data} removal={removal}>{cards}</Deck> : 
         
         /** @TODO loading screen */
-        <p>{t`removed deck`}</p>
+        <p data-testid="loading-deck">{t`removed deck`}</p>
 
     }</>
 }
@@ -253,14 +253,14 @@ export async function get(deckId: number, db: Database) {
     const deckStore = transaction.objectStore(Stores.DECKS)
     const cardStore = transaction.objectStore(Stores.CARDS)
 
-    const deck = await deckStore.get(deckId) as Data
+    const data = await deckStore.get(deckId) as Data
 
     const index = cardStore.index('deckId')
     const cards = await index.getAll(IDBKeyRange.only(deckId)) as Card.Data[]
     
     await transaction.done
 
-    return { deck, cards }
+    return { data, cards }
 }
 
 export async function getData(deckId: number, db: Database) {

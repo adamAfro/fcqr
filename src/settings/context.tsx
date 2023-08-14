@@ -18,7 +18,7 @@ export function Provider({ children }: { children: React.ReactNode }) {
 
     const [languages, setLanguages] = useState(restoreLanguages() as LanguageConfig[])
 
-    if (!languages.length)
+    if (!languages.length && speechSynthesis)
         setLanguages(speechSynthesis.getVoices().map(({ lang }) => ({ 
             id: Date.now(), language: lang, voice: lang
         })))

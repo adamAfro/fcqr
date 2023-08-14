@@ -48,9 +48,9 @@ export function Editor(props: Data & { termLang: string }) {
     }
 
     return <p className={style.card} data-testid={`card-${props.id}`}>
-        <input className={style.term} name='term' value={data.term} onChange={change}/>
+        <input className={style.term} name="term" value={data.term} onChange={change}/>
         <Speech term={data.term} termLang={data.termLang}/>
-        <textarea className={style.def} name='def' value={data.def} onChange={change}/>
+        <textarea className={style.def} name="def" value={data.def} onChange={change}/>
     </p>
 }
 

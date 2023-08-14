@@ -44,7 +44,7 @@ export function Provider({ children }: { children: ReactNode }) {
     return <>{database ? 
         
         <Context.Provider value={ database }>{children}</Context.Provider> : 
-        'no db'
+        <div data-testid="database-unloaded">no db</div>
         
     }</>
 }

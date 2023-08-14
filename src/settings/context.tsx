@@ -16,12 +16,22 @@ const Context = createContext <{
 
 export function Provider({ children }: { children: React.ReactNode }) {
 
-    const [languages, setLanguages] = useState(restoreLanguages() as LanguageConfig[])
+    const [languages, setLanguages] = useState([] as LanguageConfig[])
 
-    if (!languages.length && speechSynthesis)
-        setLanguages(speechSynthesis.getVoices().map(({ lang }) => ({ 
-            id: Date.now(), language: lang, voice: lang
+    useEffect(() => {
+
+        setLanguages(restoreLanguages())
+        if (languages)
+            return
+
+        if (!speechSynthesis)
+            return
+
+        setLanguages(speechSynthesis.getVoices().map(({ lang, name }) => ({ 
+            id: Date.now(), language: lang, voice: name
         })))
+
+    }, [])
 
     useEffect(() => storeLanugages(languages), [languages])
 

@@ -46,9 +46,11 @@ async function speak(text: string, options: SpeakOptions) {
 	const voices = speechSynthesis.getVoices()
 	if (voices.length == 0)
 		return Promise.resolve(false)
-	
-	msg.voice = voices.find(voice => voice.name == options.voice) ||
-		voices[0]
+
+	const voice = voices.find(({name}) => name == options.voice)
+	if (!voice)
+		return Promise.reject(false)
+	msg.voice = voice
 
 	window.speechSynthesis.speak(msg)
 

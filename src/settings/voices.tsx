@@ -68,6 +68,7 @@ export default function Voices(props: HTMLAttributes<HTMLDivElement>) {
     </section>
 }
 
+/** @TODO loading prompt: sometimes voices need time to load */ 
 function Editor(props: LanguageConfig) {
 
     const { t } = useTranslation()

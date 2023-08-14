@@ -40,6 +40,9 @@
     "removing may remove wrong language so you may need to refresh this panel after":
         "usuwanie może nie zadziałać poprawnie - po usunięciu trzeba odświeżyć ten panel, żeby wyglądało to poprawnie",
 
+    "term": "pojęcie",
+    "definition": "definicja",
+
     "scanner": "skaner",
     "QR scanner": "skaner kodów QR",
     "scan QR": "skanuj kod QR",

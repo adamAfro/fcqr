@@ -8,6 +8,7 @@ import { useDatabase, Type as Database, Stores } from '../database'
 import Speech from '../card/speech'
 
 import style from "./style.module.css"
+import { useTranslation } from 'react-i18next'
 
 
 export interface Data {
@@ -32,6 +33,8 @@ export function Card(props: Data) {
 
 export function Editor(props: Data & { termLang: string }) {
 
+    const {t} = useTranslation()
+
     const database = useDatabase()
 
     const [data, setData] = useState(props)
@@ -47,10 +50,10 @@ export function Editor(props: Data & { termLang: string }) {
         setData(prev => ({ ...prev, [key]: value }))
     }
 
-    return <p className={style.card} data-testid={`card-${props.id}`}>
-        <input className={style.term} name="term" value={data.term} onChange={change}/>
+    return <p className={style.card} data-testid={`card-${data.id}`}>
+        <input placeholder={t`term`} className={style.term} name="term" value={data.term} onChange={change}/>
         <Speech term={data.term} termLang={data.termLang}/>
-        <textarea className={style.def} name="def" value={data.def} onChange={change}/>
+        <textarea placeholder={t`definition`} className={style.def} name="def" value={data.def} onChange={change}/>
     </p>
 }
 

@@ -21,6 +21,7 @@
     "react-qr-code": "^2.0.11",
     "react-router-dom": "^6.14.2",
     "react-scripts": "5.0.1",
+    "semver": "^7.5.4",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4",
     "workbox-background-sync": "^6.6.0",
@@ -51,7 +52,11 @@
       "react-app/jest"
     ]
   },
-  "jest": {"testMatch": ["**/*/test.tsx"]},
+  "jest": {
+    "testMatch": [
+      "**/*/test.tsx"
+    ]
+  },
   "browserslist": {
     "production": [
       ">0.2%",

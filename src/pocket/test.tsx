@@ -5,7 +5,7 @@ import { render, screen, fireEvent, waitFor }
     from '@testing-library/react'
 
 import Pocket from "."
-import * as Deck from "../deck"
+import * as Deck from "../deck/database"
 
 import { Provider as SettingsProvider } from '../settings' 
 import { open as openDB, Provider as DatabaseProvider } 
@@ -13,8 +13,31 @@ import { open as openDB, Provider as DatabaseProvider }
 import * as fakeIDB from 'fake-indexeddb'
     Object.assign(global, fakeIDB)
 
-// @ts-ignore
-global.speechSynthesis = { getVoices: () => ['Polish', 'English'] }
+jest.mock('../speech', () => {
+
+    class SpeechSynthesisVoice {
+        localService = true
+        default = false
+        lang: string
+        name: string
+        voiceURI = 'tts'
+    
+        constructor(name: string, lang: string) { 
+            this.name = name
+            this.lang = lang 
+        }
+    }
+
+    return {
+        speak: jest.fn(async () => true),
+        getVoices: async () => [
+            new SpeechSynthesisVoice("Polish", 'pl-PL'),
+            new SpeechSynthesisVoice("English", 'en-GB'),
+            new SpeechSynthesisVoice("English US", 'en-US'),
+            new SpeechSynthesisVoice("French", 'fr-ME'),
+        ]
+    }
+})
 
 
 async function expectFullLoad() {

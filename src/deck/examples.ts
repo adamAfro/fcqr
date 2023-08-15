@@ -1,7 +1,16 @@
-import * as Deck from '.'
-import * as Card from '../card'
-
-export const decks = [
+export const decks: {
+    data: {
+        name: string;
+        termLang: string;
+        defLang: string;
+        id?: number;
+    };
+    cards: {
+        term: string;
+        def: string;
+        id?: number;
+    }[];
+}[] = [
 
     {
         data: {
@@ -74,25 +83,4 @@ export const decks = [
             { term: 'Orange (Color)', def: 'Arancione' },
         ],
     },
-] as { data: Deck.Data, cards: Card.Data[] }[]
-
-
-
-class MockSpeechSynthesisVoice {
-    localService = true
-    default = false
-    lang: string
-    name: string
-    voiceURI = 'tts'
-
-    constructor(name: string, lang: string) { 
-        this.name = name
-        this.lang = lang 
-    }
-}
-
-export const voices = [
-    new MockSpeechSynthesisVoice("Polish", 'pl-PL'),
-    new MockSpeechSynthesisVoice("English", 'en-GB'),
-    new MockSpeechSynthesisVoice("English US", 'en-US')
 ]

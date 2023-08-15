@@ -1,11 +1,13 @@
 import { useState } from 'react'
 
-import { ChangeEvent } from 'react'
+import { ChangeEvent, ButtonHTMLAttributes } from 'react'
 
-import { useDatabase, Type as Database, Stores } from '../database'
+import { useSettings } from '../settings'
+import { useDatabase, Type as Database, Stores } 
+    from '../database'
 
+import { speak } from "../speech"
 
-import Speech from '../card/speech'
 
 import style from "./style.module.css"
 import { useTranslation } from 'react-i18next'
@@ -147,4 +149,24 @@ export async function removeData(id: number, db: Database) {
     await transaction.done
 
     return
+}
+
+/** @BUG deck's language change applies only after rerender */
+export default function Speech(props: { 
+	term: string, termLang: string, def?: string, defLang?: string 
+} & ButtonHTMLAttributes<HTMLButtonElement>) {
+
+	const { t } = useTranslation()
+
+	const languages = useSettings().languages
+
+	const { term, termLang, ...rest } = props
+
+	const readAloud = () => speak(term, { 
+		voice: languages.find(lang => lang.language == termLang)?.voice
+	})
+
+	return <button onClick={readAloud} {...rest}>
+		{t`read aloud`}
+	</button>
 }

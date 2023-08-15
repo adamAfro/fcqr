@@ -2,7 +2,7 @@ import { HTMLAttributes } from 'react'
 
 import { useTranslation } from '../localisation'
 
-import Voices from './voices'
+import Voices from './languages'
 
 
 export { useSettings, Provider } from './context'

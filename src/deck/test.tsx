@@ -5,8 +5,9 @@ import { render, screen, fireEvent, waitFor }
     from '@testing-library/react'
 
 import * as Card from "../card"
-import * as Deck from "../deck"
-import { decks, voices } from './examples'
+import { Entry } from "../deck"
+import * as Deck from "../deck/database"
+import { decks } from './examples'
 
 import { Provider as SettingsProvider } from '../settings' 
 import { open as openDB, Provider as DatabaseProvider } 
@@ -14,25 +15,47 @@ import { open as openDB, Provider as DatabaseProvider }
 import * as fakeIDB from 'fake-indexeddb'
     Object.assign(global, fakeIDB)
 
-// @ts-ignore
-global.speechSynthesis = {
-    getVoices: () => voices
-}
 
+jest.mock('../speech', () => {
+
+    class SpeechSynthesisVoice {
+        localService = true
+        default = false
+        lang: string
+        name: string
+        voiceURI = 'tts'
+    
+        constructor(name: string, lang: string) { 
+            this.name = name
+            this.lang = lang 
+        }
+    }
+
+    return {
+        speak: jest.fn(async () => true),
+        getVoices: async () => [
+            new SpeechSynthesisVoice("Polish", 'pl-PL'),
+            new SpeechSynthesisVoice("English", 'en-GB'),
+            new SpeechSynthesisVoice("English US", 'en-US'),
+            new SpeechSynthesisVoice("French", 'fr-ME'),
+        ]
+    }
+})
 
 const App = ({id}: {id:number}) => <DatabaseProvider><SettingsProvider>
     
-    <Router basename={'/'}><Deck.Entry id={id}/></Router>
+    <Router basename={'/'}><Entry id={id}/></Router>
 
 </SettingsProvider></DatabaseProvider>
 
-async function expectFullLoad() {
+async function waitForFullLoad() {
 
     await waitFor(() => expect(screen.queryByTestId('database-unloaded')).toBeNull())
     await waitFor(() => expect(screen.queryByTestId('loading-deck')).toBeNull())
+    await waitFor(() => expect(screen.queryByTestId('cards')).not.toBeNull())
 }
 
-beforeAll(async function insertExampleDecks() {
+beforeEach(async function insertExampleDecks() {
 
     indexedDB = new IDBFactory()
 
@@ -53,8 +76,8 @@ describe("modifying deck's data", () => {
 
     test.each(decks)("deck's name", async ({data}) => {
 
-        render(<App id={data.id!}/>)
-        await expectFullLoad()
+        await act(() => render(<App id={data.id!}/>))
+        await waitForFullLoad()
         
         const changes = { name: 'Deck with modified deck' }
 
@@ -74,22 +97,29 @@ describe("modifying deck's data", () => {
 
     test.each(decks)("deck's term language", async ({data}) => {
 
-        render(<App id={data.id!}/>)
-        await expectFullLoad()
+        await act(() => render(<App id={data.id!}/>))
+        await waitForFullLoad()
 
-        const langsSel = [...screen.getByTestId(`deck-${data.id}`)
-            .querySelectorAll('select')!]
+        const langsSel = [...screen
+            .getByTestId(`deck-${data.id}`)
+            .querySelectorAll('select')!
+        ]
+
+        await waitFor(() => {
+
+            expect(langsSel[0].children.length)
+                .toBeGreaterThanOrEqual(4)
+        })
+
         const termLangSel = langsSel[0]
         const possibleLanguages = [...langsSel[0].querySelectorAll('option')]
             .map(x => x.value).filter(x => x)
+        expect(possibleLanguages.length).toBeGreaterThan(0)
 
         const changes = {
             termLang: possibleLanguages
                 .filter(x => x != termLangSel.value)[0]
         }
-
-
-        expect(changes.termLang).not.toBeFalsy()
 
         expect(termLangSel.value).not.toEqual(changes.termLang)
         await act(() => fireEvent.change(termLangSel, { target: { value: changes.termLang } }))
@@ -104,11 +134,20 @@ describe("modifying deck's data", () => {
 
     test.each(decks)("deck's definition language", async ({data}) => {
 
-        render(<App id={data.id!}/>)
-        await expectFullLoad()
+        await act(() => render(<App id={data.id!}/>))
+        await waitForFullLoad()
 
-        const langsSel = [...screen.getByTestId(`deck-${data.id}`)
-            .querySelectorAll('select')!]
+        const langsSel = [...screen
+            .getByTestId(`deck-${data.id}`)
+            .querySelectorAll('select')!
+        ]
+
+        await waitFor(() => {
+
+            expect(langsSel[0].children.length)
+                .toBeGreaterThanOrEqual(4)
+        })
+
         const defLangSel = langsSel[1]
         const possibleLanguages = [...langsSel[0].querySelectorAll('option')]
             .map(x => x.value)
@@ -131,13 +170,22 @@ describe("modifying deck's data", () => {
 
     test.each(decks)("all at once", async ({data}) => {
 
-        render(<App id={data.id!}/>)
-        await expectFullLoad()
+        await act(() => render(<App id={data.id!}/>))
+        await waitForFullLoad()
+
+        const langsSel = [...screen
+            .getByTestId(`deck-${data.id}`)
+            .querySelectorAll('select')!
+        ]
+
+        await waitFor(() => {
+
+            expect(langsSel[0].children.length)
+                .toBeGreaterThanOrEqual(4)
+        })
 
         const nameInput = screen.getByTestId(`deck-${data.id}`)
             .querySelector('input')!
-        const langsSel = [...screen.getByTestId(`deck-${data.id}`)
-            .querySelectorAll('select')!]
         const termLangSel = langsSel[0]
         const defLangSel = langsSel[1] || screen.getByDisplayValue(data.defLang)
         const possibleLanguages = [...langsSel[0].querySelectorAll('option')]
@@ -173,8 +221,9 @@ describe("modifying deck's data", () => {
 
 test.each(decks)("cards are visible", async({data, cards}) => {
 
-    render(<App id={data.id!}/>)
-    await expectFullLoad()
+    await act(() => render(<App id={data.id!}/>))
+    await waitForFullLoad()
+
 
     for (const card of cards) {
         
@@ -194,8 +243,8 @@ describe("modifying card's data", () => {
 
     test.each(decks)("card's term", async({data, cards}) => {
 
-        render(<App id={data.id!}/>)
-        await expectFullLoad()
+        await act(() => render(<App id={data.id!}/>))
+        await waitForFullLoad()
 
         const db = await openDB()
         const changes = { term: 'Test term' }
@@ -219,8 +268,8 @@ describe("modifying card's data", () => {
 
     test.each(decks)("card's def", async({data, cards}) => {
 
-        render(<App id={data.id!}/>)
-        await expectFullLoad()
+        await act(() => render(<App id={data.id!}/>))
+        await waitForFullLoad()
 
         const db = await openDB()
         const changes = { def: 'Test def' }
@@ -250,8 +299,8 @@ describe("modyfing list of cards", () => {
 
     test.each(decks)('are all visible in deck', async ({data, cards}) => {
 
-        render(<App id={data.id!}/>)
-        await expectFullLoad()
+        await act(() => render(<App id={data.id!}/>))
+        await waitForFullLoad()
 
         const container = screen.getByTestId('cards')
         if(cards.length)
@@ -262,23 +311,23 @@ describe("modyfing list of cards", () => {
 
     test.each(decks)('can be added', async ({data, cards}) => {
 
-        render(<App id={data.id!}/>)
-        await expectFullLoad()
+        await act(() => render(<App id={data.id!}/>))
+        await waitForFullLoad()
 
         const addBtn = screen.getByTestId('add-card-btn')
         const container = screen.getByTestId('cards')
         const initChildrenLength = container.children.length
         const initLength = cards.length
-
+        
         expect(initChildrenLength == initLength).toBeTruthy()
         
         await act(() => fireEvent.click(addBtn))
 
-        await waitFor(() => expect(container.children.length == initChildrenLength + 1).toBeTruthy())
-
         const db = await openDB()
         const savedCards = (await Deck.get(data.id!, db)).cards
         expect(savedCards.length == initLength + 1).toBeTruthy()
+        
+        await waitFor(() => expect(screen.getByTestId(`card-${savedCards[0].id}`)).toBeVisible())
     })
 
     test.todo('can be added by scanner')
@@ -288,8 +337,8 @@ describe("modyfing list of cards", () => {
 
     test.each(decks)('can be deleted', async ({data, cards}) => {
 
-        render(<App id={data.id!}/>)
-        await expectFullLoad()
+        await act(() => render(<App id={data.id!}/>))
+        await waitForFullLoad()
 
         for (const {id} of cards) {
 
@@ -306,8 +355,8 @@ describe("modyfing list of cards", () => {
 
 test.each(decks)("deck can be removed", async ({data, cards}) => {
 
-    render(<App id={data.id!}/>)
-    await expectFullLoad()
+    await act(() => render(<App id={data.id!}/>))
+    await waitForFullLoad()
 
     const removalBtn = screen.getByTestId("deck-remove-btn")
 

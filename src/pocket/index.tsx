@@ -5,7 +5,7 @@ import { links, Link } from '../app'
 import { useTranslation } from '../localisation'
 import { useDatabase } from '../database'
 
-import * as Deck from '../deck'
+import * as Deck from '../deck/database'
 
 
 import style from './style.module.css'

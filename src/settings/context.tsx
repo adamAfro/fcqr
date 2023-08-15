@@ -1,6 +1,8 @@
 import { createContext, useContext, useState, useEffect } 
     from 'react'
 
+import { t } from '../localisation'
+
 import { getVoices } from '../speech'
 
 
@@ -33,7 +35,7 @@ export function Provider({ children }: { children: React.ReactNode }) {
             setVoices(loaded)
             if (languages.length == 0) setLanguages(
                     loaded.map(({ lang, name }, id) => ({ 
-                    id, language: lang, voice: name
+                    id, language: t(lang) || lang, voice: name
                 }))
             )
 

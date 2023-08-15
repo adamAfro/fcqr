@@ -151,6 +151,7 @@ describe("modifying deck's data", () => {
         const defLangSel = langsSel[1]
         const possibleLanguages = [...langsSel[0].querySelectorAll('option')]
             .map(x => x.value)
+        expect(possibleLanguages.length).toBeGreaterThan(0)
         
         const changes = {
             defLang: possibleLanguages

@@ -42,6 +42,7 @@ export async function speak(text: string, options: SpeakOptions) {
 	if (!voice)
 		return Promise.reject(false)
 	msg.voice = voice
+	msg.lang = voice.lang
 
 	window.speechSynthesis.speak(msg)
 

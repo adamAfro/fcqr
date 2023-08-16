@@ -43,6 +43,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "BUILD_PATH='./dist/beta' react-scripts build",
+    "deploy": "BUILD_PATH='./dist/beta' react-scripts build; netlify deploy --prod -d dist",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

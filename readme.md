@@ -38,3 +38,36 @@ for making flashcards
         3. `openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt` - certificate
         4. then extension needs to be set up with absolute paths to newly created files
 - [pico.css](https://picocss.com/) under MIT license
+
+
+## QR
+
+QR slideshow is like so:
+
+```ts
+{ index: number, total: number, data: string, meta: any }
+```
+
+### Data format for QR
+
+For now only CSV with this separators is supported:
+
+```
+['—', '-', '\t', '|', ',', ';', ' ']
+```
+
+They are either passed in meta of a chunk or the first one from right that is in every line is taken.
+
+### Meta for QR
+
+Example chunk for canonical CSV:
+
+```
+{ index: 0, total: 5, data: '...', meta: {
+    type: 'CSV', 
+    characters: {
+        separator: ',',
+        endline: '\n'
+    }
+}}
+```

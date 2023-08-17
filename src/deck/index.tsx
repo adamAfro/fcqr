@@ -98,12 +98,19 @@ export function Deck({ cards, data, setData, setCards, removal }: {
             .toLocaleUpperCase()
 
         if (type == 'CSV' || /* default behaviour */ true) {
-    
-            const { separator = ',', endline = '\n' } = meta?.characters || {}
-    
-            let cardsData = scanned.split(endline)
+   
+            const { endline = '\n' } = meta?.characters || {}
+            const lines = scanned.split(endline)
+            const { separator = getProbableSeparator(lines) } = meta?.characters || {}
+
+            let cardsData = lines
                 .map(line => line.split(separator) as [string, string])
-                .map(([term, def = '']: [string, string]) => ({ term, def }))
+                .map(([term, ...def]: [string, string]) => ({ term, def: def.join(', ') }))
+
+            console.debug({ size: scanned.length,
+                n: cardsData.length,
+                meta, endline, separator, 
+            })
     
             const ids = await addCards(data?.id!, cardsData, db)
             cardsData.map((card, i) => ({ ...card, id: ids[i] }))
@@ -154,6 +161,23 @@ export function Deck({ cards, data, setData, setCards, removal }: {
         {cards ? <Cards entries={cards}/> : null}
         
     </div>
+}
+
+const separators = [
+    ' — ', ' - ', ' | ', ' , ', ' ; ', 
+    '—', '-', '|', ',', ';', '\t', ' ']
+function getProbableSeparator(lines: string[]) {
+
+    return separators.find(separator => {
+
+        let count = 0;
+        for (const line of lines)
+            if (line.includes(separator)) count++
+
+        if (count >= 0.80 * lines.length)
+            return true
+
+    }) || ','
 }
 
 function Editor({data, setData}: { data: Data, 

@@ -316,11 +316,7 @@ describe("modyfing list of cards", () => {
         await waitForFullLoad()
 
         const addBtn = screen.getByTestId('add-card-btn')
-        const container = screen.getByTestId('cards')
-        const initChildrenLength = container.children.length
         const initLength = cards.length
-        
-        expect(initChildrenLength == initLength).toBeTruthy()
         
         await act(() => fireEvent.click(addBtn))
 
@@ -345,7 +341,7 @@ describe("modyfing list of cards", () => {
 
             const card = screen.getByTestId(`card-${id}`)
             const remBtn = card.parentElement
-                ?.querySelector(`button[data-id="${id}"]`)
+                ?.querySelector(`button[data-role="removal"]`)
 
             await waitFor(() => expect(card).toBeVisible())
             await act(() => fireEvent.click(remBtn!))

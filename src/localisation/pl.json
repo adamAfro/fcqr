@@ -18,6 +18,7 @@
     
     "add card": "dodaj kartę",
     "remove card": "usuń kartę",
+    "removed card": "usunięta karta",
     "read aloud": "odczytaj na głos",
     
     "edit settings": "ustawienia",
@@ -60,6 +61,8 @@
 
     "look and language": "wygląd i język",
     "languages and voices": "języki i głos",
+
+    "loading cards": "ładowanie kart",
 
     "ar-SA": "arabski",
     "cs-CZ": "czeski",

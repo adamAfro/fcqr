@@ -20,6 +20,14 @@
     border: solid;
 }
 
+    .card button[data-role="removal"] {
+
+        position: absolute;
+        top: calc(100% + 8pt); left: 10%;
+
+        width: min-content;
+    }
+
 .term { 
     
     font-size: 2em;

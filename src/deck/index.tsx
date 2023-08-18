@@ -40,13 +40,14 @@ export default function Deck(props: { id?: number }) {
         
     }), [])
 
-    const [cards, setCards] = useState<Card.Data[] | undefined>(undefined)
+    const [addedCards, setAddedCards] = useState([] as  Card.Data[])
+    const [initialcards, setInitialCards] = useState<Card.Data[] | undefined>(undefined)
     useEffect(() => void get(id, database!).then(({ cards }) => {
 
         if (state != State.PARTIAL_LOADED)
             return
 
-        setCards(orderLoadedCards(cards) as Card.Data[])
+        setInitialCards(orderLoadedCards(cards) as Card.Data[])
         setState(State.LOADED)
 
     }), [state])
@@ -72,7 +73,7 @@ export default function Deck(props: { id?: number }) {
                 const addedIds = await addCards(id, cardsData, db)
                 cardsData.map((card, i) => ({ ...card, id: addedIds[i] }))
 
-                setCards(prev => [...cardsData.reverse(), ...prev!])
+                setInitialCards(prev => [...cardsData.reverse(), ...prev!])
             }
 
         }}/> : null}
@@ -88,15 +89,15 @@ export default function Deck(props: { id?: number }) {
 
         }}>{t`remove deck`}</button>
 
-        {cards ? <div className={ui.quickaccess}>
+        {initialcards ? <div className={ui.quickaccess}>
             
             <button className={style.shuffle} data-testid="shuffle-cards-btn" onClick={() => {
 
-                const shuffled = cards?.map(card => ({ ...card, order: Math.random() }))
+                const shuffled = initialcards?.map(card => ({ ...card, order: Math.random() }))
                     .sort((a, b) => a.order! - b.order!).reverse()
         
                 modifyCards(id, shuffled!, database!)
-                setCards(shuffled)
+                setInitialCards(shuffled)
 
             }}>{t`shuffle`}</button>
 
@@ -104,29 +105,33 @@ export default function Deck(props: { id?: number }) {
                 spread ? t`shrink` : t`spread`
             }</button>
             
-            <button className={style.addition} data-testid="add-card-btn" onClick={() => addCards(id, [{ term: '', def: '' }], database!)
-                .then(ids => setCards([{ 
-                    id: Number(ids[0]), term: '', def: '', deckId: id 
-                }, ...cards!]))
-            }>{t`add card`}</button>
+            <button className={style.addition} data-testid="add-card-btn" onClick={() => {
+
+                addCards(id, [{ term: '', def: '' }], database!)
+                    .then(ids => setAddedCards([{ 
+                        id: Number(ids[0]), term: '', def: '', deckId: id 
+                    }, ...addedCards!]))
+
+            }}>{t`add card`}</button>
 
         </div> : null}
+
+        {addedCards ? <ul className={style.cardlist} 
+            data-testid="added-cards"
+            data-spread={spread}>
+
+            {addedCards.map(card => <li key={card.id}>
+                <Card.Editor {...card} termLang={termLang!}/>
+            </li>)}
+
+        </ul> : null}
         
-        {cards ? <ul 
-            className={style.cardlist} 
+        {initialcards ? <ul className={style.cardlist} 
             data-testid='cards'
             data-spread={spread}>
 
-            {cards.map(card => <li key={card.id}>
-
-                <Card.Editor {...card} termLang={termLang!}/>            
-                <button className={ui.removal} data-id={card.id} onClick={() => {
-
-                    setCards(prev => prev?.filter(rm => rm.id != card.id))
-                    Card.removeData(id, database!)
-
-                }}>{t`remove card`}</button>
-
+            {initialcards.map(card => <li key={card.id}>
+                <Card.Editor {...card} termLang={termLang!}/>
             </li>)}
 
         </ul> : null}

@@ -7,7 +7,7 @@ import { Provider as DatabaseProvider } from './database'
 import { Provider as SettingsProvider } from './settings'
 
 import Pocket from './pocket'
-import { Entry as Deck } from './deck'
+import Deck from './deck'
 import { Settings } from './settings'
 
 

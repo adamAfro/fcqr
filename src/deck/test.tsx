@@ -5,7 +5,7 @@ import { render, screen, fireEvent, waitFor }
     from '@testing-library/react'
 
 import * as Card from "../card"
-import { Entry } from "../deck"
+import Entry from "../deck"
 import * as Deck from "../deck/database"
 import { decks } from './examples'
 

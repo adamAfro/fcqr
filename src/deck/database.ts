@@ -115,12 +115,53 @@ export async function modify(modified: Data, cards: Card.Data[], db: Database) {
     return
 }
 
+export async function modifyCards(deckId: number, cards: Card.Data[], db: Database) {
+    
+    const transaction = db.transaction([Stores.CARDS], 'readwrite')
+    const cardStore = transaction.objectStore(Stores.CARDS)
+
+    const modifications = cards.map(card => cardStore.put(card))
+    await Promise.all(modifications)
+
+    await transaction.done
+
+    return
+}
+
 export async function modifyData(modified: Data, db: Database) {
     
     const transaction = db.transaction(Stores.DECKS, 'readwrite')
     const deckStore = transaction.objectStore(Stores.DECKS)
 
     await deckStore.put(modified)
+    await transaction.done
+
+    return
+}
+
+export async function rename(deckId: number, name: string, db: Database) {
+
+    const transaction = db.transaction(Stores.DECKS, 'readwrite')
+    const deckStore = transaction.objectStore(Stores.DECKS)
+
+    const deck = await deckStore.get(deckId) as Data
+    deck.name = name
+
+    await deckStore.put(deck)
+    await transaction.done
+    
+    return
+}
+
+export async function changeLanguage(deckId: number, key: 'termLang' | 'defLang', value: string, db: Database) {
+
+    const transaction = db.transaction(Stores.DECKS, 'readwrite')
+    const deckStore = transaction.objectStore(Stores.DECKS)
+
+    const deck = await deckStore.get(deckId) as Data
+    deck[key] = value
+
+    await deckStore.put(deck)
     await transaction.done
 
     return

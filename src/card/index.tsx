@@ -2,11 +2,9 @@ import { useState } from 'react'
 
 import { ChangeEvent, ButtonHTMLAttributes } from 'react'
 
-import { useSettings } from '../settings'
-import { useDatabase, Type as Database, Stores } 
-    from '../database'
+import { useMemory, Database, Stores } from '../memory'
 
-import { speak } from "../speech"
+import { speak } from "../languages"
 
 
 import ui from "../style.module.css"
@@ -37,15 +35,12 @@ export function Card(props: Data) {
 export function Editor(props: Data & { termLang: string }) {
 
     const {t} = useTranslation()
-    const database = useDatabase()
+    const { database } = useMemory()!
 
     const [removed, setRemoved] = useState(false)
 
     const [data, setData] = useState(props)
     const change = (event: ChangeEvent) => {
-
-        if (!database)
-            throw new Error('no database')
 
         const target = event.target as HTMLInputElement | HTMLSelectElement
         const key = target.name, value = target.value
@@ -168,12 +163,12 @@ export default function Speech(props: {
 
 	const { t } = useTranslation()
 
-	const languages = useSettings().languages
+    const { languages } = useMemory()!
 
 	const { term, termLang, ...rest } = props
 
 	const readAloud = () => speak(term, { 
-		voice: languages.find(lang => lang.language == termLang)?.voice
+		voice: languages.find(lang => lang.name == termLang)?.voice
 	})
 
 	return <button onClick={readAloud} {...rest}>

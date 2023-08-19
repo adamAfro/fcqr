@@ -1,47 +1,25 @@
-import { useState } from 'react';
-
-import { MouseEvent, ChangeEvent, HTMLAttributes } from 'react'
+import { useEffect, useState } from 'react';
+import { ChangeEvent, HTMLAttributes } from 'react'
 
 import { useTranslation } from '../localisation'
-
-import { LanguageConfig, useSettings } from './context'
-
+import { LanguageConfig, getVoices } from '../languages'
+import { useMemory } from '../memory'
 
 import style from './style.module.css'
 
+export default function Languages(props: HTMLAttributes<HTMLDivElement>) {
+    
+    const { languages, setLanguages } = useMemory()!
+    const getLastId = () =>
+        languages.reduce((acc, lang) => Math.max(acc, lang.id ?? 0), 0) || 0
+    
+    const [configs] = useState(languages)
+    const [addedConfigs, setAddedConfigs] = useState([] as LanguageConfig[])
 
-export default function Voices(props: HTMLAttributes<HTMLDivElement>) {
+    const [voices, setVoices] = useState([] as SpeechSynthesisVoice[])
+    useEffect(() => void getVoices().then(setVoices), [])
 
     const { t } = useTranslation()
-
-    const { languages, setLanguages } = useSettings()
-
-    const getLastId = () => 
-        languages.reduce((acc, lang) => Math.max(acc, lang.id ?? 0), 0) || 0
-    const add = () => {
-
-        const updatedLangs = [...languages, {
-            language: t`new language`, id: getLastId() + 1
-        }]
-
-        setLanguages(updatedLangs)
-    }
-
-    const remove = (event: MouseEvent) => {
-
-        const target = event.target as HTMLButtonElement
-        const id = Number(target.dataset.id)
-
-        const index = languages.findIndex(lang => lang.id === id)
-        if (index === -1)
-            return
-
-        setLanguages([
-            ...languages.slice(0, index),
-            ...languages.slice(index + 1)
-        ])
-    }
-
     return <section {...props}>
 
         <h2>{t`voices and languages`}</h2>
@@ -50,61 +28,105 @@ export default function Voices(props: HTMLAttributes<HTMLDivElement>) {
             {t`add any language name and select voice for it`}
             {' - '}
             {t`you will be able to use them in decks`}
+
+            <button style={{
+                display:'inline-block',width:'min-content',margin:'0 1em'
+            }} data-testid="add-voice-btn" onClick={() => {
+
+                const added = {
+                    id: getLastId() + 1,
+                    name: t`new language`
+                }
+
+                setLanguages([added, ...addedConfigs, ...configs])
+                setAddedConfigs([added, ...addedConfigs])
+
+            }}>{t`add`}</button>
+
         </p>
 
-        <p className={style.bug}>
-            🐛{t`removing may remove wrong language so you may need to refresh this panel after`} 
-        </p>
+        {voices.length ? <>
 
-        <button onClick={add}>{t`add`}</button>
+            <ul>{addedConfigs.map((config, i) =>
+                <li key={i}>
+                    <Editor config={config} voices={voices} />
+                </li>
+            )}</ul>
 
-        <ul>{languages.map((config, i) =>
-            <li key={i}>
-                <Editor {...config} />
-                <button data-id={config.id} onClick={remove}>{t`remove`}</button>
-            </li>
-        )}</ul>
+            <ul>{configs.map((config, i) =>
+                <li key={i}>
+                    <Editor config={config} voices={voices} />
+                </li>
+            )}</ul>
+        </> : null}
 
     </section>
 }
 
 /** @TODO loading prompt: sometimes voices need time to load */ 
-function Editor(props: LanguageConfig) {
+function Editor({ config, voices }: { config: LanguageConfig, voices: SpeechSynthesisVoice[] }) {
 
     const { t } = useTranslation()
 
-    const { languages, setLanguages } = useSettings()
+    const { languages, setLanguages } = useMemory()!
+    
+    const [removed, setRemoved] = useState(false)
+    const [voice, setVoice] = useState(config.voice)
+    const [name, setName] = useState(config.name)
 
-    const voices = speechSynthesis.getVoices()
-
-    const [data, setData] = useState(props)
-    const change = (event: ChangeEvent) => {
-
-        const target = event.target as HTMLInputElement | HTMLSelectElement
-        const key = target.name, value = target.value
-
-        const updatedLang = { ...data, [key]: value }
-        setData(updatedLang)
-
-        const index = languages.findIndex(lang => lang.id === updatedLang.id)
-        if (index === -1)
-            return
+    return <>{!removed ? <div className={style.buttons} data-testid={`language-config-${config.id}`}>
         
-        setLanguages([
-            ...languages.slice(0, index),
-            updatedLang, 
-            ...languages.slice(index + 1)
-        ])
-    }
+        <input name='name' type='text' value={name} onChange={(e: ChangeEvent) => {
 
-    return <div className={style.buttons}>
-        <input name='language' type='text' value={data.language} onChange={change} />
-        <select name='voice' defaultValue={data.voice} onChange={change}>
+            const name = (e.target as HTMLSelectElement).value
+            setName(name)
 
-            <option key={-1} value={undefined}>{t`no voice`}</option>
+            const index = languages.findIndex(lang => lang.id === config.id)
+            if (index === -1)
+                return
+
+            setLanguages(prev => [
+                ...prev.slice(0, index),
+                { ...prev[index], name }, 
+                ...prev.slice(index + 1)
+            ])
+
+        }} />
+        
+        <select name='voice' defaultValue={voice} onChange={(e: ChangeEvent) => {
+
+            const voice = (e.target as HTMLSelectElement).value
+            setVoice(voice)
+
+            const index = languages.findIndex(lang => lang.id === config.id)
+            if (index === -1)
+                return
+
+            setLanguages([
+                ...languages.slice(0, index),
+                { ...languages[index], voice }, 
+                ...languages.slice(index + 1)
+            ])
+
+        }}><option key={-1} value={undefined}>{t`no voice`}</option>
             {voices.map((voice, i) =>
                 <option key={i} value={voice.name}>{voice.name}</option>
             )}
         </select>
-    </div>
+
+        <button onClick={() => {
+
+            const index = languages.findIndex(lang => lang.id === config.id)
+            if (index === -1)
+                return
+
+            setRemoved(true)
+            setLanguages([
+                ...languages.slice(0, index),
+                ...languages.slice(index + 1)
+            ])
+
+        }}>{t`remove`}</button>
+
+    </div> : t`removed voice`}</>
 }

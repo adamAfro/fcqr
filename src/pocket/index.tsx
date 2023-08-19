@@ -3,7 +3,7 @@ import { useState, useEffect} from 'react'
 import { links, Link } from '../app'
     
 import { useTranslation } from '../localisation'
-import { useDatabase } from '../database'
+import { useMemory } from '../memory'
 
 import * as Deck from '../deck/database'
 
@@ -18,15 +18,15 @@ export default function(props: any) {
 
     const [decks, setDecks] = useState([] as Deck.Data[])
 
-    const database = useDatabase()
-    useEffect(() => void Deck.getAllData(database!)
+    const { database } = useMemory()!
+    useEffect(() => void Deck.getAllData(database)
         .then(decks => setDecks(decks.reverse())), [database])
 
     const [addedDecks, setAddedDecks] = useState([] as Deck.Data[])
     const addDeck = () => {
 
         const deck = { name: '', termLang: '', defLang: '' }
-        Deck.addData(deck, database!)
+        Deck.addData(deck, database)
             .then(id => setAddedDecks(prev => [...prev, { id, ...deck}]))
     }
 

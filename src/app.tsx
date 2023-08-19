@@ -3,12 +3,11 @@ import { BrowserRouter as Router, Routes, Route, Link }
     from 'react-router-dom'
 
 import { default as localise, t} from './localisation'
-import { Provider as DatabaseProvider } from './database'
-import { Provider as SettingsProvider } from './settings'
+import { Provider as MemoryProvider } from './memory'
 
 import Pocket from './pocket'
 import Deck from './deck'
-import { Settings } from './settings'
+import Settings from './settings'
 
 
 import './globals.css'
@@ -26,8 +25,7 @@ export const links = {
 }
 
 export default (props: { basename?: string }) => <React.StrictMode>
-    <SettingsProvider>
-    <DatabaseProvider>
+    <MemoryProvider>
 
         <Router basename={props.basename || '/'}><Routes>
 
@@ -51,6 +49,5 @@ export default (props: { basename?: string }) => <React.StrictMode>
         
         </Routes></Router>
     
-    </DatabaseProvider>
-    </SettingsProvider>
+    </MemoryProvider>
 </React.StrictMode>

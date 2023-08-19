@@ -7,38 +7,10 @@ import { render, screen, fireEvent, waitFor }
 import Pocket from "."
 import * as Deck from "../deck/database"
 
-import { Provider as SettingsProvider } from '../settings' 
-import { open as openDB, Provider as DatabaseProvider } 
-    from "../database"
+import { openDatabase, Provider as MemoryProvider } 
+    from "../memory"
 import * as fakeIDB from 'fake-indexeddb'
     Object.assign(global, fakeIDB)
-
-jest.mock('../speech', () => {
-
-    class SpeechSynthesisVoice {
-        localService = true
-        default = false
-        lang: string
-        name: string
-        voiceURI = 'tts'
-    
-        constructor(name: string, lang: string) { 
-            this.name = name
-            this.lang = lang 
-        }
-    }
-
-    return {
-        speak: jest.fn(async () => true),
-        getVoices: async () => [
-            new SpeechSynthesisVoice("Polish", 'pl-PL'),
-            new SpeechSynthesisVoice("English", 'en-GB'),
-            new SpeechSynthesisVoice("English US", 'en-US'),
-            new SpeechSynthesisVoice("French", 'fr-ME'),
-        ]
-    }
-})
-
 
 async function expectFullLoad() {
 
@@ -49,18 +21,18 @@ beforeEach(async function() {
 
     indexedDB = new IDBFactory()
 
-    render(<DatabaseProvider><SettingsProvider>
+    render(<MemoryProvider>
     
         <Router basename={'/'}><Pocket /></Router>
     
-    </SettingsProvider></DatabaseProvider>)
+    </MemoryProvider>)
 
     await expectFullLoad()
 })
 
 test('deck can be added', async () => {
 
-    const db = await openDB()
+    const db = await openDatabase()
     const initLength = (await Deck.getAllData(db)).length
 
     await waitFor(() => screen.getByTestId('added-decks'))

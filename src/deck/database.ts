@@ -1,4 +1,4 @@
-import { Type as Database, Stores } from "../database"
+import { Database, Stores } from "../memory"
 
 import * as Card from '../card'
 
@@ -89,9 +89,9 @@ export async function remove(deckId: number, db: Database) {
     await deckStore.delete(deckId)
 
     const index = cardStore.index('deckId')
-    const cards = await index.getAll(IDBKeyRange.only(deckId))
+    const cards = await index.getAll(IDBKeyRange.only(deckId)) as Card.Data[]
 
-    const removals = cards.map(card => cardStore.delete(card.id))
+    const removals = cards.map(card => cardStore.delete(card.id!))
 
     await Promise.all(removals)
     await transaction.done

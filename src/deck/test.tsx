@@ -8,45 +8,16 @@ import * as Card from "../card"
 import Entry from "../deck"
 import * as Deck from "../deck/database"
 import { decks } from './examples'
-
-import { Provider as SettingsProvider } from '../settings' 
-import { open as openDB, Provider as DatabaseProvider } 
-    from "../database"
+import { langConfigs } from '../settings/examples'
+ 
+import { openDatabase, Provider as MemoryProvider, LANGUAGES_KEY } 
+    from "../memory"
 import * as fakeIDB from 'fake-indexeddb'
     Object.assign(global, fakeIDB)
 
-
-jest.mock('../speech', () => {
-
-    class SpeechSynthesisVoice {
-        localService = true
-        default = false
-        lang: string
-        name: string
-        voiceURI = 'tts'
-    
-        constructor(name: string, lang: string) { 
-            this.name = name
-            this.lang = lang 
-        }
-    }
-
-    return {
-        speak: jest.fn(async () => true),
-        getVoices: async () => [
-            new SpeechSynthesisVoice("Polish", 'pl-PL'),
-            new SpeechSynthesisVoice("English", 'en-GB'),
-            new SpeechSynthesisVoice("English US", 'en-US'),
-            new SpeechSynthesisVoice("French", 'fr-ME'),
-        ]
-    }
-})
-
-const App = ({id}: {id:number}) => <DatabaseProvider><SettingsProvider>
-    
+const App = ({id}: {id:number}) => <MemoryProvider> 
     <Router basename={'/'}><Entry id={id}/></Router>
-
-</SettingsProvider></DatabaseProvider>
+</MemoryProvider>
 
 async function waitForFullLoad() {
 
@@ -55,11 +26,13 @@ async function waitForFullLoad() {
     await waitFor(() => expect(screen.queryByTestId('cards')).not.toBeNull())
 }
 
+beforeEach(() => localStorage.setItem(LANGUAGES_KEY, JSON.stringify(langConfigs)))
+
 beforeEach(async function insertExampleDecks() {
 
     indexedDB = new IDBFactory()
 
-    const db = await openDB()
+    const db = await openDatabase()
     for (let i = 0; i < decks.length; i++) {
 
         const { data, cards } = decks[i]
@@ -88,7 +61,7 @@ describe("modifying deck's data", () => {
         await act(() => fireEvent.input(nameInput, { target: { value: changes.name } }))
         expect(nameInput.value).toEqual(changes.name)
         
-        const db = await openDB()
+        const db = await openDatabase()
         const savedDeck = await Deck.getData(data.id!, db)
         db.close()
 
@@ -125,7 +98,7 @@ describe("modifying deck's data", () => {
         await act(() => fireEvent.change(termLangSel, { target: { value: changes.termLang } }))
         expect(termLangSel.value).toEqual(changes.termLang)
         
-        const db = await openDB()
+        const db = await openDatabase()
         const savedDeck = await Deck.getData(data.id!, db)
         db.close()
 
@@ -162,7 +135,7 @@ describe("modifying deck's data", () => {
         await act(() => fireEvent.change(defLangSel, { target: { value: changes.defLang } }))
         expect(defLangSel.value).toEqual(changes.defLang)
         
-        const db = await openDB()
+        const db = await openDatabase()
         const savedDeck = await Deck.getData(data.id!, db)
         db.close()
 
@@ -210,7 +183,7 @@ describe("modifying deck's data", () => {
         expect(termLangSel.value).toEqual(changes.termLang)
         expect(defLangSel.value).toEqual(changes.defLang)
         
-        const db = await openDB()
+        const db = await openDatabase()
         const savedDeck = await Deck.getData(data.id!, db)
         db.close()
 
@@ -247,7 +220,7 @@ describe("modifying card's data", () => {
         await act(() => render(<App id={data.id!}/>))
         await waitForFullLoad()
 
-        const db = await openDB()
+        const db = await openDatabase()
         const changes = { term: 'Test term' }
         for (const card of cards) {
             
@@ -272,7 +245,7 @@ describe("modifying card's data", () => {
         await act(() => render(<App id={data.id!}/>))
         await waitForFullLoad()
 
-        const db = await openDB()
+        const db = await openDatabase()
         const changes = { def: 'Test def' }
         for (const card of cards) {
             
@@ -320,7 +293,7 @@ describe("modyfing list of cards", () => {
         
         await act(() => fireEvent.click(addBtn))
 
-        const db = await openDB()
+        const db = await openDatabase()
         const savedCards = (await Deck.get(data.id!, db)).cards
         expect(savedCards.length == initLength + 1).toBeTruthy()
         
@@ -359,7 +332,7 @@ test.each(decks)("deck can be removed", async ({data, cards}) => {
 
     let retrived: Deck.Data | undefined
 
-    const db = await openDB()
+    const db = await openDatabase()
 
     retrived = await Deck.getData(data.id!, db)
     expect(retrived).not.toBeUndefined()

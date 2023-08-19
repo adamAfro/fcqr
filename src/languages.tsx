@@ -1,3 +1,9 @@
+export interface LanguageConfig {
+    id: number,
+    name: string,
+    voice?: string
+}
+
 interface SpeakOptions {
 
 	voice?: string

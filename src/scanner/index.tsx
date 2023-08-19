@@ -1,7 +1,6 @@
 import { HTMLAttributes, useState } from 'react'
 
-import { useTranslation } from '../localisation'
-import { useDatabase, Type as Database } from "../database"
+import { useMemory, Database } from "../memory"
 
 import Chunk from './chunk'
 import QR from './html5qr'
@@ -15,13 +14,12 @@ enum Status {
     FOUND, READ, ADDED
 }
 
+/** @TODO remove db requirement here to somewhere else */
 export default (props: { 
     handleData?: (data: string, meta: any, db: Database) => void
 } & HTMLAttributes <HTMLDivElement>) => {
 
-    const { t } = useTranslation()
-
-    const database = useDatabase()
+    const { database } = useMemory()!
     const 
         [checkPoints, setCheckpoints] = useState([] as boolean[]),
         [status, setStatus] = useState(Status.NOT_FOUND)
@@ -53,7 +51,7 @@ export default (props: {
         if (indices.length == dataChunk.total) {
 
             if (props.handleData)
-                props.handleData(data.sort((a,b) => a.index - b.index).join(''), meta, database!)
+                props.handleData(data.sort((a,b) => a.index - b.index).join(''), meta, database)
 
             data = []
             meta = {}

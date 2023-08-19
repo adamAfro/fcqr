@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import { useTranslation } from '../localisation'
-import { useDatabase, Type as Database } from "../database"
+import { useMemory, Database } from "../memory"
 import { get, modifyCards, remove, addCards, getData } 
     from './database'
 
@@ -22,7 +22,7 @@ enum State {
 export default function Deck(props: { id?: number }) {
 
     const { t } = useTranslation()
-    const database = useDatabase()
+    const { database } = useMemory()!
 
     const id = props.id || getIdFromPath()
 

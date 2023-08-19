@@ -1,8 +1,7 @@
 import { useState, ChangeEvent, HTMLAttributes }  from 'react'
 
-import { useSettings } from '../settings/context'
 import { useTranslation } from '../localisation'
-import { useDatabase } from "../database"
+import { useMemory } from "../memory"
 import { rename, changeLanguage } 
     from './database'
 
@@ -22,8 +21,7 @@ export default function Editor({
 } & HTMLAttributes<HTMLParagraphElement>) {
 
     const { t } = useTranslation()
-    const database = useDatabase()
-    const { languages } = useSettings()
+    const { database, languages } = useMemory()!
 
     const [name, setName] = useState(initalName)
 
@@ -47,7 +45,7 @@ export default function Editor({
                 changeLanguage(deckId!, "termLang", target.value, database!)
                 setTermLang(target.value)
                 
-            }}>{languages.map(({ language }, i) => <option key={i} value={language}>{language}</option>)}</select>
+            }}>{languages.map(({ name }, i) => <option key={i} value={name}>{name}</option>)}</select>
 
             <select name="defLang" defaultValue={defLang} onChange={(e:ChangeEvent) => {
                     
@@ -56,7 +54,7 @@ export default function Editor({
                 changeLanguage(deckId!, "defLang", target.value, database!)
                 setDefLang(target.value)
                 
-            }}>{languages.map(({ language }, i) => <option key={i} value={language}>{language}</option>)}</select>
+            }}>{languages.map(({ name }, i) => <option key={i} value={name}>{name}</option>)}</select>
         
         </span>
     </p>

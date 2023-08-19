@@ -1,13 +1,8 @@
 import { HTMLAttributes } from 'react'
 
-import { useTranslation } from '../localisation'
+import Languages from './languages'
 
-import Voices from './languages'
+export default function Settings(props: HTMLAttributes<HTMLDivElement>) {
 
-
-export { useSettings, Provider } from './context'
-
-export function Settings(props: HTMLAttributes<HTMLDivElement>) {
-
-    return <Voices/>
+    return <Languages/>
 }

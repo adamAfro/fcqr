@@ -19,6 +19,10 @@ enum State {
     REMOVED
 }
 
+export * from './database'
+
+export { default as Editor } from './editor'
+
 export default function Deck(props: { id?: number }) {
 
     const { t } = useTranslation()

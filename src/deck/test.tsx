@@ -4,7 +4,7 @@ import { act } from 'react-dom/test-utils'
 import { render, screen, fireEvent, waitFor }
     from '@testing-library/react'
 
-import * as Card from "../card"
+import * as Card from "../card/database"
 import Entry from "../deck"
 import * as Deck from "../deck/database"
 import { decks } from './examples'

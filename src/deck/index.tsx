@@ -89,7 +89,7 @@ export default function Deck(props: { id?: number }) {
 
         }}>{t`remove deck`}</button>
 
-        {initialcards ? <div className={ui.quickaccess}>
+        {state >= State.LOADED ? <div className={ui.quickaccess}>
             
             <button className={style.shuffle} data-testid="shuffle-cards-btn" onClick={() => {
 
@@ -116,7 +116,7 @@ export default function Deck(props: { id?: number }) {
 
         </div> : null}
 
-        {addedCards ? <ul className={style.cardlist} 
+        <ul className={style.cardlist} 
             data-testid="added-cards"
             data-spread={spread}>
 
@@ -124,13 +124,13 @@ export default function Deck(props: { id?: number }) {
                 <Card.Editor {...card} termLang={termLang!}/>
             </li>)}
 
-        </ul> : null}
+        </ul>
         
-        {initialcards ? <ul className={style.cardlist} 
+        {state >= State.LOADED ? <ul className={style.cardlist} 
             data-testid='cards'
             data-spread={spread}>
 
-            {initialcards.map(card => <li key={card.id}>
+            {initialcards?.map(card => <li key={card.id}>
                 <Card.Editor {...card} termLang={termLang!}/>
             </li>)}
 

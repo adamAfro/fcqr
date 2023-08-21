@@ -128,5 +128,5 @@ function Editor({ config, voices }: { config: LanguageConfig, voices: SpeechSynt
 
         }}>{t`remove`}</button>
 
-    </div> : t`removed voice`}</>
+    </div> : t`removed language`}</>
 }

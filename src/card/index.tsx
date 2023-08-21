@@ -52,7 +52,7 @@ export function Editor(props: Data & { termLang: string }) {
     return <>{!removed ? 
         <p className={style.card} data-testid={`card-${data.id}`}>
             <input placeholder={t`term`} className={style.term} name="term" value={data.term} onChange={change}/>
-            <Speech term={data.term} termLang={data.termLang}/>
+            <Speech term={data.term} termLang={props.termLang}/>
             <textarea placeholder={t`definition`} className={style.def} name="def" value={data.def} onChange={change}/>
             <button data-role="removal" className={ui.removal} onClick={() => {
 

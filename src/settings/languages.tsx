@@ -38,7 +38,7 @@ export default function Languages(props: HTMLAttributes<HTMLDivElement>) {
                     name: t`new language`
                 }
 
-                setLanguages([added, ...addedConfigs, ...configs])
+                setLanguages([added, ...addedConfigs, ...languages])
                 setAddedConfigs([added, ...addedConfigs])
 
             }}>{t`add`}</button>

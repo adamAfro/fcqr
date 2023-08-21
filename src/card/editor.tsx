@@ -10,7 +10,9 @@ import style from "./style.module.css"
 import { useTranslation } from 'react-i18next'
 
 
-export default function Editor(props: Data & { termLang: string }) {
+export default function Editor(props: Data & { 
+    termLang: string, defLang?: string
+}) {
 
     const {t} = useTranslation()
     const { database } = useMemory()!

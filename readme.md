@@ -12,10 +12,7 @@ for making flashcards
 - [x] :evergreen_tree: make app avaible offline after initial entry
 - [x] :floppy_disk: save multiple sets and let to choose between them
 - [x] :loud_sound: read words [aloud](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis) with custom voices setup
-
-- [ ] fix voices' setting - they cannot be removed properly and often get default settings
-- [ ] changing deck's name requires full rerender - it is slow
-- [ ] removing cards is not optimal
+- [x] :muscle: exercise mode
 
 
 ### Locations

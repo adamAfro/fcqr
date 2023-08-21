@@ -16,6 +16,7 @@ enum State {
     LOADING,
     PARTIAL_LOADED,
     LOADED,
+    EXERCISES,
     REMOVED
 }
 
@@ -77,10 +78,24 @@ export default function Deck(props: { id?: number }) {
                 const addedIds = await addCards(id, cardsData, db)
                 cardsData.map((card, i) => ({ ...card, id: addedIds[i] }))
 
-                setInitialCards(prev => [...cardsData.reverse(), ...prev!])
+                setAddedCards(prev => [...cardsData.reverse(), ...prev!])
             }
 
         }}/> : null}
+
+        {state >= State.LOADED ? <button 
+            className={style.play} data-testid="play-btn" onClick={() => {
+
+                state != State.EXERCISES ? setState(State.EXERCISES) : setState(State.LOADED)
+
+                setAddedCards([])
+                get(id, database)
+                    .then(({ cards }) => setInitialCards(orderLoadedCards(cards) as Card.Data[]))
+            }}>   
+            
+            {state != State.EXERCISES ? t`exercises` : t`edition`}
+
+        </button> : null}
 
         <button data-testid="scan-btn" onClick={() => setScanning(prev => !prev)}>
             {scanning ? t`close scanner` : t`scan QR`}
@@ -125,7 +140,13 @@ export default function Deck(props: { id?: number }) {
             data-spread={spread}>
 
             {addedCards.map(card => <li key={card.id}>
-                <Card.Editor {...card} termLang={termLang!}/>
+                {state == State.EXERCISES ?
+                    <Card.Random {...card} 
+                        termLang={termLang!} defLang={defLang}/> :
+                    
+                    <Card.Editor {...card} 
+                        termLang={termLang!} defLang={defLang} />
+                }
             </li>)}
 
         </ul>
@@ -135,7 +156,13 @@ export default function Deck(props: { id?: number }) {
             data-spread={spread}>
 
             {initialcards?.map(card => <li key={card.id}>
-                <Card.Editor {...card} termLang={termLang!}/>
+                {state == State.EXERCISES ?
+                    <Card.Random {...card} 
+                        termLang={termLang!} defLang={defLang}/> :
+                    
+                    <Card.Editor {...card} 
+                        termLang={termLang!} defLang={defLang} />
+                }
             </li>)}
 
         </ul> : null}

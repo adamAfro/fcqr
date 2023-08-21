@@ -28,6 +28,12 @@
         width: min-content;
     }
 
+.points {
+    position: absolute;
+    right: -1.2em;
+    top: -2.4em;
+}
+
 .term { 
     
     font-size: 2em;

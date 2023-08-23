@@ -76,10 +76,9 @@ function Editor({ config, voices }: { config: LanguageConfig, voices: SpeechSynt
 
     return <>{!removed ? <div className={style.buttons} data-testid={`language-config-${config.id}`}>
         
-        <input name='name' type='text' value={name} onChange={(e: ChangeEvent) => {
+        <input name='name' type='text' value={name} onChange={e => {
 
-            const name = (e.target as HTMLSelectElement).value
-            setName(name)
+            setName(e.target.value)
 
             const index = languages.findIndex(lang => lang.id === config.id)
             if (index === -1)
@@ -87,16 +86,15 @@ function Editor({ config, voices }: { config: LanguageConfig, voices: SpeechSynt
 
             setLanguages(prev => [
                 ...prev.slice(0, index),
-                { ...prev[index], name }, 
+                { ...prev[index], name: e.target.value }, 
                 ...prev.slice(index + 1)
             ])
 
         }} />
         
-        <select name='voice' defaultValue={voice} onChange={(e: ChangeEvent) => {
+        <select name='voice' defaultValue={voice} onChange={e => {
 
-            const voice = (e.target as HTMLSelectElement).value
-            setVoice(voice)
+            setVoice(e.target.value)
 
             const index = languages.findIndex(lang => lang.id === config.id)
             if (index === -1)
@@ -104,7 +102,11 @@ function Editor({ config, voices }: { config: LanguageConfig, voices: SpeechSynt
 
             setLanguages([
                 ...languages.slice(0, index),
-                { ...languages[index], voice }, 
+                { ...languages[index],
+                    voice: e.target.value, 
+                    code: voices
+                        .find(voice => voice.name === e.target.value)?.lang
+                },
                 ...languages.slice(index + 1)
             ])
 

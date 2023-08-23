@@ -1,107 +1,57 @@
 import { useState } from 'react'
 
 import Speech from "./speech"
+import Hearing from "./hearing"
 
 import style from "./style.module.css"
 
-export function Random(props: RandomProps) {
-    
-    const Ex = [...exercises.values()][Math.floor(Math.random() * exercises.size)]
-    const ans = [...answers.keys()][Math.floor(Math.random() * answers.size)]
-
-    return <Ex {...props} answer={ans}/>
+interface Props {
+    term: string, termLang: string,
+    def: string, defLang?: string,
+    vocal?: boolean, audible?: boolean
 }
 
-export function Audible({ term, def, answer, termLang, defLang }: ExerciseProps) {
-
-    const Answer = answers.get(answer)!
-
-    return <p className={style.card}>
-
-        <Answer correct={term} />
-        <Speech
-            term={term} termLang={termLang}
-            def={def} defLang={defLang}/>
-        <div className={style.def}></div>
-
-    </p>
-}
-
-export function Defined({ term, def, answer, termLang, defLang }: ExerciseProps) {
-
-    const Answer = answers.get(answer)!
-
-    return <p className={style.card}>
-
-        <Answer correct={term} />
-        
-        <div className={style.def}>{def}</div>
-
-    </p>
-}
-
-export function Named() {
-
-    return <p className={style.card}></p>
-}
-
-function Input({ correct }: { correct: string }) {
+export default function Exercise({ 
+    term, termLang, def, defLang, 
+    vocal = true, //Math.random() < 0.5 ? true : false,
+    audible = Math.random() < 0.5 ? true : false
+}: Props) {
 
     const [similarity, setSimiliarity] = useState(0)
-    const [value, setValue] = useState('')
+    const [answer, setAnswer] = useState('')
 
-    return <label>
+    return <p className={style.card}>
 
-        <input className={style.term} type="text" value={value} style={{color:color(similarity)}} onChange={e => {
+        <label>
 
-            setValue(e.target.value)
-            setSimiliarity(compare(e.target.value, correct))
+            <input className={style.term} type="text" value={answer} onChange={e => {
 
-        }}/>
+                setAnswer(e.target.value)
+                setSimiliarity(compare(e.target.value, term))
 
-        <span className={style.points}>{Math.round(similarity)}/100</span>
+            }} style={{color:color(similarity)}} disabled={vocal}/>
 
-    </label>
+            <span className={style.points}>{Math.round(similarity)}/100</span>
+
+        </label>
+
+        <span className={style.buttons}>
+
+            {!audible || <Speech
+                term={term} termLang={termLang}
+                def={def} defLang={defLang}
+            />}
+
+            {!vocal || <Hearing 
+                setResult={setAnswer} lang={termLang}
+            />}
+
+        </span>
+
+        <span className={style.def}>{def}</span>
+
+    </p>
 }
-
-
-interface RandomProps {
-    term: string, termLang: string,
-    def?: string, defLang?: string
-}
-
-interface ExerciseProps extends RandomProps {
-    answer: AnswerType,
-}
-
-enum ExerciseType {
-    AUDIBLE = 'audible', 
-    DEFINED = 'defined', 
-    //NAMED = 'named'
-}
-
-const exercises = new Map([
-    [ExerciseType.AUDIBLE, Audible],
-    [ExerciseType.DEFINED, Defined],
-    //[ExerciseType.NAMED, Named]
-])
-
-enum AnswerType {
-    VOCAL = 'vocal',
-    SELECT = 'select',
-    INPUT = 'input'
-}
-
-const answers = new Map([
-
-    [AnswerType.INPUT, Input],
-    //[AnswerType.SELECTION, Selection],
-    //[AnswerType.VOCAl, Vocal]
-
-]) as Map<AnswerType, (props: {
-    correct: string, options?: string[]
-}) => JSX.Element>
-
 
 function compare(a: string, b: string, positionWeight = 1.5): number {
 

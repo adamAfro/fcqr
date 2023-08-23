@@ -34,9 +34,14 @@
     top: -2.4em;
 }
 
+.buttons {
+    display: flex;
+    gap: 1em;
+}
+
 .term { 
     
-    font-size: 2em;
+    /* font-size: 2em; */
     max-width: 15em;
     border: none;
 }

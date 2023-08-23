@@ -141,7 +141,7 @@ export default function Deck(props: { id?: number }) {
 
             {addedCards.map(card => <li key={card.id}>
                 {state == State.EXERCISES ?
-                    <Card.Random {...card} 
+                    <Card.Exercise {...card} 
                         termLang={termLang!} defLang={defLang}/> :
                     
                     <Card.Editor {...card} 
@@ -157,7 +157,7 @@ export default function Deck(props: { id?: number }) {
 
             {initialcards?.map(card => <li key={card.id}>
                 {state == State.EXERCISES ?
-                    <Card.Random {...card} 
+                    <Card.Exercise {...card} 
                         termLang={termLang!} defLang={defLang}/> :
                     
                     <Card.Editor {...card} 

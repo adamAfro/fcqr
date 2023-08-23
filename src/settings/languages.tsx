@@ -13,7 +13,7 @@ export default function Languages(props: HTMLAttributes<HTMLDivElement>) {
     const getLastId = () =>
         languages.reduce((acc, lang) => Math.max(acc, lang.id ?? 0), 0) || 0
     
-    const [configs] = useState(languages)
+    const [configs] = useState([...languages].reverse())
     const [addedConfigs, setAddedConfigs] = useState([] as LanguageConfig[])
 
     const [voices, setVoices] = useState([] as SpeechSynthesisVoice[])
@@ -68,7 +68,7 @@ function Editor({ config, voices }: { config: LanguageConfig, voices: SpeechSynt
 
     const { t } = useTranslation()
 
-    const { languages, setLanguages } = useMemory()!
+    const { setLanguages } = useMemory()!
     
     const [removed, setRemoved] = useState(false)
     const [voice, setVoice] = useState(config.voice)
@@ -79,36 +79,34 @@ function Editor({ config, voices }: { config: LanguageConfig, voices: SpeechSynt
         <input name='name' type='text' value={name} onChange={e => {
 
             setName(e.target.value)
+            setLanguages(prev => {
 
-            const index = languages.findIndex(lang => lang.id === config.id)
-            if (index === -1)
-                return
-
-            setLanguages(prev => [
-                ...prev.slice(0, index),
-                { ...prev[index], name: e.target.value }, 
-                ...prev.slice(index + 1)
-            ])
+                const index = prev.findIndex(lang => lang.id === config.id)
+                return [
+                    ...prev.slice(0, index),
+                    { ...prev[index], name: e.target.value }, 
+                    ...prev.slice(index + 1)
+                ]
+            })
 
         }} />
         
         <select name='voice' defaultValue={voice} onChange={e => {
 
             setVoice(e.target.value)
+            setLanguages(prev => {
 
-            const index = languages.findIndex(lang => lang.id === config.id)
-            if (index === -1)
-                return
-
-            setLanguages([
-                ...languages.slice(0, index),
-                { ...languages[index],
-                    voice: e.target.value, 
-                    code: voices
-                        .find(voice => voice.name === e.target.value)?.lang
-                },
-                ...languages.slice(index + 1)
-            ])
+                const index = prev.findIndex(lang => lang.id === config.id)
+                return [
+                    ...prev.slice(0, index),
+                    { ...prev[index],
+                        voice: e.target.value, 
+                        code: voices
+                            .find(voice => voice.name === e.target.value)?.lang
+                    },
+                    ...prev.slice(index + 1)
+                ]
+            })
 
         }}><option key={-1} value={undefined}>{t`no voice`}</option>
             {voices.map((voice, i) =>
@@ -118,15 +116,15 @@ function Editor({ config, voices }: { config: LanguageConfig, voices: SpeechSynt
 
         <button onClick={() => {
 
-            const index = languages.findIndex(lang => lang.id === config.id)
-            if (index === -1)
-                return
-
             setRemoved(true)
-            setLanguages([
-                ...languages.slice(0, index),
-                ...languages.slice(index + 1)
-            ])
+            setLanguages(prev => {
+
+                const index = prev.findIndex(lang => lang.id === config.id)
+                return [
+                    ...prev.slice(0, index),
+                    ...prev.slice(index + 1)
+                ]
+            })
 
         }}>{t`remove`}</button>
 

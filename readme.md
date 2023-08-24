@@ -1,27 +1,30 @@
 # FCQR :black_joker:
 
-(serverless) Flashcards with :camera: QR code scanning
-
-It complements 
-[firefox extension :desktop_computer:](https://github.com/adamAfro/browser-fc-maker)
-for making flashcards
+Flashcards with :camera: QR code scanning
 
 ## Features&TODOs
 
-- [x] :iphone: scan words
-- [x] :evergreen_tree: make app avaible offline after initial entry
-- [x] :floppy_disk: save multiple sets and let to choose between them
-- [x] :loud_sound: read words [aloud](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis) with custom voices setup
-- [x] :muscle: exercise mode
+- :flower_playing_cards: decks and cards
+    - [x] save multiple sets and let to choose between them
+    - [x] decks and cards edition 
+    - [x] read words [:loud_sound: aloud](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis)
+    - [x] custom voice setup\*
+    - [x] scan words\*
+- :brain: exercise mode
+    - [x] guessing term based on definition or voice - reponding with voice or text input
+    - [ ] hints and correction
+- :computer: technical issues
+    - [x] act as PWA
+    - [ ] make app avaible offline after initial entry
+    - [ ] option to update app
+- :flags: locations
+    - [x] :england: English (base)
+    - [x] :poland: Polish
+    - [ ] :it: Italian
+    - [ ] :fr: French
+    - [ ] :es: Spanish
 
-
-### Locations
-
-- [x] :england: English (base)
-- [x] :poland: Polish
-- [ ] :it: Italian
-- [ ] :fr: French
-- [ ] :es: Spanish
+\* need some fixes
 
 ## Dev&Deps
 

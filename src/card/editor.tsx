@@ -32,14 +32,21 @@ export default function Editor(props: Data & {
     return <>{!removed ? 
         <p className={style.card} data-testid={`card-${data.id}`}>
             <input placeholder={t`term`} className={style.term} name="term" value={data.term} onChange={change}/>
-            <Speech term={data.term} termLang={props.termLang}/>
             <textarea placeholder={t`definition`} className={style.def} name="def" value={data.def} onChange={change}/>
-            <button data-role="removal" className={ui.removal} onClick={() => {
+            
+            <span className={style.options}>
+        
+                <button data-role="removal" className={ui.removal} onClick={() => {
 
-                removeData(props.id!, database!)
-                setRemoved(true)
+                    removeData(props.id!, database!)
+                    setRemoved(true)
 
-            }}>{t`remove card`}</button>
+                }}>{t`remove card`}</button>
+
+                <Speech term={data.term} termLang={props.termLang}/>
+            
+            </span>
+        
         </p> : <>{t`removed card`}</>
     }</>
 }

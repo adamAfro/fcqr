@@ -54,13 +54,15 @@ interface ListenOptions {
 	langCode: string
 }
 
-const Recognition = (() => {
+export const Recognition = (() => {
 
 	if (window.SpeechRecognition)
 		return window.SpeechRecognition
 
 	if (window.webkitSpeechRecognition)
 		return window.webkitSpeechRecognition
+
+	return null
 })()
 
 export async function listen(callback: (result: string[]) => void, options: ListenOptions) {

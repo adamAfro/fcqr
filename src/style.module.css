@@ -56,5 +56,17 @@
 
 a.removal, button.removal {
     background-color: transparent !important;
-    color: inherit !important;
+    color: var(--del-color) !important;
+    border-color: var(--del-color) !important;
+}
+
+.secondary {
+    background-color: var(--secondary);
+    border-color: var(--secondary);
+    color: var(--secondary-inverse);
+}
+
+.secondary::placeholder { 
+    color: var(--secondary-inverse);
+    opacity: .5;
 }

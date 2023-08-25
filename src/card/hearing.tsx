@@ -4,7 +4,7 @@ import { Dispatch, SetStateAction } from 'react'
 import { useMemory } from '../memory'
 import { useTranslation } from 'react-i18next'
 
-import { listen } from "../languages"
+import { listen, Recognition } from "../languages"
 
 export default function Hearing({
     lang, setResult, ...attrs

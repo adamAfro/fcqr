@@ -3,80 +3,93 @@ import { useState } from 'react'
 import Speech from "./speech"
 import Hearing from "./hearing"
 
+import { useTranslation } from 'react-i18next'
+
+import Color from "color"
+import { stringSimilarity as calcSimilarity } 
+    from 'string-similarity-js'
+
 import style from "./style.module.css"
+import ui from "../style.module.css"
 
 interface Props {
     term: string, termLang: string,
     def: string, defLang?: string,
-    vocal?: boolean, audible?: boolean
+    vocal?: boolean, audible?: boolean, defined?: boolean
 }
 
 export default function Exercise({ 
-    term, termLang, def, defLang, 
-    vocal = true, //Math.random() < 0.5 ? true : false,
-    audible = Math.random() < 0.5 ? true : false
+    term, termLang, def, defLang,
+    vocal = true,
+    audible = Math.random() < 0.5,
+    defined = !audible
 }: Props) {
 
-    const [similarity, setSimiliarity] = useState(0)
-    const [answer, setAnswer] = useState('')
+    return <div className={style.card}>
 
-    return <p className={style.card}>
+        <Input term={term} termLang={termLang} vocal={vocal}/>
 
-        <label>
+        <span className={style.def}>{defined ? def : null}</span>
 
-            <input className={style.term} type="text" value={answer} onChange={e => {
-
-                setAnswer(e.target.value)
-                setSimiliarity(compare(e.target.value, term))
-
-            }} style={{color:color(similarity)}} disabled={vocal}/>
-
-            <span className={style.points}>{Math.round(similarity)}/100</span>
-
-        </label>
-
-        <span className={style.buttons}>
-
+        <span className={style.options}>
+            
             {!audible || <Speech
                 term={term} termLang={termLang}
                 def={def} defLang={defLang}
             />}
 
-            {!vocal || <Hearing 
-                setResult={setAnswer} lang={termLang}
-            />}
-
         </span>
-
-        <span className={style.def}>{def}</span>
-
-    </p>
+    </div>
 }
 
-function compare(a: string, b: string, positionWeight = 1.5): number {
+function Input({ term, termLang, vocal }: { 
+    term: string, termLang: string, vocal: boolean
+}) {
 
-    const max = Math.max(a.length, b.length)
-    let common = 0
+    const [answer, setAnswer] = useState('')
+    const [similarity, setSimilarity] = useState(0)
 
-    for (let i = 0; i < max; i++) {
-        if (i < a.length && i < b.length) {
+    const { t } = useTranslation()
 
-            if (a[i] === b[i])
-                common += 1*positionWeight
-            else if (i > 0 && a[i - 1] === b[i - 1])
-                common += 1/positionWeight
-            else if (i < a.length - 1 && i < b.length - 1 && a[i + 1] === b[i + 1])
-                common += 1/positionWeight
-        }
-    }
+    return <div>
 
-    return (common / (max * positionWeight)) * 100
-}
+        <p className={style.buttons}>
+            <input className={style.term} type="text" value={answer} onChange={e => {
+                setAnswer(e.target.value)
+                setSimilarity(calcSimilarity(e.target.value, term))
 
-function color(value: number, minValue = 0, maxValue = 100) {
-    const normalizedValue = (value - minValue) / (maxValue - minValue)
-    const hue = 120 * normalizedValue
-    const lightness = 25
-  
-    return `hsl(${hue}, 100%, ${lightness}%)`
+            }} style={{
+                color: new Color([126,0,0])
+                    .mix(new Color([0, 126, 0]), similarity == 1 ? similarity : similarity * 1/2 )
+                    .string()
+                }
+            }/>
+        </p>
+
+        {!vocal || <Hearing
+            setResult={x => setAnswer(p => p + ' ' + x)} lang={termLang}
+        />}
+        
+        <button onClick={() => {
+
+            if (answer.length == 0) {
+
+                const hint = term.slice(0, term.indexOf(' '))
+                setAnswer(hint)
+                setSimilarity(calcSimilarity(hint, term))
+
+                return
+            }
+                
+            let end = answer.length
+            for (end; end < term.length; end++)
+                if (term[end] == ' ') break
+            
+            const hint = term.slice(0, end + 1)
+            setAnswer(hint)
+            setSimilarity(calcSimilarity(hint, term))
+
+        }} className={ui.removal}>{t`hint`}</button>
+
+    </div>
 }

@@ -87,11 +87,11 @@ export default function Deck(props: { id?: number }) {
 
             {!scanning && showOptions ? <>
 
-                <button className={ui.removal} onClick={() => setShowOptions(false)}>
+                <button className={ui.secondary} onClick={() => setShowOptions(false)}>
                     {t`less options`}
                 </button>
 
-                <button data-testid="deck-copy-btn" className={style.secondary} onClick={() => {
+                <button data-testid="deck-copy-btn" className={ui.secondary} onClick={() => {
                         
                     const text = [...addedCards, ...initialCards!]
                         .map(({ term, def }) => `${term} - ${def}`).join('\n')
@@ -117,7 +117,7 @@ export default function Deck(props: { id?: number }) {
 
                 }}>{t`remove deck`}</Link>
                 
-            </>: !scanning ? <button data-testid='more-opt-btn' onClick={() => setShowOptions(true)} className={style.secondary}>
+            </>: !scanning ? <button data-testid='more-opt-btn' onClick={() => setShowOptions(true)} className={ui.secondary}>
                 {t`more options`}
             </button> : null}
 
@@ -143,7 +143,7 @@ export default function Deck(props: { id?: number }) {
             
             <div className={ui.thumbaccess}>
 
-                <button className={state == State.EXERCISES ? style.secondary: ''} onClick={() => {
+                <button className={state == State.EXERCISES ? ui.secondary: ''} onClick={() => {
 
                     state != State.EXERCISES ? setState(State.EXERCISES) : setState(State.LOADED)
 
@@ -154,7 +154,7 @@ export default function Deck(props: { id?: number }) {
                     {state != State.EXERCISES ? t`exercises` : t`edition`}
                 </button>
                 
-                <button className={state != State.EXERCISES ? style.secondary: ''} data-testid="shuffle-cards-btn" onClick={() => {
+                <button className={state != State.EXERCISES ? ui.secondary: ''} data-testid="shuffle-cards-btn" onClick={() => {
 
                     const shuffled = initialCards?.map(card => ({ ...card, order: Math.random() }))
                         .sort((a, b) => a.order! - b.order!).reverse()
@@ -164,7 +164,7 @@ export default function Deck(props: { id?: number }) {
 
                 }}>{t`shuffle`}</button>
 
-                <button className={state != State.EXERCISES ? style.secondary: ''} data-testid="spread-cards-btn" onClick={() => setSpread(x => !x)}>{
+                <button className={state != State.EXERCISES ? ui.secondary: ''} data-testid="spread-cards-btn" onClick={() => setSpread(x => !x)}>{
                     spread ? t`shrink` : t`spread`
                 }</button>
             </div>

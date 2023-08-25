@@ -12,7 +12,7 @@ Flashcards with :camera: QR code scanning
     - [x] scan words\*
 - :brain: exercise mode
     - [x] guessing term based on definition or voice - reponding with voice or text input
-    - [ ] hints and correction
+    - [x] hints and correction
 - :computer: technical issues
     - [x] act as PWA
     - [ ] make app avaible offline after initial entry

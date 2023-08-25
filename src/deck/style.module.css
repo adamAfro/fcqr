@@ -44,17 +44,6 @@
     gap: 1em;
 }
 
-.secondary {
-    background-color: var(--secondary);
-    border-color: var(--secondary);
-    color: var(--secondary-inverse);
-}
-
-.secondary::placeholder { 
-    color: var(--secondary-inverse);
-    opacity: .5;
-}
-
 .options * { 
     width: 16em !important; 
     display: block;
@@ -64,4 +53,12 @@
 .options + p {
     margin-left: auto;
     width: min-content;
+}
+
+.buttonstack button {
+    padding: .2em;
+}
+
+.buttonstack button:nth-child(1) {
+    margin-left: 1em;
 }

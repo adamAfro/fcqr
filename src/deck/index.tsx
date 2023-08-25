@@ -143,30 +143,36 @@ export default function Deck(props: { id?: number }) {
             
             <div className={ui.thumbaccess}>
 
-                <button className={state == State.EXERCISES ? ui.secondary: ''} onClick={() => {
+                <div>
 
-                    state != State.EXERCISES ? setState(State.EXERCISES) : setState(State.LOADED)
+                    <button className={state == State.EXERCISES ? ui.secondary: ''} onClick={() => {
 
-                    setAddedCards([])
-                    get(id, database)
-                        .then(({ cards }) => setInitialCards(orderLoadedCards(cards) as Card.Data[]))
-                    }} data-testid="play-btn">
-                    {state != State.EXERCISES ? t`exercises` : t`edition`}
-                </button>
+                        state != State.EXERCISES ? setState(State.EXERCISES) : setState(State.LOADED)
+
+                        setAddedCards([])
+                        get(id, database)
+                            .then(({ cards }) => setInitialCards(orderLoadedCards(cards) as Card.Data[]))
+                        }} data-testid="play-btn">
+                        {state != State.EXERCISES ? t`exercises` : t`edition`}
+                    </button>
+
+                </div>
                 
-                <button className={state != State.EXERCISES ? ui.secondary: ''} data-testid="shuffle-cards-btn" onClick={() => {
+                <div className={style.buttonstack}>
+                    <button className={state != State.EXERCISES ? ui.secondary: ''} data-testid="shuffle-cards-btn" onClick={() => {
 
-                    const shuffled = initialCards?.map(card => ({ ...card, order: Math.random() }))
-                        .sort((a, b) => a.order! - b.order!).reverse()
+                        const shuffled = initialCards?.map(card => ({ ...card, order: Math.random() }))
+                            .sort((a, b) => a.order! - b.order!).reverse()
 
-                    modifyCards(id, shuffled!, database!)
-                    setInitialCards(shuffled)
+                        modifyCards(id, shuffled!, database!)
+                        setInitialCards(shuffled)
 
-                }}>{t`shuffle`}</button>
+                    }}>{t`shuffle`}</button>
 
-                <button className={state != State.EXERCISES ? ui.secondary: ''} data-testid="spread-cards-btn" onClick={() => setSpread(x => !x)}>{
-                    spread ? t`shrink` : t`spread`
-                }</button>
+                    <button className={state != State.EXERCISES ? ui.secondary: ''} data-testid="spread-cards-btn" onClick={() => setSpread(x => !x)}>{
+                        spread ? t`shrink` : t`spread`
+                    }</button>
+                </div>
             </div>
 
         </div>

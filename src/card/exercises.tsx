@@ -64,11 +64,11 @@ function Input({ term, termLang, vocal }: {
                     .string()
                 }
             }/>
-        </p>
 
-        {!vocal || <Hearing
-            setResult={x => setAnswer(p => p + ' ' + x)} lang={termLang}
-        />}
+            {!vocal || <Hearing
+                setResult={x => setAnswer(p => p + ' ' + x)} lang={termLang}
+            />}
+        </p>
         
         <button onClick={() => {
 

@@ -5,7 +5,7 @@ import { useMemory } from "../memory"
 import { get, modifyCards, remove, addCards, getData } 
     from './database'
 
-import Scanner from './scanner'
+import { Scanner, Text as TextInput } from './input'
 import * as Card from '../card'
 import Editor from './editor'
 
@@ -61,6 +61,7 @@ export default function Deck(props: { id?: number }) {
 
     const [spread, setSpread] = useState(false)
     const [scanning, setScanning] = useState(false)
+    const [showOptions, setShowOptions] = useState(false)
 
     return <div className={style.deck}>
 
@@ -68,39 +69,71 @@ export default function Deck(props: { id?: number }) {
             deckId={id!} initalName={name!} 
             termLang={termLang!} defLang={defLang!}
             setTermLang={setTermLang} setDefLang={setDefLang}/> : null}
-        
-        {scanning ? <Scanner deckId={id} onSuccess={(cards: Card.Data[]) => {
 
-            setScanning(false)
-            setAddedCards(prev => [
-                ...cards, ...prev
-            ])
-
-        }}/> : null}
-
-        <div className={style.buttons}>
-            <button className={ui.removal} data-testid="deck-remove-btn" onClick={() => { 
-                
-                remove(id, database!)
-                setState(State.REMOVED)
-
-            }}>{t`remove deck`}</button>
+        <section className={style.options}>
 
             <button data-testid="scan-btn" onClick={() => setScanning(prev => !prev)}>
                 {scanning ? t`close scanner` : t`scan QR`}
             </button>
 
-            <button className={style.addition} data-testid="add-card-btn" onClick={() => {
+            {scanning ? <Scanner deckId={id} onSuccess={cards => {
 
-            addCards(id, [{ term: '', def: '' }], database!)
-                .then(ids => setAddedCards([{ 
-                    id: Number(ids[0]), term: '', def: '', deckId: id 
-                }, ...addedCards!]))
+                setScanning(false)
+                setAddedCards(prev => [
+                    ...cards, ...prev
+                ])
 
-            }}>{t`add card`}</button>
-        </div>
+            }}/> : null}
 
-        <p>{(initialCards?.length || 0) + addedCards.length} {t`of cards`}</p>
+            {!scanning && showOptions ? <>
+
+                <button className={ui.removal} onClick={() => setShowOptions(false)}>
+                    {t`less options`}
+                </button>
+
+                <button data-testid="deck-copy-btn" className={style.secondary} onClick={() => {
+                        
+                    const text = [...addedCards, ...initialCards!]
+                        .map(({ term, def }) => `${term} - ${def}`).join('\n')
+                    navigator.clipboard.writeText(text)
+    
+                }}>
+                    {t`copy as text`}
+                </button>
+                
+                <TextInput deckId={id} onSuccess={cards => {
+
+                    setScanning(false)
+                    setAddedCards(prev => [
+                        ...cards, ...prev
+                    ])
+
+                }}/>
+
+                <Link to={links.pocket} role='button' className={ui.removal} data-testid="deck-remove-btn" onClick={() => { 
+                    
+                    remove(id, database!)
+                    setState(State.REMOVED)
+
+                }}>{t`remove deck`}</Link>
+                
+            </>: !scanning ? <button data-testid='more-opt-btn' onClick={() => setShowOptions(true)} className={style.secondary}>
+                {t`more options`}
+            </button> : null}
+
+        </section>
+
+        <p>
+            {(initialCards?.length || 0) + addedCards.length} {t`of cards`}
+            <button data-testid="add-card-btn" onClick={() => {
+
+                addCards(id, [{ term: '', def: '' }], database!)
+                    .then(ids => setAddedCards([{ 
+                        id: Number(ids[0]), term: '', def: '', deckId: id 
+                    }, ...addedCards!]))
+
+            }}>{t`add`}</button>
+        </p>
 
         <div className={ui.quickaccess}>
 

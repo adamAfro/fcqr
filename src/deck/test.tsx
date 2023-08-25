@@ -330,6 +330,9 @@ test.each(decks)("deck can be removed", async ({data, cards}) => {
     await act(() => render(<App id={data.id!}/>))
     await waitForFullLoad()
 
+    const optBtn = screen.getByTestId("more-opt-btn")
+    await act(() => fireEvent.click(optBtn))
+
     const removalBtn = screen.getByTestId("deck-remove-btn")
 
     let retrived: Deck.Data | undefined

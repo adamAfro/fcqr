@@ -6,9 +6,13 @@
     width: 100%;
 }
 
-.camera {
+.camera div > div {
     
+    display: flex;
+    flex-flow: column;
+    align-items: center;
     max-width: 100%;
+    justify-content: center;
 }
 
 .checkpoints {

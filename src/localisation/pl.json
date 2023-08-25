@@ -60,6 +60,17 @@
     "scan QR": "skanuj kod QR",
     "close scanner": "zamknij skaner",
 
+    "managing deck": "zarządzanie talią",
+    "write cards manually": "dopisz karty ręcznie",
+    "copy as text": "skopiuj jako tekst",
+    "download as file": "pobierz jako plik",
+    "add written cards": "dodaj dopisane karty",
+
+    "more options": "więcej opcji",
+    "less options": "mniej opcji",
+
+    "place for text input": "miejsce na tekst",
+
     "no scans yet": "jeszcze nic nie przeskanowano",
     "could not find QR": "nie znaleziono kodu QR",
     "scanned QR code": "znaleziono dane w kodzie QR",

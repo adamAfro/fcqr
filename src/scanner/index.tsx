@@ -1,7 +1,5 @@
 import { HTMLAttributes, useState } from 'react'
 
-import { useMemory, Database } from "../memory"
-
 import Chunk from './chunk'
 import QR from './html5qr'
 
@@ -16,10 +14,9 @@ enum Status {
 
 /** @TODO remove db requirement here to somewhere else */
 export default (props: { 
-    handleData?: (data: string, meta: any, db: Database) => void
+    handleData?: (data: string, meta: any) => void
 } & HTMLAttributes <HTMLDivElement>) => {
 
-    const { database } = useMemory()!
     const 
         [checkPoints, setCheckpoints] = useState([] as boolean[]),
         [status, setStatus] = useState(Status.NOT_FOUND)
@@ -51,7 +48,7 @@ export default (props: {
         if (indices.length == dataChunk.total) {
 
             if (props.handleData)
-                props.handleData(data.sort((a,b) => a.index - b.index).join(''), meta, database)
+                props.handleData(data.sort((a,b) => a.index - b.index).join(''), meta)
 
             data = []
             meta = {}

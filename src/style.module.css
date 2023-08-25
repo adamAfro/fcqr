@@ -54,8 +54,7 @@
         margin-bottom: 2em;
     }
 
-button.removal {
-    background-color: transparent;
-    color: inherit;
-    filter: contrast(.5)
+a.removal, button.removal {
+    background-color: transparent !important;
+    color: inherit !important;
 }

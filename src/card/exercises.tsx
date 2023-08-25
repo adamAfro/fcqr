@@ -6,7 +6,7 @@ import Hearing from "./hearing"
 import { useTranslation } from 'react-i18next'
 
 import Color from "color"
-import { stringSimilarity as calcSimilarity } 
+import { stringSimilarity as calcSimilarity }
     from 'string-similarity-js'
 
 import style from "./style.module.css"
@@ -18,78 +18,93 @@ interface Props {
     vocal?: boolean, audible?: boolean, defined?: boolean
 }
 
-export default function Exercise({ 
+export default function Exercise({
     term, termLang, def, defLang,
     vocal = true,
     audible = Math.random() < 0.5,
     defined = !audible
 }: Props) {
 
+    const [hint, setHint] = useState(false)
+
     return <div className={style.card}>
 
-        <Input term={term} termLang={termLang} vocal={vocal}/>
+        <Input term={term} termLang={termLang} vocal={vocal} hint={hint} setHint={setHint} />
 
-        <span className={style.def}>{defined ? def : null}</span>
+        <span className={style.def}>{defined || hint ? def : null}</span>
 
         <span className={style.options}>
-            
-            {!audible || <Speech
+
+            {audible || hint ? <Speech
                 term={term} termLang={termLang}
                 def={def} defLang={defLang}
-            />}
+            /> : null}
 
         </span>
     </div>
 }
 
-function Input({ term, termLang, vocal }: { 
-    term: string, termLang: string, vocal: boolean
+function Input({ term, termLang, vocal, hint, setHint }: {
+    term: string, termLang: string, vocal: boolean, 
+    hint: boolean, setHint: (x:boolean) => void
 }) {
 
     const [answer, setAnswer] = useState('')
     const [similarity, setSimilarity] = useState(0)
+
+    const respond = (value: string) => {
+
+        setAnswer(value)
+        setSimilarity(calcSimilarity(value, term))
+        if (value == term) 
+            setHint(true)
+    }
 
     const { t } = useTranslation()
 
     return <div>
 
         <p className={style.buttons}>
+
             <input className={style.term} type="text" value={answer} onChange={e => {
-                setAnswer(e.target.value)
-                setSimilarity(calcSimilarity(e.target.value, term))
-
+                respond(e.target.value)
             }} style={{
-                color: new Color([126,0,0])
-                    .mix(new Color([0, 126, 0]), similarity == 1 ? similarity : similarity * 1/2 )
+                color: new Color([126, 0, 0])
+                    .mix(new Color([0, 126, 0]), similarity == 1 ? similarity : similarity * 1 / 2)
                     .string()
-                }
-            }/>
+            }}/>
 
-            {!vocal || <Hearing
-                setResult={x => setAnswer(p => p + ' ' + x)} lang={termLang}
-            />}
+            {vocal && similarity < 1 ? <Hearing
+                setResult={(heard:string) => respond(heard)} 
+                lang={termLang}/> : null}
         </p>
-        
-        <button onClick={() => {
 
-            if (answer.length == 0) {
+        <div className={style.buttons}>
 
-                const hint = term.slice(0, term.indexOf(' '))
-                setAnswer(hint)
-                setSimilarity(calcSimilarity(hint, term))
+            {similarity < 1 ? <button onClick={() => {
 
-                return
-            }
-                
-            let end = answer.length
-            for (end; end < term.length; end++)
-                if (term[end] == ' ') break
-            
-            const hint = term.slice(0, end + 1)
-            setAnswer(hint)
-            setSimilarity(calcSimilarity(hint, term))
+                if (!hint)
+                    return void setHint(true)
 
-        }} className={ui.removal}>{t`hint`}</button>
+                if (answer.length == 0)
+                    return void respond(term.slice(0, term.indexOf(' ')))
+
+                let end = answer.length
+                for (end; end < term.length; end++)
+                    if (term[end] == ' ') break
+
+                return void respond(term.slice(0, end + 1))
+
+            }} className={hint ? ui.removal : ui.secondary}>{t`hint`}</button> : null}
+
+            <button style={{marginLeft:"auto"}} onClick={() => {
+
+                setAnswer('')
+                setSimilarity(0)
+
+            }} className={ui.removal}>{t`cancel`}</button>
+
+        </div>
 
     </div>
 }

@@ -10,7 +10,7 @@ export default function Hearing({
     lang, setResult, ...attrs
 }: { 
 	lang: string, 
-    setResult: Dispatch<SetStateAction<string>> 
+    setResult: (x:string) => void 
 } & ButtonHTMLAttributes<HTMLButtonElement>) {
 
 	const { t } = useTranslation()
@@ -20,7 +20,7 @@ export default function Hearing({
 	return <button onClick={!listening ? () => {
         
         setListening(true)
-        listen(alts => setResult(alts[0]), { 
+        listen(alts => setResult(alts[0].trim()), { 
             langCode: languages.find(l => l.name === lang)?.code || lang 
         })
 

@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 
 import { useTranslation } from '../localisation'
-import { useMemory, Database } from "../memory"
+import { useMemory } from "../memory"
 import { get, modifyCards, remove, addCards, getData } 
     from './database'
 
-import Scanner from '../scanner'
+import Scanner from './scanner'
 import * as Card from '../card'
 import Editor from './editor'
 
@@ -69,20 +69,12 @@ export default function Deck(props: { id?: number }) {
             termLang={termLang!} defLang={defLang!}
             setTermLang={setTermLang} setDefLang={setDefLang}/> : null}
         
-        {scanning ? <Scanner className={style.scanner} handleData={async (scanned: string, meta: any, db: Database) => {
+        {scanning ? <Scanner deckId={id} onSuccess={(cards: Card.Data[]) => {
 
             setScanning(false)
-            const type = (meta.type?.toString() as string || '')
-                .toLocaleUpperCase()
-
-            if (type == 'CSV' || /* default behaviour */ true) {
-
-                const cardsData = await handleCSV(scanned, meta)
-                const addedIds = await addCards(id, cardsData, db)
-                cardsData.map((card, i) => ({ ...card, id: addedIds[i] }))
-
-                setAddedCards(prev => [...cardsData.reverse(), ...prev!])
-            }
+            setAddedCards(prev => [
+                ...cards, ...prev
+            ])
 
         }}/> : null}
 
@@ -191,41 +183,4 @@ function getIdFromPath() {
 function orderLoadedCards(array: any[]) {
 
     return array.sort((a, b) => a.order! - b.order!).reverse()
-}
-
-const separators = [
-    ' — ', ' - ', ' | ', ' , ', ' ; ', 
-    '—', '-', '|', ',', ';', '\t', ' '
-]
-
-function getProbableSeparator(lines: string[]) {
-
-    return separators.find(separator => {
-
-        let count = 0;
-        for (const line of lines)
-            if (line.includes(separator)) count++
-
-        if (count >= 0.80 * lines.length)
-            return true
-
-    }) || ','
-}
-
-async function handleCSV(scanned: string, meta: any) {
-
-    const { endline = '\n' } = meta?.characters || {}
-    const lines = scanned.split(endline)
-    const { separator = getProbableSeparator(lines) } = meta?.characters || {}
-
-    let cardsData = lines
-        .map(line => line.split(separator) as [string, string])
-        .map(([term, ...def]: [string, string]) => ({ term, def: def.join(', ') }))
-
-    console.debug({ size: scanned.length,
-        n: cardsData.length,
-        meta, endline, separator, 
-    })
-
-    return cardsData
 }

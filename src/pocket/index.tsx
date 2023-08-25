@@ -39,19 +39,9 @@ export default function(props: any) {
     </p>
 
 
-    return <main className={ux.panel} {...props} data-testid="pocket">
+    return <div {...props} data-testid="pocket">
 
-        <header className={ux.headline}>
-            <div>
-                <h1 style={{margin:0}}>FCQR</h1>
-                <a target='_blank' href="https://github.com/adamAfro/fcqr">
-                    by adamAfro
-                </a>
-            </div>
-            <Link role="button" data-testid="preferences-btn" to={links.settings}>{t`edit settings`}</Link>
-        </header>
-
-        <h2>{t`your decks`}</h2>
+        <h1 className={ux.title}>{t`your decks`}</h1>
 
         <ul className={style.decklist} data-testid="added-decks">
             {addedDecks.map(deck => <li key={deck.id}><Entry {...deck}/></li>)}
@@ -62,8 +52,18 @@ export default function(props: any) {
         </ul>
 
         <nav className={ux.quickaccess}>
-            <button data-testid='add-btn' onClick={addDeck}>{t`add deck`}</button>
+            <div className={ux.faraccess}>
+                <h1 style={{margin:0}}>FCQR</h1>
+                <p><a target='_blank' href="https://github.com/adamAfro/fcqr">
+                    by adamAfro
+                </a></p>
+                <p><Link role="button" data-testid="preferences-btn" to={links.settings}>{t`edit settings`}</Link></p>
+            </div>
+
+            <div className={ux.thumbaccess}>
+                <button data-testid='add-btn' onClick={addDeck}>{t`add deck`}</button>
+            </div>
         </nav>
 
-    </main>
+    </div>
 }

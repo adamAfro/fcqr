@@ -122,7 +122,7 @@ describe("modifying deck's data", () => {
         })
 
         const defLangSel = langsSel[1]
-        const possibleLanguages = [...langsSel[0].querySelectorAll('option')]
+        const possibleLanguages = [...langsSel[1].querySelectorAll('option')]
             .map(x => x.value)
         expect(possibleLanguages.length).toBeGreaterThan(0)
         
@@ -162,13 +162,15 @@ describe("modifying deck's data", () => {
             .querySelector('input')!
         const termLangSel = langsSel[0]
         const defLangSel = langsSel[1] || screen.getByDisplayValue(data.defLang)
-        const possibleLanguages = [...langsSel[0].querySelectorAll('option')]
+        const possibleTermLanguages = [...langsSel[0].querySelectorAll('option')]
+            .map(x => x.value)
+        const possibleDefLanguages = [...langsSel[1].querySelectorAll('option')]
             .map(x => x.value)
         
         const changes = {
             name: 'Modified deck',
-            termLang: possibleLanguages.filter(x => x != termLangSel.value)[0],
-            defLang: possibleLanguages.filter(x => x != defLangSel.value)[0],
+            termLang: possibleTermLanguages.filter(x => x != termLangSel.value)[0],
+            defLang: possibleDefLanguages.filter(x => x != defLangSel.value)[0],
         }
 
         expect(nameInput.value).not.toEqual(changes.name)

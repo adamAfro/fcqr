@@ -12,6 +12,10 @@
     "your deck": "twoja talia",
     "your decks": "twoje talie",
 
+    "of cards": "kart",
+
+    "refresh": "odśwież",
+
     "exercises": "ćwiczenia",
     "edition": "edycja",
     
@@ -24,6 +28,9 @@
     "removed card": "usunięta karta",
     "read aloud": "odczytaj na głos",
     "speak": "mów",
+
+    "no definition language": "brak języka dla definicji",
+    "no term language": "brak języka dla pojęcia",
     
     "edit settings": "ustawienia",
     "edit voices": "zmień głosy",

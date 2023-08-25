@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Amatic+SC&family=Comforter&family=Gloria+Hallelujah&family=Indie+Flower&family=Just+Me+Again+Down+Here&display=swap');
-
 .card {
 
     display: flex;
@@ -56,28 +54,3 @@
 
     border: none;
 }
-
-.letter {
-                
-    box-sizing: border-box;
-    display: inline-block;
-    
-    margin: .125em; 
-    padding: .125em;
-    
-    /* border: solid thin;
-    border-radius: .25em; */
-
-    font-family: 'Indie Flower', cursive;
-    font-family: 'Just Me Again Down Here', cursive;
-
-    transition: background .25s;
-}
-
-.letter[data-variant="1"] {font-family: 'Amatic SC', cursive;}
-.letter[data-variant="2"] {font-family: 'Comforter', cursive;}
-.letter[data-variant="3"] {font-family: 'Gloria Hallelujah', cursive;}
-.letter[data-variant="4"] {font-family: 'Indie Flower', cursive;}
-.letter[data-variant="5"] {font-family: 'Just Me Again Down Here', cursive;}
-
-.letter.highlight { background-color: yellow; }

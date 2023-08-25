@@ -29,22 +29,16 @@ export default (props: { basename?: string }) => <React.StrictMode>
 
         <Router basename={props.basename || '/'}><Routes>
 
-            <Route path={links.pocket} element={<Pocket/>} />
+            <Route path={links.pocket} element={<main className={style.panel}>
+                <Pocket/>
+            </main>} />
             
             <Route path={links.decks + '*'} element={<main className={style.panel}>  
-                <header className={style.headline}>
-                    <h1>{t`your deck`}</h1>
-                    <Link role='button' to={links.pocket}>{t`go back`}</Link>
-                </header>
-                <Deck />
+                <Deck/>
             </main>}/>
 
             <Route path={links.settings} element={<main className={style.panel}>
-                <header className={style.headline}>
-                    <h1>{t`settings`}</h1>
-                    <Link role='button' to={links.pocket}>{t`go back`}</Link>
-                </header>
-                <Settings />
+                <Settings/>
             </main>}/>
         
         </Routes></Router>

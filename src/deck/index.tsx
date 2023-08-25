@@ -9,15 +9,17 @@ import Scanner from '../scanner'
 import * as Card from '../card'
 import Editor from './editor'
 
+import { Link, links } from '../app'
+
 import ui from "../style.module.css"
 import style from "./style.module.css"
 
 enum State {
+    REMOVED,
     LOADING,
     PARTIAL_LOADED,
     LOADED,
-    EXERCISES,
-    REMOVED
+    EXERCISES
 }
 
 export * from './database'
@@ -46,7 +48,7 @@ export default function Deck(props: { id?: number }) {
     }), [])
 
     const [addedCards, setAddedCards] = useState([] as  Card.Data[])
-    const [initialcards, setInitialCards] = useState<Card.Data[] | undefined>(undefined)
+    const [initialCards, setInitialCards] = useState<Card.Data[] | undefined>(undefined)
     useEffect(() => void get(id, database!).then(({ cards }) => {
 
         if (state != State.PARTIAL_LOADED)
@@ -62,11 +64,12 @@ export default function Deck(props: { id?: number }) {
 
     return <div className={style.deck}>
 
-        {state > State.LOADING ? <Editor className={style.properties}
-            deckId={id!} initalName={name!} termLang={termLang!} defLang={defLang!}
+        {state > State.LOADING ? <Editor 
+            deckId={id!} initalName={name!} 
+            termLang={termLang!} defLang={defLang!}
             setTermLang={setTermLang} setDefLang={setDefLang}/> : null}
         
-        {scanning ? <Scanner handleData={async (scanned: string, meta: any, db: Database) => {
+        {scanning ? <Scanner className={style.scanner} handleData={async (scanned: string, meta: any, db: Database) => {
 
             setScanning(false)
             const type = (meta.type?.toString() as string || '')
@@ -83,57 +86,65 @@ export default function Deck(props: { id?: number }) {
 
         }}/> : null}
 
-        {state >= State.LOADED ? <button 
-            className={style.play} data-testid="play-btn" onClick={() => {
+        <div className={style.buttons}>
+            <button className={ui.removal} data-testid="deck-remove-btn" onClick={() => { 
+                
+                remove(id, database!)
+                setState(State.REMOVED)
 
-                state != State.EXERCISES ? setState(State.EXERCISES) : setState(State.LOADED)
+            }}>{t`remove deck`}</button>
 
-                setAddedCards([])
-                get(id, database)
-                    .then(({ cards }) => setInitialCards(orderLoadedCards(cards) as Card.Data[]))
-            }}>   
-            
-            {state != State.EXERCISES ? t`exercises` : t`edition`}
+            <button data-testid="scan-btn" onClick={() => setScanning(prev => !prev)}>
+                {scanning ? t`close scanner` : t`scan QR`}
+            </button>
 
-        </button> : null}
-
-        <button data-testid="scan-btn" onClick={() => setScanning(prev => !prev)}>
-            {scanning ? t`close scanner` : t`scan QR`}
-        </button>
-
-        <button className={ui.removal} data-testid="deck-remove-btn" onClick={() => { 
-        
-            remove(id, database!)
-            setState(State.PARTIAL_LOADED)
-
-        }}>{t`remove deck`}</button>
-
-        {state >= State.LOADED ? <div className={ui.quickaccess}>
-            
-            <button className={style.shuffle} data-testid="shuffle-cards-btn" onClick={() => {
-
-                const shuffled = initialcards?.map(card => ({ ...card, order: Math.random() }))
-                    .sort((a, b) => a.order! - b.order!).reverse()
-        
-                modifyCards(id, shuffled!, database!)
-                setInitialCards(shuffled)
-
-            }}>{t`shuffle`}</button>
-
-            <button className={style.spread}data-testid="spread-cards-btn" onClick={() => setSpread(x => !x)}>{
-                spread ? t`shrink` : t`spread`
-            }</button>
-            
             <button className={style.addition} data-testid="add-card-btn" onClick={() => {
 
-                addCards(id, [{ term: '', def: '' }], database!)
-                    .then(ids => setAddedCards([{ 
-                        id: Number(ids[0]), term: '', def: '', deckId: id 
-                    }, ...addedCards!]))
+            addCards(id, [{ term: '', def: '' }], database!)
+                .then(ids => setAddedCards([{ 
+                    id: Number(ids[0]), term: '', def: '', deckId: id 
+                }, ...addedCards!]))
 
             }}>{t`add card`}</button>
+        </div>
 
-        </div> : null}
+        <p>{(initialCards?.length || 0) + addedCards.length} {t`of cards`}</p>
+
+        <div className={ui.quickaccess}>
+
+            <div className={ui.faraccess}>
+                <p><Link role="button" to={links.pocket}>{t`go back`}</Link></p>
+            </div>
+            
+            <div className={ui.thumbaccess}>
+
+                <button className={state == State.EXERCISES ? style.secondary: ''} onClick={() => {
+
+                    state != State.EXERCISES ? setState(State.EXERCISES) : setState(State.LOADED)
+
+                    setAddedCards([])
+                    get(id, database)
+                        .then(({ cards }) => setInitialCards(orderLoadedCards(cards) as Card.Data[]))
+                    }} data-testid="play-btn">
+                    {state != State.EXERCISES ? t`exercises` : t`edition`}
+                </button>
+                
+                <button className={state != State.EXERCISES ? style.secondary: ''} data-testid="shuffle-cards-btn" onClick={() => {
+
+                    const shuffled = initialCards?.map(card => ({ ...card, order: Math.random() }))
+                        .sort((a, b) => a.order! - b.order!).reverse()
+
+                    modifyCards(id, shuffled!, database!)
+                    setInitialCards(shuffled)
+
+                }}>{t`shuffle`}</button>
+
+                <button className={state != State.EXERCISES ? style.secondary: ''} data-testid="spread-cards-btn" onClick={() => setSpread(x => !x)}>{
+                    spread ? t`shrink` : t`spread`
+                }</button>
+            </div>
+
+        </div>
 
         <ul className={style.cardlist} 
             data-testid="added-cards"
@@ -155,7 +166,7 @@ export default function Deck(props: { id?: number }) {
             data-testid='cards'
             data-spread={spread}>
 
-            {initialcards?.map(card => <li key={card.id}>
+            {initialCards?.map(card => <li key={card.id}>
                 {state == State.EXERCISES ?
                     <Card.Exercise {...card} 
                         termLang={termLang!} defLang={defLang}/> :

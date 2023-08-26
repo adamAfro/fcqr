@@ -1,78 +1,50 @@
-# FCQR :black_joker:
+# FcQR :black_joker:
 
-Flashcards with :camera: QR code scanning
+Flashcards app for language learning
 
-## Features&TODOs
+## Features
 
 - :flower_playing_cards: decks and cards
-    - [x] save multiple sets and let to choose between them
-    - [x] decks and cards edition 
-    - [x] read words [:loud_sound: aloud](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis)
-    - [x] custom voice setup\*
-    - [x] scan words\*
+  - [x] save multiple sets and choose between them
+  - [x] edit cards' and decks' properties
+  - [x] read terms [:loud_sound: aloud](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis)
+  - [x] custom voice setup\*
+  - [x] import and export with :iphone: scanner or text input and clipboard
 - :brain: exercise mode
-    - [x] guessing term based on definition or voice - reponding with voice or text input
-    - [x] hints and correction
-- :computer: technical issues
-    - [x] act as PWA
-    - [ ] make app avaible offline after initial entry
-    - [ ] option to update app
-- :flags: locations
-    - [x] :england: English (base)
-    - [x] :poland: Polish
-    - [ ] :it: Italian
-    - [ ] :fr: French
-    - [ ] :es: Spanish
+  - [x] guess term based on definition or audio
+  - [x] guess with voice input
+  - [x] get additional hint (definition or audio if not present) 
+  - [x] get correct answer
+- :writing_hand: user experience
+  - [x] act native\*
+  - [ ] run offline
+  - [ ] update
+- :flags: localisations
+  - [x] :england: English (base)
+  - [x] :poland: Polish
+  - [ ] :it: Italian
+  - [ ] :fr: French
+  - [ ] :es: Spanish
 
-\* need some fixes
+\* may need some fixes (see `src/readme.md`)
 
-## Dev&Deps
+## Dependencies
 
-- [react JS](https://reactjs.org/)
-    - `npm start`
-    - `npm test` ([running tests](https://facebook.github.io/create-react-app/docs/running-tests))
-        - all t[(j)est](https://jestjs.io/)s' should pass except todo's
-    - `npm run build` ([deployment](https://facebook.github.io/create-react-app/docs/deployment))
-    - `npm run eject`
-- [mebjas/html5-qrcode](https://github.com/mebjas/html5-qrcode) as provided under Apache-2.0 license 
-    - testing QR code reader on a mobile requires serving over HTTPS,
-        curretly done with VS Code `live server` extension 
-        with [self-signed cert.](https://www.akadia.com/services/ssh_test_certificate.html)
-        1. `openssl genrsa -des3 -out server.key 1024` - create key
-        2. `openssl req -new -key server.key -out server.csr` - request self-sign
-        3. `openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt` - certificate
-        4. then extension needs to be set up with absolute paths to newly created files
-- [pico.css](https://picocss.com/) under MIT license
+Built with [react JS](https://reactjs.org/) and some other Node dependencies (see `package.json`); QR scanner is [mebjas/html5-qrcode](https://github.com/mebjas/html5-qrcode) as provided under Apache-2.0 license; style is based on [pico.css](https://picocss.com/) originally provided under MIT license.
 
+See `src/readme.md` for development help. 
 
-## QR
+## Making QR codes for scanner
 
-QR slideshow is like so:
+App provides QR reader for reading data from other devices and environment. QR codes should be provided as a slideshow or a set of codes in which every code has following data structure as `JSON` code:
 
 ```ts
-{ index: number, total: number, data: string, meta: any }
+{ 
+    index: number, // index of QR code among others
+    total: number, // total number of codes to scan
+    data: string, // data in supported format
+    meta: any // additional informations (not in use for now)
+}
 ```
 
-### Data format for QR
-
-For now only CSV with this separators is supported:
-
-```
-['—', '-', '\t', '|', ',', ';', ' ']
-```
-
-They are either passed in meta of a chunk or the first one from right that is in every line is taken.
-
-### Meta for QR
-
-Example chunk for canonical CSV:
-
-```
-{ index: 0, total: 5, data: '...', meta: {
-    type: 'CSV', 
-    characters: {
-        separator: ',',
-        endline: '\n'
-    }
-}}
-```
+**Format**: For now only CSV is supported with separator being dash `— `, hyphen-minus `-`, tab, vertical line `|`, comma, semicolon or space. Additionally they may be surrounded with spaces for clarity like so ` — `.

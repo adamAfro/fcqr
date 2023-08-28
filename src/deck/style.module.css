@@ -44,10 +44,10 @@
     gap: 1em;
 }
 
-.options * { 
-    width: 16em !important; 
-    display: block;
-    resize: vertical;
+.options {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .options + p {

@@ -25,7 +25,9 @@ export default function Editor(props: Data & {
         const target = event.target as HTMLInputElement | HTMLSelectElement
         const key = target.name, value = target.value
 
-        modifyData({ ...data, [key]: value } as Data, database)
+        if (props.id)
+            modifyData({ ...data, [key]: value } as Data, database)
+    
         setData(prev => ({ ...prev, [key]: value }))
     }
 
@@ -38,7 +40,9 @@ export default function Editor(props: Data & {
         
                 <button data-role="removal" className={ui.removal} onClick={() => {
 
-                    removeData(props.id!, database!)
+                    if (props.id)
+                        removeData(props.id, database!)
+                    
                     setRemoved(true)
 
                 }}>{t`remove card`}</button>

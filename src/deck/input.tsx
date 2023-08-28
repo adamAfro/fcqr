@@ -10,7 +10,7 @@ import { addCards } from './database'
 import style from "./style.module.css"
 
 export function Scanner({ deckId, onSuccess }: {
-    deckId: number,
+    deckId?: number,
     onSuccess: (cards: Card[]) => void
 }) {
 
@@ -24,8 +24,11 @@ export function Scanner({ deckId, onSuccess }: {
         if (type == 'CSV' || /* default behaviour */ true) {
 
             const cardsData = await handleCSV(scanned, meta)
+
+            if (!deckId) 
+                return void onSuccess(cardsData.reverse())
+
             const addedIds = await addCards(deckId, cardsData, database)
-            
             onSuccess(cardsData
                 .map((card, i) => ({ ...card, id: addedIds[i] as number }))
                 .reverse()
@@ -35,7 +38,7 @@ export function Scanner({ deckId, onSuccess }: {
 }
 
 export function Text({ deckId, onSuccess }: { 
-    deckId: number,
+    deckId?: number,
     onSuccess: (cards: Card[]) => void
 }) {
 
@@ -50,6 +53,10 @@ export function Text({ deckId, onSuccess }: {
         <button data-testid="cards-input-btn" className={style.secondary} onClick={async () => {
             
             const cardsData = await handleCSV(value)
+
+            if (!deckId) 
+                return void onSuccess(cardsData.reverse())
+            
             const addedIds = await addCards(deckId, cardsData, database)
 
             setValue('')

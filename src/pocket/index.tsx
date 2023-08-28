@@ -12,44 +12,32 @@ import style from './style.module.css'
 import ux from '../style.module.css'
 
 
-export default function(props: any) {
+export default function(props: {
+    decks?: Deck.Data[],
+    ignoreDatabase?: boolean
+}) {
 
     const { t } = useTranslation()
 
-    const [decks, setDecks] = useState([] as Deck.Data[])
+    const [decks, setDecks] = useState(props.decks || [])
 
     const { database } = useMemory()!
-    useEffect(() => void Deck.getAllData(database)
-        .then(decks => setDecks(decks.reverse())), [database])
+    useEffect(() => void (props.ignoreDatabase || Deck.getAllData(database)
+        .then(decks => setDecks(decks.reverse()))), [database])
 
     const [addedDecks, setAddedDecks] = useState([] as Deck.Data[])
-    const addDeck = () => {
-
-        const deck = { name: '', termLang: '', defLang: '' }
-        Deck.addData(deck, database)
-            .then(id => setAddedDecks(prev => [...prev, { id, ...deck}]))
-    }
 
     const Entry = (props: Deck.Data) => <p>
 
-        <Link role='button' to={links.decks + props.name + '$' + props.id!.toString()}>
+        {props.id ? <Link role='button' to={links.decks + '/' + props.id.toString()}>
             {props.name || t`unnamed deck`}
-        </Link>
+        </Link> : <span role='button'>
+            {props.name || t`unnamed deck`}
+        </span>}
 
     </p>
 
-
-    return <div {...props} data-testid="pocket">
-
-        <h1 className={ux.title}>{t`your decks`}</h1>
-
-        <ul className={style.decklist} data-testid="added-decks">
-            {addedDecks.map(deck => <li key={deck.id}><Entry {...deck}/></li>)}
-        </ul>
-
-        <ul className={style.decklist} data-testid="decks">
-            {decks.map(deck => <li key={deck.id}><Entry {...deck}/></li>)}
-        </ul>
+    return <>
 
         <nav className={ux.quickaccess}>
             <div className={ux.faraccess}>
@@ -61,9 +49,28 @@ export default function(props: any) {
             </div>
 
             <div className={ux.thumbaccess}>
-                <button data-testid='add-btn' onClick={addDeck}>{t`add deck`}</button>
+                <button data-testid='add-btn' onClick={() => {
+
+                    const deck = { name: '', termLang: '', defLang: '' }
+                    
+                    if (props.ignoreDatabase)
+                        return void setAddedDecks(prev => [...prev, deck])
+
+                    Deck.addData(deck, database)
+                        .then(id => setAddedDecks(prev => [...prev, { id, ...deck}]))
+                }}>{t`add deck`}</button>
             </div>
         </nav>
 
-    </div>
+        <h1 className={ux.title}>{t`your decks`}</h1>
+
+        <ul className={style.decklist} data-testid="added-decks">
+            {addedDecks.map(deck => <li key={deck.id}><Entry {...deck}/></li>)}
+        </ul>
+
+        <ul className={style.decklist} data-testid="decks">
+            {decks.map(deck => <li key={deck.id}><Entry {...deck}/></li>)}
+        </ul>
+
+    </>
 }

@@ -71,7 +71,7 @@ For now app uses slightly modified, classless `pico.css`, it looks rather bad an
 
 - [x] use `pico.css` and provide some basic, easy layout
 
-- [ ] make `src/demo` with important components together, where they can be easily tested manually and their look may be modified in wider context for CSS design purposes.
+- [x] make `src/demo` with important components together, where they can be easily tested manually and their look may be modified in wider context for CSS design purposes.
 
 ## :flags: Localisations
 

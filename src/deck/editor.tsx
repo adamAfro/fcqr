@@ -13,7 +13,7 @@ export default function Editor({
     setTermLang, setDefLang,
     ...htmlAttr
 }: {
-    deckId: number,
+    deckId?: number,
     initalName: string,
     termLang: string,
     defLang: string,
@@ -32,7 +32,9 @@ export default function Editor({
 
             const target = e.target as HTMLInputElement
 
-            rename(deckId!, target.value, database!)
+            if (deckId)
+                rename(deckId, target.value, database!)
+            
             setName(target.value)
             
         }} placeholder={t`unnamed deck`} type="text" value={name}/>
@@ -43,7 +45,9 @@ export default function Editor({
                     
                 const target = e.target as HTMLSelectElement
 
-                changeLanguage(deckId!, "termLang", target.value, database!)
+                if (deckId)
+                    changeLanguage(deckId, "termLang", target.value, database!)
+    
                 setTermLang(target.value)
                 
             }} defaultValue={termLang}>
@@ -55,7 +59,9 @@ export default function Editor({
                     
                 const target = e.target as HTMLSelectElement
 
-                changeLanguage(deckId!, "defLang", target.value, database!)
+                if (deckId)
+                    changeLanguage(deckId, "defLang", target.value, database!)
+    
                 setDefLang(target.value)
                 
             }} defaultValue={defLang}>

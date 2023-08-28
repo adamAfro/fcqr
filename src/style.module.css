@@ -1,14 +1,21 @@
 .panel {
 
     position: relative;
-    max-width: 48em;
     min-height: 100vh;
-    padding: 1em;
     margin: auto;
 
     display: flex;
     flex-flow: column;
     align-items: center;
+}
+
+.panel .quickaccess ~ :last-child {
+    margin-bottom: 50vh;
+}
+
+.panel > :not(.quickaccess) {
+
+    max-width: 48em;
 }
 
 .title {
@@ -22,15 +29,17 @@
 }
 
 .quickaccess {
-    
-    width: 100%;
+
+    width: calc(100vw - 4em);
+    max-width: 32em;
+    height: 0;
 
     display: flex;
     align-items: flex-end;
     gap: 1em;
     
-    position: fixed;
-    left: 0; bottom: 0;
+    position: sticky; top: 100vh;
+
     z-index: 10;
     
     padding: 0 2em;

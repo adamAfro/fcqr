@@ -1,32 +1,21 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState, ChangeEvent } from 'react'
 
 import { useTranslation } from '../localisation'
 import { useMemory } from "../memory"
-import { get, modifyCards, remove, addCards, getData }
+import { get, modifyCards, remove, addCards, getData, rename, changeLanguage }
     from './database'
 
 import { Scanner, Text as TextInput } from './input'
 import * as Card from '../card'
-import Editor from './editor'
 
 import { Link, links } from '../app'
+
+import { default as Context, State } from './context'
 
 import ui from "../style.module.css"
 import style from "./style.module.css"
 
-enum State {
-    NOT_FOUND,
-    REMOVED,
-    LOADING,
-    PARTIAL_LOADED,
-    LOADED,
-    EXERCISES
-}
-
 export * from './database'
-
-export { default as Editor } from './editor'
-
 
 interface Props {
     name: string,
@@ -42,7 +31,6 @@ export default function Deck(props: { id?: number } | Props): JSX.Element {
 
     const id = ('id' in props) ? props.id : undefined
 
-    const { t } = useTranslation()
     const { database } = useMemory()!
 
     const [state, setState] = useState(('id' in props) ? State.LOADING : State.LOADED)
@@ -74,112 +62,222 @@ export default function Deck(props: { id?: number } | Props): JSX.Element {
 
     })), [state])
 
-    const [spread, setSpread] = useState(false)
+    const [spread, setSpread] = useState(true)
+
+    return <Context.Provider value={{ 
+        id, state, setState,
+        name, setName,
+        termLang, defLang,
+        setTermLang, setDefLang,
+
+        addedCards, setAddedCards, 
+        initialCards, setInitialCards, 
+        spread, setSpread,
+    }}>
+
+        <Quickaccess/>
+
+        {state > State.LOADING ? <Properties/> : null}
+
+        <Options/>
+
+        {state >= State.LOADED ? <Cards/> : null}
+
+    </Context.Provider>
+}
+
+function Quickaccess() {
+
+    const {
+        state, setState,
+        id, initialCards,
+        setAddedCards, setInitialCards,
+        spread, setSpread
+    } = useContext(Context)
+
+    const { database } = useMemory()!
+
+    return <nav className={ui.quickaccess}>
+
+        <p className={ui.faraccess}>
+            <Link role="button" to={links.pocket}>🃏</Link>
+        </p>
+
+        <div className={ui.thumbaccess}>
+
+            <button className={state == State.EXERCISES ? ui.secondary : ''} onClick={() => {
+
+                state != State.EXERCISES ? setState(State.EXERCISES) : setState(State.LOADED)
+
+                setAddedCards([])
+                if (id) get(id, database)
+                    .then(({ cards }) => setInitialCards(orderLoadedCards(cards) as Card.Data[]))
+                }} data-testid="play-btn">
+                {state != State.EXERCISES ? '💪' : '📝'}
+            </button>
+
+            <div className={style.buttonstack}>
+                <button className={state != State.EXERCISES ? ui.secondary : ''} data-testid="shuffle-cards-btn" onClick={() => {
+
+                    const shuffled = initialCards?.map(card => ({ ...card, order: Math.random() }))
+                        .sort((a, b) => a.order! - b.order!).reverse()
+
+                    if (id) modifyCards(id, shuffled!, database!)
+                    setInitialCards(shuffled)
+
+                }}>🔀</button>
+
+                <button className={state != State.EXERCISES ? ui.secondary : ''} data-testid="spread-cards-btn" onClick={() => setSpread(x => !x)}>{
+                    spread ? '🔼' : '🔽'
+                }</button>
+            </div>
+        </div>
+
+    </nav>
+}
+
+function Properties() {
+
+    const context = useContext(Context)
+    const { 
+        id, termLang, defLang,
+        setTermLang, setDefLang
+    } = context
+
+    const { t } = useTranslation()
+    const { database, languages } = useMemory()!
+
+    const [name, setName] = useState(context.name)
+
+    return <header className={style.properites} data-testid={`deck-${id}`}>
+        
+        <input className={ui.title} onChange={(e:ChangeEvent) => {
+
+            const target = e.target as HTMLInputElement
+
+            if (id)
+                rename(id, target.value, database!)
+            
+            setName(target.value)
+            
+        }} placeholder={t`unnamed deck`} type="text" value={name}/>
+
+        <div className={style.languages}>
+
+            <select onChange={(e:ChangeEvent) => {
+                    
+                const target = e.target as HTMLSelectElement
+
+                if (id)
+                    changeLanguage(id, "termLang", target.value, database!)
+    
+                setTermLang(target.value)
+                
+            }} defaultValue={termLang}>
+                <option key={-1}>{t`no term language`}</option>
+                {languages.map(({ name }, i) => <option key={i} value={name}>{name}</option>)}
+            </select>
+
+            <select onChange={(e:ChangeEvent) => {
+                    
+                const target = e.target as HTMLSelectElement
+
+                if (id)
+                    changeLanguage(id, "defLang", target.value, database!)
+    
+                setDefLang(target.value)
+                
+            }} defaultValue={defLang}>
+                <option key={-1}>{t`no definition language`}</option>
+                {languages.map(({ name }, i) => <option key={i} value={name}>{name}</option>)}
+            </select>
+        
+        </div>
+
+    </header>
+}
+
+function Options() {
+
     const [scanning, setScanning] = useState(false)
     const [showOptions, setShowOptions] = useState(false)
 
-    return <>
+    const {
+        setState,
+        id, addedCards, initialCards,
+        setAddedCards,
+    } = useContext(Context)
 
-        <div className={ui.quickaccess}>
+    const { database } = useMemory()!
+    const { t } = useTranslation()
 
-            <div className={ui.faraccess}>
-                <p><Link role="button" to={links.pocket}>{t`go back`}</Link></p>
-            </div>
+    return <section className={style.options}>
 
-            <div className={ui.thumbaccess}>
+        <button data-testid="scan-btn" onClick={() => setScanning(prev => !prev)}>
+            {scanning ? t`close scanner` : t`scan QR`}
+        </button>
 
-                <div>
+        {scanning ? <Scanner deckId={id} onSuccess={cards => {
 
-                    <button className={state == State.EXERCISES ? ui.secondary : ''} onClick={() => {
+            setScanning(false)
+            setAddedCards(prev => [
+                ...cards, ...prev
+            ])
 
-                        state != State.EXERCISES ? setState(State.EXERCISES) : setState(State.LOADED)
+        }} /> : null}
 
-                        setAddedCards([])
-                        if (id) get(id, database)
-                            .then(({ cards }) => setInitialCards(orderLoadedCards(cards) as Card.Data[]))
-                    }} data-testid="play-btn">
-                        {state != State.EXERCISES ? t`exercises` : t`edition`}
-                    </button>
+        {!scanning && showOptions ? <>
 
-                </div>
-
-                <div className={style.buttonstack}>
-                    <button className={state != State.EXERCISES ? ui.secondary : ''} data-testid="shuffle-cards-btn" onClick={() => {
-
-                        const shuffled = initialCards?.map(card => ({ ...card, order: Math.random() }))
-                            .sort((a, b) => a.order! - b.order!).reverse()
-
-                        if (id) modifyCards(id, shuffled!, database!)
-                        setInitialCards(shuffled)
-
-                    }}>{t`shuffle`}</button>
-
-                    <button className={state != State.EXERCISES ? ui.secondary : ''} data-testid="spread-cards-btn" onClick={() => setSpread(x => !x)}>{
-                        spread ? t`shrink` : t`spread`
-                    }</button>
-                </div>
-            </div>
-
-        </div>
-
-        {state > State.LOADING ? <Editor
-            deckId={id} initalName={name!}
-            termLang={termLang!} defLang={defLang!}
-            setTermLang={setTermLang} setDefLang={setDefLang} /> : null}
-
-        <section className={style.options}>
-
-            <button data-testid="scan-btn" onClick={() => setScanning(prev => !prev)}>
-                {scanning ? t`close scanner` : t`scan QR`}
+            <button className={ui.secondary} onClick={() => setShowOptions(false)}>
+                {t`less options`}
             </button>
 
-            {scanning ? <Scanner deckId={id} onSuccess={cards => {
+            <button data-testid="deck-copy-btn" onClick={() => {
+
+                const text = [...addedCards, ...initialCards!]
+                    .map(({ term, def }) => `${term} - ${def}`).join('\n')
+                navigator.clipboard.writeText(text)
+
+            }}>
+                {t`copy as text`}
+            </button>
+
+            <TextInput deckId={id} onSuccess={cards => {
 
                 setScanning(false)
                 setAddedCards(prev => [
                     ...cards, ...prev
                 ])
 
-            }} /> : null}
+            }} />
 
-            {!scanning && showOptions ? <>
+            <Link to={links.pocket} role='button' className={ui.removal} data-testid="deck-remove-btn" onClick={() => {
 
-                <button className={ui.secondary} onClick={() => setShowOptions(false)}>
-                    {t`less options`}
-                </button>
+                if (id) remove(id, database!)
+                setState(State.REMOVED)
 
-                <button data-testid="deck-copy-btn" className={ui.secondary} onClick={() => {
+            }}>{t`remove deck`}</Link>
 
-                    const text = [...addedCards, ...initialCards!]
-                        .map(({ term, def }) => `${term} - ${def}`).join('\n')
-                    navigator.clipboard.writeText(text)
+        </> : !scanning ? <button data-testid='more-opt-btn' onClick={() => setShowOptions(true)} className={ui.secondary}>
+            {t`more options`}
+        </button> : null}
 
-                }}>
-                    {t`copy as text`}
-                </button>
+    </section>
+}
 
-                <TextInput deckId={id} onSuccess={cards => {
+function Cards() {
 
-                    setScanning(false)
-                    setAddedCards(prev => [
-                        ...cards, ...prev
-                    ])
+    const {
+        termLang, defLang,
+        id, addedCards, initialCards,
+        state, spread,
+        setAddedCards,
+    } = useContext(Context)
 
-                }} />
+    const { database } = useMemory()!
+    const { t } = useTranslation()
 
-                <Link to={links.pocket} role='button' className={ui.removal} data-testid="deck-remove-btn" onClick={() => {
-
-                    if (id) remove(id, database!)
-                    setState(State.REMOVED)
-
-                }}>{t`remove deck`}</Link>
-
-            </> : !scanning ? <button data-testid='more-opt-btn' onClick={() => setShowOptions(true)} className={ui.secondary}>
-                {t`more options`}
-            </button> : null}
-
-        </section>
-
+    return <>
         <p>
             {(initialCards?.length || 0) + addedCards.length} {t`of cards`}
             <button data-testid="add-card-btn" onClick={() => {
@@ -211,7 +309,7 @@ export default function Deck(props: { id?: number } | Props): JSX.Element {
 
         </ul>
 
-        {state >= State.LOADED ? <ul className={style.cardlist}
+        <ul className={style.cardlist}
             data-testid='cards'
             data-spread={spread}>
 
@@ -225,8 +323,7 @@ export default function Deck(props: { id?: number } | Props): JSX.Element {
                 }
             </li>)}
 
-        </ul> : null}
-
+        </ul>
     </>
 }
 

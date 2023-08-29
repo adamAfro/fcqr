@@ -96,11 +96,12 @@ function Quickaccess() {
     } = useContext(Context)
 
     const { database } = useMemory()!
+    const { t } = useTranslation()
 
     return <nav className={ui.quickaccess}>
 
         <p className={ui.faraccess}>
-            <Link role="button" to={links.pocket}>🃏</Link>
+            <Link role="button" to={links.pocket}>{t`go back`}</Link>
         </p>
 
         <div className={ui.thumbaccess}>

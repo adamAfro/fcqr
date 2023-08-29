@@ -45,7 +45,7 @@ export default function Editor(props: Data & {
                     
                     setRemoved(true)
 
-                }}>{t`remove card`}</button>
+                }}>❌</button>
 
                 <Speech term={data.term} termLang={props.termLang}/>
             

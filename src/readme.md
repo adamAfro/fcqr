@@ -65,13 +65,10 @@ Using service workers may provide some native functionalities and offline usage:
 
 ### :art: Interface
 
-- [ ] it looks nice!
+Main element is card so all other elements are styled in reference to it.
 
-For now app uses slightly modified, classless `pico.css`, it looks rather bad and does not have any design or look manifest:
-
-- [x] use `pico.css` and provide some basic, easy layout
-
-- [x] make `src/demo` with important components together, where they can be easily tested manually and their look may be modified in wider context for CSS design purposes.
+- [x] make `src/demo` with important components together, where they can be easily tested manually and their look may be modified in wider context for CSS design purposes;
+- [ ] make it look nice!
 
 ## :flags: Localisations
 

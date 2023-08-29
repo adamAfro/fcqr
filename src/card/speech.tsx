@@ -21,7 +21,5 @@ export default function Speech({
 		voice: languages
 			.find(lang => lang.name == termLang)?.voice
 
-	})} {...attrs}>
-		{t`read aloud`}
-	</button>
+	})} {...attrs}>🔈</button>
 }

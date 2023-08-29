@@ -24,9 +24,5 @@ export default function Hearing({
             langCode: languages.find(l => l.name === lang)?.code || lang 
         })
 
-    } : () => setListening(false)} {...attrs}>
-		
-        {t`speak`}
-	
-    </button>
+    } : () => setListening(false)} {...attrs}>🎤</button>
 }

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import Base from '../scanner'
 
-import { Database, useMemory } from "../memory"
+import { useMemory } from "../memory"
 import { Data as Card } from '../card/database'
 import { addCards } from './database'
 
@@ -65,9 +65,7 @@ export function Text({ deckId, onSuccess }: {
                 .reverse()
             )
             
-        }}>
-            {t`add written cards`}
-        </button>
+        }}>{t`add written cards`}</button>
 
         <textarea data-testid="cards-input-area"
             onChange={e => setValue(e.target.value)} 

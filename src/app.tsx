@@ -1,8 +1,8 @@
 import React from 'react'
-import { BrowserRouter as Router, Routes, Route, Link, useParams } 
+import { BrowserRouter as Router, Routes, Route, Link, useParams }
     from 'react-router-dom'
 
-import { default as localise, t} from './localisation'
+import { default as localise, t } from './localisation'
 import { Provider as MemoryProvider } from './memory'
 
 import Pocket from './pocket'
@@ -31,66 +31,62 @@ export default (props: { basename?: string }) => <React.StrictMode>
         <Router basename={props.basename || '/'}><Routes>
 
             <Route path={links.pocket} element={<main className={style.panel}>
-                <Pocket/>
+                <Pocket />
             </main>} />
-            
-            <Route path={links.decks + ':id'} Component={() => { 
+
+            <Route path={links.decks + ':id'} Component={() => {
 
                 const { id } = useParams()
 
                 return <main className={style.panel}>
-                    <Deck id={Number(id)}/>
+                    <Deck id={Number(id)} />
                 </main>
 
-            }}/>
+            }} />
 
             <Route path={links.settings} element={<main className={style.panel}>
-                <Settings/>
-            </main>}/>
+                <Settings />
+            </main>} />
 
             <Route path={links.demo} element={<main style={{
-                display:"flex", gap: 'min(10vw, 10vh)'
+                display: "flex", alignItems: 'flex-start', padding: '1em'
             }}>
 
-                <div>
-                    <div className={style.panel} 
-                        style={{marginBottom:'20vh', gridArea: '1 / 1 / 2 / 2', boxShadow: '0 0 1em'}}>
-                    
-                        <Pocket ignoreDatabase decks={[
-                            { name: 'Science Quiz', termLang: 'English', defLang: 'French' },
-                            { name: 'Francese', termLang: 'fr', defLang: 'it' },
-                            { name: 'Math', termLang: '', defLang: '' },
-                            { name: '', termLang: '', defLang: '' },
-                            { name: 'Que et que', termLang: 'fr', defLang: 'it' },
-                            { name: 'Trebien', termLang: '', defLang: '' }
-                        ]}/>
-                            
-                    </div>
-                    
 
-                    <div className={style.panel} 
-                        style={{marginBottom:'20vh', gridArea: '1 / 2 / 3 / 3', boxShadow: '0 0 1em'}}>
-                            
-                        <Settings/>
-                    
-                    </div>
+                <div className={style.panel}>
+
+                    <Pocket ignoreDatabase decks={[
+                        { name: 'Science Quiz', termLang: 'English', defLang: 'French' },
+                        { name: 'Francese', termLang: 'fr', defLang: 'it' },
+                        { name: 'Math', termLang: '', defLang: '' },
+                        { name: '', termLang: '', defLang: '' },
+                        { name: 'Que et que', termLang: 'fr', defLang: 'it' },
+                        { name: 'Trebien', termLang: '', defLang: '' }
+                    ]} />
+
                 </div>
-                
 
-                <div className={style.panel} 
-                    style={{marginBottom:'20vh', gridArea: '2 / 1 / 3 / 2', boxShadow: '0 0 1em'}}>
-                        
+
+                <div className={style.panel}>
+
+                    <Settings />
+
+                </div>
+
+
+                <div className={style.panel}>
+
                     <Deck name={'demo'} defLang='pl' termLang='en' cards={[
                         { term: 'Physics', def: 'Physique' },
                         { term: 'Chemistry', def: 'Chimie' },
                         { term: 'Biology', def: 'Biologie' },
-                    ]}/>
-                    
+                    ]} />
+
                 </div>
 
-            </main>}/>
-        
+            </main>} />
+
         </Routes></Router>
-    
+
     </MemoryProvider>
 </React.StrictMode>

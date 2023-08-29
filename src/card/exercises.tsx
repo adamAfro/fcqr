@@ -27,11 +27,11 @@ export default function Exercise({
 
     const [hint, setHint] = useState(false)
 
-    return <div className={style.card}>
+    return <p className={style.card}>
 
         <Input term={term} termLang={termLang} vocal={vocal} hint={hint} setHint={setHint} />
 
-        <span className={style.def}>{defined || hint ? def : null}</span>
+        <textarea disabled className={style.def}>{defined || hint ? def : null}</textarea>
 
         <span className={style.options}>
 
@@ -41,7 +41,7 @@ export default function Exercise({
             /> : null}
 
         </span>
-    </div>
+    </p>
 }
 
 function Input({ term, termLang, vocal, hint, setHint }: {
@@ -60,26 +60,17 @@ function Input({ term, termLang, vocal, hint, setHint }: {
             setHint(true)
     }
 
-    const { t } = useTranslation()
+    return <>
 
-    return <div>
+        <input className={style.term} type="text" value={answer} onChange={e => {
+            respond(e.target.value)
+        }} style={{
+            color: new Color([126, 0, 0])
+                .mix(new Color([0, 126, 0]), similarity == 1 ? similarity : similarity * 1 / 2)
+                .string()
+        }} placeholder='?'/>
 
-        <p className={style.buttons}>
-
-            <input className={style.term} type="text" value={answer} onChange={e => {
-                respond(e.target.value)
-            }} style={{
-                color: new Color([126, 0, 0])
-                    .mix(new Color([0, 126, 0]), similarity == 1 ? similarity : similarity * 1 / 2)
-                    .string()
-            }}/>
-
-            {vocal && similarity < 1 ? <Hearing
-                setResult={(heard:string) => respond(heard)} 
-                lang={termLang}/> : null}
-        </p>
-
-        <div className={style.buttons}>
+        <span className={style.interactions}>
 
             {similarity < 1 ? <button onClick={() => {
 
@@ -95,16 +86,20 @@ function Input({ term, termLang, vocal, hint, setHint }: {
 
                 return void respond(term.slice(0, end + 1))
 
-            }} className={hint ? ui.removal : ui.secondary}>{t`hint`}</button> : null}
+            }} className={hint ? ui.removal : ui.secondary}>❔</button> : null}
 
             <button style={{marginLeft:"auto"}} onClick={() => {
 
                 setAnswer('')
                 setSimilarity(0)
 
-            }} className={ui.removal}>{t`cancel`}</button>
+            }} className={ui.removal}>◀</button>
 
-        </div>
+            {vocal && similarity < 1 ? <Hearing
+                setResult={(heard:string) => respond(heard)} 
+                lang={termLang}/> : null}
 
-    </div>
+        </span>
+
+    </>
 }

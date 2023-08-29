@@ -29,11 +29,11 @@ export default function(props: {
 
     const Entry = (props: Deck.Data) => <p>
 
-        {props.id ? <Link role='button' to={links.decks + '/' + props.id.toString()}>
+        {props.id ? <Link className={style.deck} to={links.decks + '/' + props.id.toString()}>
             {props.name || t`unnamed deck`}
-        </Link> : <span role='button'>
+        </Link> : <Link className={style.deck} to={links.demo}>
             {props.name || t`unnamed deck`}
-        </span>}
+        </Link>}
 
     </p>
 
@@ -41,7 +41,7 @@ export default function(props: {
 
         <nav className={ux.quickaccess}>
             <div className={ux.faraccess}>
-                <h1 style={{margin:0}}>FCQR</h1>
+                <p className={ux.brandname}>FCQR</p>
                 <p><a target='_blank' href="https://github.com/adamAfro/fcqr">
                     by adamAfro
                 </a></p>

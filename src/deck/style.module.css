@@ -18,7 +18,7 @@
 
 .cardlist[data-spread=true] li {
     margin: 50vh 0;
-    transform: scale(.8);
+    font-size: 80%;
 }
 
 .languages {
@@ -48,17 +48,14 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-bottom: 5em;
 }
 
-.options + p {
-    margin-left: auto;
-    width: min-content;
-}
-
-.buttonstack button {
-    padding: .2em;
+.options button {
+    margin: 1em;
+    padding: .5em 1.5em;
 }
 
 .buttonstack button:nth-child(1) {
-    margin-left: 1em;
+    margin: 1em;
 }

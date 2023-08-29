@@ -38,7 +38,7 @@ Flashcards app for language learning
 
 ## Dependencies
 
-Built with [react JS](https://reactjs.org/) and some other Node dependencies (see `package.json`); QR scanner is [mebjas/html5-qrcode](https://github.com/mebjas/html5-qrcode) as provided under Apache-2.0 license; style is based on [pico.css](https://picocss.com/) originally provided under MIT license.
+Built with [react JS](https://reactjs.org/) and some other Node dependencies (see `package.json`); QR scanner is [mebjas/html5-qrcode](https://github.com/mebjas/html5-qrcode) as provided under Apache-2.0 license.
 
 See `src/readme.md` for development help. 
 

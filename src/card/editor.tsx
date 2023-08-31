@@ -1,4 +1,6 @@
-import { useState, ChangeEvent } from 'react'
+import { useState, ChangeEvent, useContext } from 'react'
+
+import Context from '../deck/context'
 
 import { useMemory } from '../memory'
 import { Data, modifyData, removeData } from './database'
@@ -10,9 +12,9 @@ import style from "./style.module.css"
 import { useTranslation } from 'react-i18next'
 
 
-export default function Editor(props: Data & { 
-    termLang: string, defLang?: string
-}) {
+export default function Editor(props: Data) {
+    
+    const { termLang, defLang } = useContext(Context)
 
     const {t} = useTranslation()
     const { database } = useMemory()!
@@ -47,7 +49,7 @@ export default function Editor(props: Data & {
 
                 }}>❌</button>
 
-                <Speech term={data.term} termLang={props.termLang}/>
+                {!termLang || <Speech term={data.term} termLang={termLang}/>}
             
             </span>
         

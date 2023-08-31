@@ -94,7 +94,7 @@ export async function listen(callback: (result: string[]) => void, options: List
 	})
 }
 
-function getVoiceByName(name: string) {
+export function getVoiceByName(name: string) {
 
 	const voices = speechSynthesis.getVoices()
 	if (voices.length == 0)

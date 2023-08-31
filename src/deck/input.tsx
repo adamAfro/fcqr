@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import Base from '../scanner'
@@ -7,12 +7,15 @@ import { useMemory } from "../memory"
 import { Data as Card } from '../card/database'
 import { addCards } from './database'
 
+import Context from './context'
+
 import style from "./style.module.css"
 
-export function Scanner({ deckId, onSuccess }: {
-    deckId?: number,
+export function Scanner({ onSuccess }: {
     onSuccess: (cards: Card[]) => void
 }) {
+
+    const { id } = useContext(Context)
 
     const { database } = useMemory()!
 
@@ -25,10 +28,10 @@ export function Scanner({ deckId, onSuccess }: {
 
             const cardsData = await handleCSV(scanned, meta)
 
-            if (!deckId) 
+            if (!id) 
                 return void onSuccess(cardsData.reverse())
 
-            const addedIds = await addCards(deckId, cardsData, database)
+            const addedIds = await addCards(id, cardsData, database)
             onSuccess(cardsData
                 .map((card, i) => ({ ...card, id: addedIds[i] as number }))
                 .reverse()
@@ -37,10 +40,11 @@ export function Scanner({ deckId, onSuccess }: {
     }}/>
 }
 
-export function Text({ deckId, onSuccess }: { 
-    deckId?: number,
+export function Text({ onSuccess }: {
     onSuccess: (cards: Card[]) => void
 }) {
+
+    const { id } = useContext(Context)
 
     const { database } = useMemory()!
 
@@ -54,10 +58,10 @@ export function Text({ deckId, onSuccess }: {
             
             const cardsData = await handleCSV(value)
 
-            if (!deckId) 
+            if (!id) 
                 return void onSuccess(cardsData.reverse())
             
-            const addedIds = await addCards(deckId, cardsData, database)
+            const addedIds = await addCards(id, cardsData, database)
 
             setValue('')
             onSuccess(cardsData

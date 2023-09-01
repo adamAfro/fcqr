@@ -24,8 +24,26 @@ export async function getVoices(): Promise <SpeechSynthesisVoice[]> {
 
 	return new Promise((ok, er) => {
 
-		setTimeout(er, 1000)
-		const resolve = () => ok(speechSynthesis.getVoices() as SpeechSynthesisVoice[])
+		let i = 0
+		const checkout = setInterval(() => {
+
+			if (i < 10)
+				return void i++
+
+			er("No were voices found")
+			clearInterval(checkout)
+
+		}, 250)
+
+		const resolve = () => {
+
+			const voices = speechSynthesis.getVoices() as SpeechSynthesisVoice[]
+			if (voices.length > 0)
+				ok(voices)
+			else
+				er(voices)
+		}
+		
 		speechSynthesis.addEventListener("voiceschanged", resolve, {once: true})
 	})
 }

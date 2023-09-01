@@ -11,7 +11,7 @@ registerForOffline()
     .then(({ ok, message}) => console.debug('webworker', ok, message))
 
 ReactDOM
-    .createRoot(document.body as Element)
+    .createRoot(document.getElementById('root') as Element)
     .render(React.createElement(App, { basename: '/beta/' }))
 
 reportWebVitals()

@@ -55,13 +55,36 @@ For better experience user may install app as PWA, which needs a browser. Main f
 
 Using service workers may provide some native functionalities and offline usage:
 
-- [ ] create service worker (it's not directly executed in app) which will save assets
+- [x] create service worker (it's not directly executed in app) which will save assets (copy from `cra`)
 
-- [x] register service worker from app (directly)
+- [x] register service worker from app
 
 - [ ] provide option to reload assets from app (without it you either need developer tools or clear cache)
 
 :warning: Manual testing of offline access should be done after completely closing app and opening it once again - refreshing will often work, but that is unless app is closed. Then, in Chrome `You are offline` would show up and app would not load, similarly in Firefox.   
+
+#### :woozy_face: GOSH
+
+I was having issue with PWA aspect of offline availability. As it turn out `manifest.json` should have `start_url` property ending with trailing slash like so :+1:`/beta/` and not like so `/beta` :-1:. At least for Chrome.
+
+Earlier I was getting this error from `workbox` while debugging android app on chromium:
+
+```
+(indeks):707 crbug/1173575, non-JS module files deprecated.
+(anonimowa) @ (indeks):707
+(indeks):706 Uncaught TypeError: Cannot read properties of null (reading '__jstcache')
+    at L ((indeks):706:1601)
+    at window.jstProcess ((indeks):706:5026)
+    at (indeks):708:18423
+```
+
+As it turned out it is totally unrelated. It was something with vVm1242 or something like that. Not important. After investigation I got that it is about *you are offline window* and only about that! Shame... Then I got suspicious about what is really loaded so I tried with other path: `/beta/settings`, which surprisingly worked. That made me thinking about base of path - it was `/beta` because I thought to myself „what can be the difference”. As it turns out it is rather an annoying difference. One works and one does not.
+
+MDN Web Docs states:
+
+> The `start_url` member is a string that represents the *start URL of the web application* — the preferred URL that should be loaded when the user launches the web application (e.g., when the user taps on the web application's icon from a device's application menu or homescreen).
+
+In conclusion: installing app with Chrome will make it with starting path specified in manifesto and it does not treat paths without trailing slash as location!
 
 ### :art: Interface
 

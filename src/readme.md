@@ -59,7 +59,7 @@ Using service workers may provide some native functionalities and offline usage:
 
 - [x] register service worker from app
 
-- [ ] provide option to reload assets from app (without it you either need developer tools or clear cache)
+- [x] provide option to reload assets from app (without it you either need developer tools or clear cache)
 
 :warning: Manual testing of offline access should be done after completely closing app and opening it once again - refreshing will often work, but that is unless app is closed. Then, in Chrome `You are offline` would show up and app would not load, similarly in Firefox.   
 

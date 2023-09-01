@@ -5,10 +5,11 @@ import React from 'react'
 
 import App from './app'
 
-import { registerForOffline, reportWebVitals } from './web'
+import reportWebVitals from './report'
 
-registerForOffline()
-    .then(({ ok, message}) => console.debug('webworker', ok, message))
+import { register } from './registrar'
+register().then(x => console.log(x))
+    .catch(e => console.error(e))
 
 ReactDOM
     .createRoot(document.getElementById('root') as Element)

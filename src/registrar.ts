@@ -12,7 +12,7 @@ interface Report {
 }
 
 export async function register(): Promise<Report> {
-    
+
     if (process.env.NODE_ENV !== 'production')
         return { ok: false, message: 'service worker does not work on develomepent' }
 
@@ -23,20 +23,24 @@ export async function register(): Promise<Report> {
     if (publicUrl.origin !== window.location.origin)
         return { ok: false, message: 'public URL is not the same as the current origin' }
 
-    return new Promise((ok,er) => void window.addEventListener('load', async () => {
+    return new Promise((ok,er) => {
+        
+        setTimeout(() => er({ ok: false, message: 'timeout' }), 5000)
+        window.addEventListener('load', async () => {
 
-        const workerURL = `${process.env.PUBLIC_URL}/service-worker.js`
-        if (isLocalhost) {
-
-            const report = findWorker(workerURL)
-            
-            await navigator.serviceWorker.ready
-
-            return void ok(await report)
-        }
-
-        return void ok(registerWorker(workerURL))
-    }))
+            const workerURL = `${process.env.PUBLIC_URL}/service-worker.js`
+            if (isLocalhost) {
+    
+                const report = findWorker(workerURL)
+                
+                await navigator.serviceWorker.ready
+    
+                return void ok(await report)
+            }
+    
+            return void ok(registerWorker(workerURL))
+        })
+    })
 }
 
 export async function unregister(): Promise<Report> {
@@ -82,7 +86,7 @@ function install(reg: ServiceWorkerRegistration) {
 
     if (navigator.serviceWorker.controller)
         return { ok: true, message: 'new content is available, please refresh' }
-    
+
     return { ok: true, message: 'content is cached for offline use' }
 }
 

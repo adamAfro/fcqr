@@ -1,12 +1,13 @@
 import { HTMLAttributes } from 'react'
 
 import { useTranslation } from '../localisation'
+import { unregister } from '../registrar'
 
 import Languages from './languages'
 
 import { Link, links } from "../app"
 
-import ux from '../style.module.css'
+import ui from '../style.module.css'
 
 export default function Settings(props: HTMLAttributes<HTMLDivElement>) {
 
@@ -14,13 +15,23 @@ export default function Settings(props: HTMLAttributes<HTMLDivElement>) {
 
     return <>
 
-        <nav className={ux.quickaccess}>
-            <p className={ux.faraccess}>
+        <nav className={ui.quickaccess}>
+            <p className={ui.faraccess}>
                 <Link role="button" data-testid="preferences-btn" to={links.pocket}>{t`go back`}</Link>
             </p>
         </nav>
 
-        <h1 className={ux.title}>{t`settings`}</h1>
+        <h1 className={ui.title}>{t`settings`}</h1>
+
+        <section>
+
+            v0.4.0
+
+            <button style={{display:'inline-block',margin: '0 1em'}} onClick={() => 
+                unregister().then(() => window.location.reload())
+            }>{t`refresh`}</button>
+
+        </section>
 
         <Languages />
 

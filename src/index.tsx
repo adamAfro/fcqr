@@ -12,6 +12,6 @@ registerForOffline()
 
 ReactDOM
     .createRoot(document.body as Element)
-    .render(React.createElement(App, { basename: '/beta' }))
+    .render(React.createElement(App, { basename: '/beta/' }))
 
 reportWebVitals()

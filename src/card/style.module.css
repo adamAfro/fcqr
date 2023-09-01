@@ -20,6 +20,10 @@
     position: relative;
 }
 
+    .card :is(button, a[role=button], [role=button]) {
+        padding: var(--padding);
+    }
+
 .term { font-size: 2em;}
 .term, .def {
 

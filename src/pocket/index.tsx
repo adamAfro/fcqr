@@ -9,7 +9,7 @@ import * as Deck from '../deck/database'
 
 
 import style from './style.module.css'
-import ux from '../style.module.css'
+import ui from '../style.module.css'
 
 
 export default function(props: {
@@ -39,17 +39,17 @@ export default function(props: {
 
     return <>
 
-        <nav className={ux.quickaccess}>
-            <div className={ux.faraccess}>
-                <p className={ux.brandname}>FCQR</p>
+        <nav className={ui.quickaccess}>
+            <div className={ui.faraccess}>
+                <p className={ui.brandname}>FCQR</p>
                 <p><a target='_blank' href="https://github.com/adamAfro/fcqr">
                     by adamAfro
                 </a></p>
                 <p><Link role="button" data-testid="preferences-btn" to={links.settings}>{t`edit settings`}</Link></p>
             </div>
 
-            <div className={ux.thumbaccess}>
-                <button data-testid='add-btn' onClick={() => {
+            <div className={ui.thumbaccess}>
+                <button className={ui.primary} onClick={() => {
 
                     const deck = { name: '', termLang: '', defLang: '' }
                     
@@ -58,11 +58,11 @@ export default function(props: {
 
                     Deck.addData(deck, database)
                         .then(id => setAddedDecks(prev => [...prev, { id, ...deck}]))
-                }}>{t`add deck`}</button>
+                }} data-testid='add-btn'>➕</button>
             </div>
         </nav>
 
-        <h1 className={ux.title}>{t`your decks`}</h1>
+        <h1 className={ui.title}>{t`your decks`}</h1>
 
         <ul className={style.decklist} data-testid="added-decks">
             {addedDecks.map(deck => <li key={deck.id}><Entry {...deck}/></li>)}

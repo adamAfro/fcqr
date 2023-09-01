@@ -24,5 +24,10 @@ export default function localise() {
     })
 }
 
+export const supported = {
+    pl: "polski",
+    en: "English"
+}
+
 export { useTranslation } from 'react-i18next'
 export { t } from 'i18next'

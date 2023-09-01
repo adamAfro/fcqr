@@ -103,7 +103,7 @@ function Quickaccess() {
 
                 <ShuffleButton/>
 
-                {/* <SpreadButton/> */}
+                <SpreadButton/>
             </div>
         </div>
 
@@ -116,7 +116,9 @@ function ExerciseButton() {
 
     const { database } = useMemory()!
 
-    return <button className={state == State.EXERCISES ? ui.secondary : ''} onClick={() => {
+    return <button className={
+        state == State.EXERCISES ? '' : ui.primary
+    } onClick={() => {
 
         state != State.EXERCISES ? setState(State.EXERCISES) : setState(State.LOADED)
 
@@ -135,7 +137,9 @@ function ShuffleButton() {
 
     const { database } = useMemory()!
 
-    return <button className={state != State.EXERCISES ? ui.secondary : ''} onClick={() => {
+    return <button className={
+        state == State.EXERCISES ? '' : ui.primary
+    }  onClick={() => {
 
         const shuffled = cards?.map(card => ({ ...card, order: Math.random() }))
             .sort((a, b) => a.order! - b.order!).reverse()
@@ -152,7 +156,7 @@ function SpreadButton() {
 
     const { state, spread, setSpread } = useContext(Context)
 
-    return <button className={state != State.EXERCISES ? ui.secondary : ''} data-testid="spread-cards-btn" onClick={() => setSpread(x => !x)}>{
+    return <button disabled={true} data-testid="spread-cards-btn" onClick={() => setSpread(x => !x)}>{
         spread ? '🔼' : '🔽'
     }</button>
 }
@@ -237,7 +241,7 @@ function Options() {
 
         <AddButton/>
 
-        <button className={ui.secondary} 
+        <button
             data-testid={'more-opt-btn'}
             onClick={e => setShowOptions(x => !x)}>
             
@@ -292,7 +296,7 @@ function AddButton() {
         addition
             .then(([cardId]) => setCards(prev => [{ ...card, id: Number(cardId) }, ...prev]))
 
-    }}>{t`add card`}</button>
+    }} className={ui.primary}>{t`add card`}</button>
 }
 
 function RemoveButton() {

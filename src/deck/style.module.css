@@ -39,6 +39,10 @@
     margin-bottom: 5em;
 }
 
+    .properites select {
+        margin: .5em 0;
+    }
+
 .buttons {
     display: flex;
     gap: 1em;
@@ -47,15 +51,20 @@
 .options {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-end;
     margin-bottom: 5em;
+    gap: 1em;
+    min-width: 32em;
 }
 
-.options button {
-    margin: 1em;
-    padding: .5em 1.5em;
+.options textarea {
+    resize: vertical;
+    min-height: 5em;
 }
 
-.buttonstack button:nth-child(1) {
-    margin: 1em;
+.buttonstack {
+    font-size: 80%;
+    display: flex;
+    flex-flow: column;
+    gap: 1em;
 }

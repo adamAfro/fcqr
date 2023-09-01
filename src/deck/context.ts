@@ -28,11 +28,8 @@ export interface Props {
     state: State,
     setState: Dispatch<SetStateAction<State>>
 
-    initialCards: Card.Data[], 
-    setInitialCards: Dispatch<SetStateAction<Card.Data[]>>
-    
-    addedCards: Card.Data[],
-    setAddedCards: Dispatch<SetStateAction<Card.Data[]>>,
+    cards: Card.Data[], 
+    setCards: Dispatch<SetStateAction<Card.Data[]>>,
     
     spread: boolean,
     setSpread: Dispatch<SetStateAction<boolean>>
@@ -53,11 +50,8 @@ export default createContext<Props>({
     defLang: undefined,
     setDefLang: () => {},
 
-    addedCards: [],
-    setAddedCards: () => {}, 
-
-    initialCards: [], 
-    setInitialCards: () => {},
+    cards: [], 
+    setCards: () => {},
 
     spread: false, 
     setSpread: () => {}

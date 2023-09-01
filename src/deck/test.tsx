@@ -206,11 +206,11 @@ test.each(decks)("cards are visible", async({data, cards}) => {
         const element = screen.getByTestId(`card-${card.id}`)
         
         const termInput = element
-            .querySelector('input[name=term]') as HTMLInputElement
+            .querySelector('input') as HTMLInputElement
         expect(termInput.value).toEqual(card.term)
 
         const defInput = element
-            .querySelector('textarea[name=def]') as HTMLTextAreaElement
+            .querySelector('textarea') as HTMLTextAreaElement
         expect(defInput.value).toEqual(card.def)
     }
 })
@@ -229,7 +229,7 @@ describe("modifying card's data", () => {
             const element = screen.getByTestId(`card-${card.id}`)
             
             const termInput = element
-                .querySelector('input[name=term]') as HTMLInputElement
+                .querySelector('input') as HTMLInputElement
 
             expect(termInput.value).not.toEqual(changes.term)
             await act(() => fireEvent.input(termInput, { target: { value: changes.term } }))
@@ -254,7 +254,7 @@ describe("modifying card's data", () => {
             const element = screen.getByTestId(`card-${card.id}`)
             
             const defInput = element
-                .querySelector('textarea[name=def]') as HTMLTextAreaElement
+                .querySelector('textarea') as HTMLTextAreaElement
 
             expect(defInput.value).not.toEqual(changes.def)
             await act(() => fireEvent.input(defInput, { target: { value: changes.def } }))

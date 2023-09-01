@@ -50,14 +50,13 @@ export default function Deck(props: { id?: number } | Props): JSX.Element {
 
     })), [])
 
-    const [addedCards, setAddedCards] = useState([] as Card.Data[])
-    const [initialCards, setInitialCards] = useState(('cards' in props) ? props.cards : [])
+    const [cards, setCards] = useState(('cards' in props) ? props.cards : [])
     useEffect(() => void (!id || get(id, database!).then(({ cards }) => {
 
         if (state != State.PARTIAL_LOADED)
             return
 
-        setInitialCards(orderLoadedCards(cards) as Card.Data[])
+        setCards(cards as Card.Data[])
         setState(State.LOADED)
 
     })), [state])
@@ -68,10 +67,8 @@ export default function Deck(props: { id?: number } | Props): JSX.Element {
         id, state, setState,
         name, setName,
         termLang, defLang,
-        setTermLang, setDefLang,
-
-        addedCards, setAddedCards, 
-        initialCards, setInitialCards, 
+        setTermLang, setDefLang, 
+        cards, setCards, 
         spread, setSpread,
     }}>
 
@@ -79,7 +76,7 @@ export default function Deck(props: { id?: number } | Props): JSX.Element {
 
         {state > State.LOADING ? <Properties/> : null}
 
-        <Options/>
+        {state == State.LOADED ? <Options/> : null}
 
         {state >= State.LOADED ? <Cards/> : null}
 
@@ -115,7 +112,7 @@ function Quickaccess() {
 
 function ExerciseButton() {
 
-    const { state, setState, id, setAddedCards, setInitialCards } = useContext(Context)
+    const { state, setState, id, setCards } = useContext(Context)
 
     const { database } = useMemory()!
 
@@ -123,30 +120,32 @@ function ExerciseButton() {
 
         state != State.EXERCISES ? setState(State.EXERCISES) : setState(State.LOADED)
 
-        setAddedCards([])
+        setCards([])
         if (id) get(id, database)
-            .then(({ cards }) => setInitialCards(orderLoadedCards(cards) as Card.Data[]))
-        }} data-testid="play-btn">
-        {state != State.EXERCISES ? '💪' : '📝'}
+            .then(({ cards }) => setCards(cards as Card.Data[]))
     
+    }} data-testid="play-btn">
+        {state != State.EXERCISES ? '💪' : '📝'}
     </button>
 }
 
 function ShuffleButton() {
 
-    const { state, id, initialCards, setInitialCards } = useContext(Context)
+    const { state, id, cards, setCards } = useContext(Context)
 
     const { database } = useMemory()!
 
-    return <button className={state != State.EXERCISES ? ui.secondary : ''} data-testid="shuffle-cards-btn" onClick={() => {
+    return <button className={state != State.EXERCISES ? ui.secondary : ''} onClick={() => {
 
-        const shuffled = initialCards?.map(card => ({ ...card, order: Math.random() }))
+        const shuffled = cards?.map(card => ({ ...card, order: Math.random() }))
             .sort((a, b) => a.order! - b.order!).reverse()
 
-        if (id) modifyCards(id, shuffled!, database)
-        setInitialCards(shuffled)
+        if (id) 
+            modifyCards(id, shuffled!, database)
+        
+        setCards(shuffled)
 
-    }}>🔀</button>
+    }} data-testid="shuffle-cards-btn">🔀</button>
 }
 
 function SpreadButton() {
@@ -219,7 +218,7 @@ function Language({ subject }: {subject: 'term' | 'def'}) {
         
     }} defaultValue={subject == 'term' ? termLang : defLang}>
         <option key={-1}>{t`no language`}</option>
-        {languages.map(({ name }, i) => <option key={i} value={name}>{name}</option>)}
+        {languages.map(({ id, name }, i) => <option key={id} value={name}>{name}</option>)}
     </select>
 }
 
@@ -230,7 +229,7 @@ function Options() {
     const [scanning, setScanning] = useState(false)
     const [showOptions, setShowOptions] = useState(false)
 
-    const { setAddedCards } = useContext(Context)
+    const { setCards } = useContext(Context)
 
     const { t } = useTranslation()
 
@@ -254,7 +253,7 @@ function Options() {
             {scanning ? <Scanner onSuccess={cards => {
 
                 setScanning(false)
-                setAddedCards(prev => [
+                setCards(prev => [
                     ...cards, ...prev
                 ])
 
@@ -262,7 +261,7 @@ function Options() {
             
                 <CopyButton/>
 
-                <TextInput onSuccess={cards => setAddedCards(prev => [
+                <TextInput onSuccess={cards => setCards(prev => [
                     ...cards, ...prev
                 ])} />
 
@@ -276,7 +275,7 @@ function Options() {
 
 function AddButton() {
 
-    const { id, addedCards, setAddedCards } = useContext(Context)
+    const { id, setCards } = useContext(Context)
 
     const { database } = useMemory()!
 
@@ -284,13 +283,14 @@ function AddButton() {
 
     return <button data-testid="add-card-btn" onClick={() => {
 
-        if (id) addCards(id, [{ term: '', def: '' }], database!)
-            .then(ids => setAddedCards([{
-                id: Number(ids[0]), term: '', def: '', deckId: id
-            }, ...addedCards!]))
-        else setAddedCards([{
-            term: '', def: '', deckId: id
-        }, ...addedCards!])
+        const card = { term: '', def: '', deckId: id } as Card.Data
+        
+        const addition = id ?
+            addCards(id, [card], database) : 
+            Promise.resolve([0])
+        
+        addition
+            .then(([cardId]) => setCards(prev => [{ ...card, id: Number(cardId) }, ...prev]))
 
     }}>{t`add card`}</button>
 }
@@ -300,6 +300,7 @@ function RemoveButton() {
     const { id, setState } = useContext(Context)
 
     const { database } = useMemory()!
+
     const { t } = useTranslation()
 
     return <Link role='button' className={ui.removal} onClick={() => {
@@ -312,13 +313,13 @@ function RemoveButton() {
 
 function CopyButton() {
 
-    const { addedCards, initialCards } = useContext(Context)
+    const { cards } = useContext(Context)
 
     const { t } = useTranslation()
 
     return <button data-testid="deck-copy-btn" onClick={() => {
 
-        const text = [...addedCards, ...initialCards!]
+        const text = cards
             .map(({ term, def }) => `${term} - ${def}`).join('\n')
         navigator.clipboard.writeText(text)
 
@@ -331,47 +332,25 @@ function CopyButton() {
 
 function Cards() {
 
-    const {
-        termLang, defLang,
-        id, addedCards, initialCards,
-        state, spread,
-        setAddedCards,
-    } = useContext(Context)
+    const { cards, state, spread } = useContext(Context)
 
-    const { database } = useMemory()!
-    const { t } = useTranslation()
+    return <ul className={style.cardlist}
+        data-testid='cards'
+        data-spread={spread}>
 
-    return <>
+        {[...cards].sort((a, b) => {
 
-        <ul className={style.cardlist}
-            data-testid="added-cards"
-            data-spread={spread}>
+            if (a.order !== undefined && b.order !== undefined)
+                return a.order - b.order
+            
+            return b.id! - a.id!
 
-            {addedCards.map((card, i) => <li key={i}>
-                {state == State.EXERCISES ?
-                    <Card.Exercise {...card}/> :
-                    <Card.Editor {...card}/>
-                }
-            </li>)}
+        }).map((card,i) => <li key={card.id}>
+            {state == State.EXERCISES ?
+                <Card.Exercise {...card}/> :
+                <Card.Editor {...card}/>
+            }
+        </li>)}
 
-        </ul>
-
-        <ul className={style.cardlist}
-            data-testid='cards'
-            data-spread={spread}>
-
-            {initialCards?.map((card,i) => <li key={i}>
-                {state == State.EXERCISES ?
-                    <Card.Exercise {...card}/> :
-                    <Card.Editor {...card}/>
-                }
-            </li>)}
-
-        </ul>
-    </>
-}
-
-function orderLoadedCards(array: any[]) {
-
-    return array.sort((a, b) => a.order! - b.order!).reverse()
+    </ul>
 }

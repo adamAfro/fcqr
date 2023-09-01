@@ -38,14 +38,14 @@ export async function addData(deck: Data, db: Database) {
     return deckId
 }
 
-export async function addCards(deckId: number, card: Card.Data[], db: Database) {
+export async function addCards(deckId: number, cards: Card.Data[], db: Database) {
 
     const transaction = db.transaction([Stores.CARDS], 'readwrite')
     const cardStore = transaction.objectStore(Stores.CARDS)
 
-    card = card.map(card => ({ ...card, deckId }))
+    cards = cards.map(card => ({ ...card, deckId }))
     
-    const additions = card.map(card => cardStore.add(card))
+    const additions = cards.map(card => cardStore.add(card))
 
     const ids = await Promise.all(additions)
     await transaction.done

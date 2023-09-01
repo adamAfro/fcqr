@@ -1,6 +1,6 @@
 import { useState, ChangeEvent, useContext } from 'react'
 
-import Context from '../deck/context'
+import WideContext from '../deck/context'
 
 import { useMemory } from '../memory'
 import { Data, modifyData, removeData } from './database'
@@ -12,47 +12,59 @@ import style from "./style.module.css"
 import { useTranslation } from 'react-i18next'
 
 
-export default function Editor(props: Data) {
+export default function Editor({ id, ...props }: Data) {
     
-    const { termLang, defLang } = useContext(Context)
+    const { termLang, defLang } = useContext(WideContext)
 
-    const {t} = useTranslation()
     const { database } = useMemory()!
 
     const [removed, setRemoved] = useState(false)
-
-    const [data, setData] = useState(props)
-    const change = (event: ChangeEvent) => {
-
-        const target = event.target as HTMLInputElement | HTMLSelectElement
-        const key = target.name, value = target.value
-
-        if (props.id)
-            modifyData({ ...data, [key]: value } as Data, database)
+    const [term, setTerm] = useState(props.term)
+    const [def, setDef] = useState(props.def)
     
-        setData(prev => ({ ...prev, [key]: value }))
-    }
+    const { t } = useTranslation()
 
     return <>{!removed ? 
-        <p className={style.card} data-testid={`card-${data.id}`}>
-            <input placeholder={t`term`} className={style.term} name="term" value={data.term} onChange={change}/>
-            <textarea placeholder={t`definition`} className={style.def} name="def" value={data.def} onChange={change}/>
+        
+        <p className={style.card} data-testid={`card-${id}`}>
+
+            <input className={style.term} onChange={(e) => {
+
+                console.log('modifing', id)
+                if (id)
+                    modifyData({ id, ...props, term: e.target.value } as Data, database)
+                
+                setTerm(e.target.value)
+
+            }} placeholder={t`term`} value={term}/>
+
+
+            <textarea className={style.def} onChange={(e) => {
+
+                if (id)
+                    modifyData({ id, ...props, def: e.target.value } as Data, database)
+                
+                setDef(e.target.value)
+
+            }} placeholder={t`definition`} value={def}/>
             
+
             <span className={style.options}>
         
                 <button data-role="removal" className={ui.removal} onClick={() => {
 
-                    if (props.id)
-                        removeData(props.id, database!)
+                    if (id)
+                        removeData(id, database!)
                     
                     setRemoved(true)
 
                 }}>❌</button>
 
-                {!termLang || <Speech term={data.term} termLang={termLang}/>}
+                {!termLang || <Speech term={term} termLang={termLang}/>}
             
             </span>
         
+
         </p> : <>{t`removed card`}</>
     }</>
 }

@@ -138,7 +138,7 @@ function ShuffleButton() {
     const { database } = useMemory()!
 
     return <button className={
-        state == State.EXERCISES ? '' : ui.primary
+        state == State.EXERCISES ? ui.primary : ''
     }  onClick={() => {
 
         const shuffled = cards?.map(card => ({ ...card, order: Math.random() }))

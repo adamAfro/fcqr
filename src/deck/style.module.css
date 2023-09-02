@@ -54,7 +54,6 @@
     align-items: flex-end;
     margin-bottom: 5em;
     gap: 1em;
-    min-width: 32em;
 }
 
 .options textarea {

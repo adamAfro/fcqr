@@ -61,7 +61,7 @@ export default function Deck(props: { id?: number } | Props): JSX.Element {
 
     })), [state])
 
-    const [spread, setSpread] = useState(false)
+    const [layout, setLayout] = useState(layouts.compact)
 
     return <Context.Provider value={{ 
         id, state, setState,
@@ -69,7 +69,7 @@ export default function Deck(props: { id?: number } | Props): JSX.Element {
         termLang, defLang,
         setTermLang, setDefLang, 
         cards, setCards, 
-        spread, setSpread,
+        layout, setLayout,
     }}>
 
         <Quickaccess/>
@@ -103,7 +103,7 @@ function Quickaccess() {
 
                 <ShuffleButton/>
 
-                <SpreadButton/>
+                <LayoutButton/>
             </div>
         </div>
 
@@ -152,13 +152,24 @@ function ShuffleButton() {
     }} data-testid="shuffle-cards-btn">🔀</button>
 }
 
-function SpreadButton() {
+const layouts = {
+    compact: 'compact',
+    extended: 'extended',
+    quarter: 'quarter',
+    grid: 'grid'
+}
 
-    const { state, spread, setSpread } = useContext(Context)
+function LayoutButton() {
 
-    return <button disabled={true} data-testid="spread-cards-btn" onClick={() => setSpread(x => !x)}>{
-        spread ? '🔼' : '🔽'
-    }</button>
+    const { layout, setLayout } = useContext(Context)
+
+    return <button data-testid="layout-cards-btn" onClick={() => {
+
+        const values = Object.values(layouts)
+        const index = values.findIndex(v => v == layout)
+        setLayout(values[index + 1 < values.length ? index + 1 : 0])
+        
+    }}>🔍</button>
 }
 
 
@@ -336,11 +347,11 @@ function CopyButton() {
 
 function Cards() {
 
-    const { cards, state, spread } = useContext(Context)
+    const { cards, state, layout } = useContext(Context)
 
     return <ul className={style.cardlist}
         data-testid='cards'
-        data-spread={spread}>
+        data-layout={layout}>
 
         {[...cards].sort((a, b) => {
 

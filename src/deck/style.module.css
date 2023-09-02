@@ -1,25 +1,58 @@
 .cardlist {
-    padding: 0; margin: 0;
 
     display: flex;
     flex-flow: column;
     align-items: center;
     
+    padding: 0;
+    --extend-margin: 50vh;
     margin: 5em 0;
 
-    gap: 5em;
+    /* should fit at least 2 cards side by side given it is 24em */
+    --split-screen-font-size: min(80%, 1.6vw);
+
+    --gap: 1em;
+    gap: var(--gap);
 }
 
     .cardlist li {
-
         list-style: none;
         position: relative;        
     }
 
-.cardlist[data-spread=true] li {
-    margin: 50vh 0;
+.cardlist[data-layout=extended] li {
+    margin-bottom: var(--extend-margin);
     font-size: 80%;
 }
+
+.cardlist[data-layout=quarter] {
+
+    --gap: 1em;
+    
+    flex-flow: row wrap;
+    justify-content: center;
+
+} .cardlist[data-layout=quarter] li {
+    
+    font-size: var(--split-screen-font-size);
+    flex-basis: calc(50% - 2*var(--gap));
+} 
+    .cardlist[data-layout=quarter] li:nth-child(4n + 3), 
+    .cardlist[data-layout=quarter] li:nth-child(4n + 4) { margin-bottom: var(--extend-margin); } 
+    
+    .cardlist[data-layout=quarter] li:nth-child(odd) > * { margin-left: auto }
+    .cardlist[data-layout=quarter] li:nth-child(even) > * { margin-right: auto }
+
+.cardlist[data-layout=grid] {
+
+    --gap: 1em;
+    flex-flow: row wrap;
+    justify-content: center;
+
+} .cardlist[data-layout=grid] li {
+    
+    font-size: calc(var(--split-screen-font-size) * 2 / 3);
+} 
 
 .languages {
     display: flex;

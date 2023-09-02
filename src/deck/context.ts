@@ -31,8 +31,8 @@ export interface Props {
     cards: Card.Data[], 
     setCards: Dispatch<SetStateAction<Card.Data[]>>,
     
-    spread: boolean,
-    setSpread: Dispatch<SetStateAction<boolean>>
+    layout: string,
+    setLayout: Dispatch<SetStateAction<string>>
 }
 
 export default createContext<Props>({ 
@@ -53,6 +53,6 @@ export default createContext<Props>({
     cards: [], 
     setCards: () => {},
 
-    spread: false, 
-    setSpread: () => {}
+    layout: '', 
+    setLayout: () => {}
 })

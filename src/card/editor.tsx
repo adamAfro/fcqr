@@ -32,7 +32,7 @@ export default function Editor({ id, ...props }: Data) {
 
                 console.log('modifing', id)
                 if (id)
-                    modifyData({ id, ...props, term: e.target.value } as Data, database)
+                    modifyData({ id, ...props, def, term: e.target.value } as Data, database)
                 
                 setTerm(e.target.value)
 
@@ -42,7 +42,7 @@ export default function Editor({ id, ...props }: Data) {
             <textarea className={style.def} onChange={(e) => {
 
                 if (id)
-                    modifyData({ id, ...props, def: e.target.value } as Data, database)
+                    modifyData({ id, ...props, def: e.target.value, term } as Data, database)
                 
                 setDef(e.target.value)
 

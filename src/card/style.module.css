@@ -25,8 +25,12 @@
     }
 
 .term { font-size: 2em;}
+.term[data-is-long=true] {
+    font-size: 1.2em;
+}
 .term, .def {
 
+    padding: 1em 0;
     text-align: center;
     border: 0; resize: vertical;
     outline: none;

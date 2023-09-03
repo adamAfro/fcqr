@@ -28,9 +28,8 @@ export default function Editor({ id, ...props }: Data) {
         
         <p className={style.card} data-testid={`card-${id}`}>
 
-            <input className={style.term} onChange={(e) => {
+            <input data-is-long={term.length > 15} className={style.term} onChange={(e) => {
 
-                console.log('modifing', id)
                 if (id)
                     modifyData({ id, ...props, def, term: e.target.value } as Data, database)
                 
@@ -65,6 +64,6 @@ export default function Editor({ id, ...props }: Data) {
             </span>
         
 
-        </p> : <>{t`removed card`}</>
+        </p> : null
     }</>
 }

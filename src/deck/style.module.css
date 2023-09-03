@@ -20,6 +20,10 @@
         position: relative;        
     }
 
+    .cardlist li:empty {
+        display: none;
+    }
+
 .cardlist[data-layout=extended] li {
     margin-bottom: var(--extend-margin);
     font-size: 80%;

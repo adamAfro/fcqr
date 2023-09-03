@@ -82,7 +82,9 @@ function Input({ term, langCode }: {
 
     return <>
 
-        <input lang={langCode} className={style.term} type="text" value={answer} onChange={e => {
+        <input data-is-long={term.length > 15} lang={langCode} 
+            className={style.term} type="text" 
+            value={answer} onChange={e => {
             respond(e.target.value)
         }} style={{
             color: new Color([255, 0, 0])

@@ -9,6 +9,8 @@ import { Link, links } from "../app"
 
 import ui from '../style.module.css'
 
+import { version } from '../meta'
+
 export default function Settings(props: HTMLAttributes<HTMLDivElement>) {
 
     const { t } = useTranslation()
@@ -25,7 +27,7 @@ export default function Settings(props: HTMLAttributes<HTMLDivElement>) {
 
         <section>
 
-            v0.4.0
+            v{version}
 
             <button style={{display:'inline-block',margin: '0 1em'}} onClick={() => 
                 unregister().then(() => window.location.reload())

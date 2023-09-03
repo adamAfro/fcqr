@@ -1,3 +1,5 @@
+import { version } from './meta'
+
 const isLocalhost = Boolean(
     window.location.hostname === 'localhost' ||
     // [::1] is the IPv6 localhost address.
@@ -28,7 +30,7 @@ export async function register(): Promise<Report> {
         setTimeout(() => er({ ok: false, message: 'timeout' }), 5000)
         window.addEventListener('load', async () => {
 
-            const workerURL = `${process.env.PUBLIC_URL}/service-worker.js`
+            const workerURL = `${process.env.PUBLIC_URL}/service-worker.js?v=${version}`
             if (isLocalhost) {
     
                 const report = findWorker(workerURL)

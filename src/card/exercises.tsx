@@ -77,6 +77,7 @@ function Input({ term, langCode }: {
         if (sim == 1) {
             setAudible(true)
             setDefined(true)
+            setAnswer(term)
         }
     }
 
@@ -103,7 +104,7 @@ function Input({ term, langCode }: {
                 if (!vocal)
                     return void setVocal(true)
 
-                return void respond(randomDottedChars(term))
+                return void respond(hint(answer, term))
 
             }} className={ui.removal}>❔</button> : null}
 
@@ -112,7 +113,7 @@ function Input({ term, langCode }: {
                 setAnswer('')
                 setSimilarity(0)
 
-            }} className={ui.removal}>◀</button>
+            }} className={ui.removal}>❌</button>
 
             {langCode && vocal && similarity < 1 ? <Hearing
                 setResult={(heard:string) => respond(heard)} 
@@ -123,15 +124,83 @@ function Input({ term, langCode }: {
     </>
 }
 
-function randomDottedChars(sentence: string) {
+function hint(answer: string, term: string) {
 
-    const words = sentence.split(' ')
-    const index = Math.floor(Math.random() * words.length)
-    let word = words[index]
-    if (index + 1 < words.length)
-        word += '...'
-    if (index > 0)
-        return '...' + word
+    answer = answer.toLocaleLowerCase()
+    term = term.toLocaleLowerCase()
+
+    const initial = calcSimilarity(answer, term)
+    let corrected: string
     
-    return word
+    corrected = correctGuess(answer, term)
+    if (calcSimilarity(corrected, term) - initial > 0) 
+        return corrected
+
+    corrected = addToGuesses(answer, term)
+    if (calcSimilarity(corrected, term) - initial > 0)
+        return corrected
+
+    return term
+}
+
+function correctGuess(answer: string, term: string) {
+
+    const corrects = term.split(' ').filter(x => x.trim())
+    const guesses = answer.split(' ').filter(x => x.trim())
+    
+    for (let i = 0; i < guesses.length; i++) {
+
+        if (corrects.includes(guesses[i]))
+            continue
+
+        const sims = corrects.map(x => calcSimilarity(guesses[i], x))
+        const m = Math.max(...sims)
+        if (m == 0)
+            continue
+
+        const correct = corrects[sims.findIndex(s => s == m)]
+        guesses.splice(i, 1, correct)
+        
+        return guesses.join(' ')
+    }
+
+    return ''
+}
+
+function addToGuesses(answer: string, term: string) {
+
+    const all = term.split(' ').filter(x => x.trim())
+    const provided = answer.split(' ').filter(x => x.trim())
+        .filter(x => all.includes(x))
+
+    if (provided.length == 0)
+        return randomFrom(all)
+        
+    const indices = Array.from(all.keys()).filter(i => !provided.includes(all[i]))
+    const randomIndex = randomFrom(indices)
+    const indexToInsert = mapIndexToOrder(randomIndex, provided, all)
+
+    provided.splice(indexToInsert, 0, all[randomIndex])
+
+    return provided.join(' ')
+}
+
+function mapIndexToOrder(randomIndex: number, provided: any[], all: any[]) {
+
+    let index = 0;
+    while (index < provided.length + 1 && index < randomIndex) {
+
+        const nextRealIndex = all.findIndex(x => x == provided[index])
+        if (nextRealIndex > randomIndex)
+            break
+
+        index++
+    }
+
+    return index
+}
+
+function randomFrom(ar: any[]) {
+
+    return ar[Math.floor(Math.random() * ar.length)]
 }

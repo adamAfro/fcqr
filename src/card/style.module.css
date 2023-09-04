@@ -42,7 +42,7 @@
 
     position: absolute;
     bottom: var(--padding);
-    right: var(--padding);
+    left: var(--padding);
 }
 
 .interactions {
@@ -50,5 +50,13 @@
 
     position: absolute;
     bottom: var(--padding);
-    left: var(--padding);
+    right: var(--padding);
+}
+
+.selection > :is(button, a[role=button], [role=button]) {
+    
+    display: inline-block;
+    width: min-content;
+    white-space: nowrap;
+    margin: .5em;
 }

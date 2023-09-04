@@ -57,7 +57,7 @@ export default function Editor({ id, ...props }: Data) {
                     
                     setRemoved(true)
 
-                }}>❌</button>
+                }}>🗑</button>
 
                 {!termLang || <Speech term={term} termLang={termLang}/>}
             

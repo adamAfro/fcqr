@@ -4,7 +4,7 @@ import WideContext from '../deck/context'
 import Speech from "./speech"
 import Hearing from "./hearing"
 import { useMemory } from '../memory'
-import { randomIndex, randomFrom, randomWeighted, subindexToIndex } 
+import { randomIndex, randomFrom, randomWeighted, indexToSubindex } 
     from '../misc'
 
 import Color from "color"
@@ -203,7 +203,7 @@ namespace Text {
             
         const indices = Array.from(all.keys()).filter(i => !provided.includes(all[i]))
         const randomIndex = randomFrom(indices)
-        const indexToInsert = subindexToIndex(randomIndex, provided, all)
+        const indexToInsert = indexToSubindex(randomIndex, provided, all)
     
         provided.splice(indexToInsert, 0, all[randomIndex])
     

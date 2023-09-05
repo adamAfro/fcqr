@@ -1,16 +1,16 @@
-export function subindexToIndex <T> (subserieIndex: number, subserie: T[], serie: T[]) {
+export function indexToSubindex <T> (serieIndex: number, subserie: T[], serie: T[]) {
 
-    let serieIndex = 0;
-    while (serieIndex < subserie.length + 1 && serieIndex < subserieIndex) {
+    let subserieIndex = 0;
+    while (subserieIndex < subserie.length + 1 && subserieIndex < serieIndex) {
 
-        const nextRealIndex = serie.findIndex(x => x == subserie[serieIndex])
-        if (nextRealIndex > subserieIndex)
+        const nextRealIndex = serie.findIndex(x => x == subserie[subserieIndex])
+        if (nextRealIndex > serieIndex)
             break
 
-        serieIndex++
+        subserieIndex++
     }
 
-    return serieIndex
+    return subserieIndex
 }
 
 export function randomFrom <T> (ar: T[]) {

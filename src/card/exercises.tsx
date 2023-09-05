@@ -4,7 +4,7 @@ import WideContext from '../deck/context'
 import Speech from "./speech"
 import Hearing from "./hearing"
 import { useMemory } from '../memory'
-import { randomInt, randomFrom, randomWeighted, indexToSubindex } 
+import { randomInt, randomFrom, randomWeighted, indexToSubindex, randomSubstring } 
     from '../misc'
 
 import Color from "color"
@@ -194,21 +194,17 @@ namespace Text {
         const provided = answer.split(' ').filter(x => x.trim())
             .filter(x => all.includes(x))
     
-        if (provided.length == 0)
-            return randomFrom(all)
+        if (provided.length > 0) return substring ? 
+            randomSubstring(randomFrom(all)) : 
+            randomFrom(all)
             
         const indices = Array.from(all.keys()).filter(i => !provided.includes(all[i]))
         const guessIndex = randomFrom(indices)
         const indexToInsert = indexToSubindex(guessIndex, provided, all)
         
-        let guess = all[guessIndex]
-        if (substring && guess.length > 2) {
-
-            const start = randomInt(0, guess.length - 2)
-            const end = start + randomInt(start + 1, guess.length)
-
-            guess = all[guessIndex].substring(start, end)
-        }
+        const guess = substring ? 
+            randomSubstring(all[guessIndex]) : 
+            all[guessIndex]
         
         provided.splice(indexToInsert, 0, guess)
     

@@ -37,3 +37,16 @@ export function randomWeighted(weights: number[]) {
 
     return -1
 }
+
+export function randomSubstring(text: string) {
+        
+    if (text.length > 2) {
+
+        const start = randomInt(0, text.length - 2)
+        const end = start + randomInt(start + 1, text.length)
+
+        return text.substring(start, end)
+    }
+
+    return text
+}

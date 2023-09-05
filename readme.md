@@ -64,3 +64,9 @@ App provides QR reader for reading data from other devices and environment. QR c
 ```
 
 **Format**: For now only CSV is supported with separator being dash `— `, hyphen-minus `-`, tab, vertical line `|`, comma, semicolon or space. Additionally they may be surrounded with spaces for clarity like so ` — `.
+
+## Versioning
+
+```
+[concept version].[minor change number].[bug fix number]
+```

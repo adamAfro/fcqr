@@ -110,20 +110,23 @@ function InputOptions() {
 
         <h2>{t`adding cards to deck`}</h2>
 
+        <button disabled={!value} data-testid="cards-input-btn" className={style.secondary} 
+            onClick={() => setInput(value)}>{t`click to select deck`}</button>
+
+        {scanning ? <Scanner
+            handleData={(txt: string) => {
+
+                setValue(txt)
+                setScanning(false)
+
+            }}/> : <textarea data-testid="cards-input-area"
+            onChange={e => setValue(e.target.value)}
+            placeholder={t`or write cards manually here,\nlike so:\n\n term - definition`}
+            className={style.secondary} value={value}></textarea>}
+
         <button data-testid="scan-btn" onClick={() => setScanning(prev => !prev)}>
             {scanning ? t`close scanner` : t`scan QR`}
         </button>
-
-        {scanning ? <Scanner 
-            handleData={(txt: string) => setValue(txt)}/> : null}
-
-        <textarea data-testid="cards-input-area"
-            onChange={e => setValue(e.target.value)} 
-            placeholder={t`or write cards manually here,\nlike so:\n\n term - definition`}
-            className={style.secondary} value={value}></textarea>
-
-        <button disabled={!value} data-testid="cards-input-btn" className={style.secondary} 
-            onClick={() => setInput(value)}>{t`click to select deck`}</button>
 
     </div>
 }

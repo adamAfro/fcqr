@@ -6,6 +6,12 @@
     width: 100%;
 }
 
+.camera :is(button) {
+    margin: .5em !important;
+    max-width: 100% !important;
+    width: min-content !important;
+}
+
 .camera div > div {
     
     display: flex;

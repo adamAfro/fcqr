@@ -14,6 +14,11 @@
     font-family: sans;
 }
 
+body {
+
+    font-size: min(1em, 3.2vw);
+}
+
 :is(p, h1, h2, h3, h4, h5, h6, button, [role=button])::first-letter { 
     text-transform: uppercase;
 }

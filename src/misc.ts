@@ -15,12 +15,12 @@ export function indexToSubindex <T> (serieIndex: number, subserie: T[], serie: T
 
 export function randomFrom <T> (ar: T[]) {
 
-    return ar[randomIndex(ar)]
+    return ar[randomInt(0, ar.length)]
 }
 
-export function randomIndex <T> (ar: T[]) {
+export function randomInt(a = 0, b = 1) {
 
-    return Math.floor(Math.random() * ar.length)
+    return Math.floor(Math.random() * (b - a) + a)
 }
 
 export function randomWeighted(weights: number[]) {

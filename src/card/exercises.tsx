@@ -4,7 +4,7 @@ import WideContext from '../deck/context'
 import Speech from "./speech"
 import Hearing from "./hearing"
 import { useMemory } from '../memory'
-import { randomIndex, randomFrom, randomWeighted, indexToSubindex } 
+import { randomInt, randomFrom, randomWeighted, indexToSubindex } 
     from '../misc'
 
 import Color from "color"
@@ -322,7 +322,7 @@ namespace Selection {
             texts.splice(index, 1)
         }
     
-        guesses.splice(randomIndex(guesses), 0, [term, 1])
+        guesses.splice(randomInt(0, guesses.length), 0, [term, 1])
     
         return guesses
     }
@@ -407,7 +407,7 @@ namespace Puzzle {
         }
 
         for (let i = 0; i < corrects.length; i++)
-            guesses.splice(randomIndex(guesses), 0, [ corrects[i], i ])
+            guesses.splice(randomInt(0, guesses.length), 0, [ corrects[i], i ])
     
         return guesses
     }

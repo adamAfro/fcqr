@@ -58,9 +58,11 @@ export default function Editor({ id, ...props }: Data) {
                     setRemoved(true)
 
                 }}>🗑</button>
-
-                {!termLang || <Speech term={term} termLang={termLang}/>}
             
+            </span>
+
+            <span className={style.interactions}>
+                {!termLang || <Speech term={term} termLang={termLang}/>}
             </span>
         
 

@@ -28,8 +28,9 @@ enum InputMode {
 
 const Context = createContext({
 
-    term: '',
-    termLangCode: '' as string | undefined, 
+    term: '', 
+    termLang: undefined as string | undefined,
+    termLangCode: undefined as string | undefined, 
     defLangCode: '' as string | undefined, 
         
     mode: InputMode.TEXT, setMode: (_:InputMode) => {},
@@ -54,7 +55,7 @@ export default function Exercise(props: Props) {
 
     return <Context.Provider value={{
 
-        termLangCode, 
+        termLang, termLangCode,
         defLangCode: undefined,
 
         audible, setAudible,
@@ -76,15 +77,6 @@ export default function Exercise(props: Props) {
 
         <textarea disabled={true} className={style.def} value={defined ? props.def : ''}/>
 
-        <span className={style.options}>
-
-            {audible && termLang ? <Speech
-                term={props.term} termLang={termLang}
-                def={props.def} defLang={defLang}
-            /> : null}
-
-        </span>
-
     </p></Context.Provider>
 }
 
@@ -92,7 +84,8 @@ namespace Text {
 
     export function Interactions() {
 
-        const { term, termLangCode, 
+        const { 
+            term, termLang, termLangCode, 
             audible, setAudible, 
             defined, setDefined 
         } = useContext(Context)
@@ -133,6 +126,9 @@ namespace Text {
                     return void respond(hint(answer, term, { substring: true }))
     
                 }} className={ui.removal}>❔</button> : null}
+   
+                {audible && termLang ? 
+                    <Speech term={term} termLang={termLang}/> : null} 
     
                 <button className={ui.primary} onClick={e => {
     
@@ -144,8 +140,8 @@ namespace Text {
                     input.focus()
     
                 }}>⌨</button>
-    
-            </span>    
+
+            </span>
         </>
     }
     
@@ -224,7 +220,8 @@ namespace Vocal {
 
     export function Interactions() {
 
-        const { term, termLangCode, 
+        const { 
+            term, termLang, termLangCode, 
             audible, setAudible, 
             defined, setDefined 
         } = useContext(Context)
@@ -263,6 +260,9 @@ namespace Vocal {
                         return void setAudible(true)
     
                 }} className={ui.removal}>❔</button> : null}
+
+                {audible && termLang ? 
+                    <Speech term={term} termLang={termLang}/> : null}
     
                 <Hearing className={ui.primary}
                     langCode={termLangCode!} setResult={(heard:string) => respond(heard)}/>
@@ -275,15 +275,17 @@ namespace Vocal {
 
 namespace Selection {
 
-    const Context = createContext({
+    const Options = createContext({
         isCorrect: false, setIsCorrect: (isCorrect:boolean) => {}
     })
 
     export function Text({ guesses }: { guesses: [string, number][]}) {
+
+        const { term, termLang, audible } = useContext(Context)
     
         const [isCorrect, setIsCorrect] = useState(false)
     
-        return <Context.Provider
+        return <Options.Provider
             value={{ isCorrect, setIsCorrect }}>
     
             <span className={style.selection}>
@@ -291,13 +293,19 @@ namespace Selection {
                     text={text} sim={sim} key={i}
                 />)}
             </span>
+
+            <span className={style.interactions}>
+
+                {audible && termLang ? 
+                    <Speech term={term} termLang={termLang}/> : null} 
+            </span>
     
-        </Context.Provider>
+        </Options.Provider>
     }
 
     function Option({ text, sim }: { text: string, sim: number }) {
     
-        const { isCorrect, setIsCorrect } = useContext(Context)
+        const { isCorrect, setIsCorrect } = useContext(Options)
     
         const [showSim, setShowSim] = useState(false)
     
@@ -339,7 +347,7 @@ namespace Selection {
 
 namespace Puzzle {
 
-    const Context = createContext({
+    const Options = createContext({
         index: 0, setIndex: (index:number) => {}, length: 0,
         isCorrect: false, setIsCorrect: (isCorrect:boolean) => {}
     })
@@ -348,8 +356,10 @@ namespace Puzzle {
     
         const [index, setIndex] = useState(0)
         const [isCorrect, setIsCorrect] = useState(false)
+
+        const { term, termLang, audible } = useContext(Context)
     
-        return <Context.Provider
+        return <Options.Provider
             value={{ index, setIndex, length, isCorrect, setIsCorrect }}>
     
             <span className={style.selection}>
@@ -357,8 +367,14 @@ namespace Puzzle {
                     text={text} order={order} key={i}
                 />)}
             </span>
+
+            <span className={style.interactions}>
+
+                {audible && termLang ? 
+                    <Speech term={term} termLang={termLang}/> : null} 
+            </span>
     
-        </Context.Provider>
+        </Options.Provider>
     }
 
     enum Status { INCORRECT, UNANSWERED, CORRECT }
@@ -367,7 +383,7 @@ namespace Puzzle {
         const { 
             index, setIndex, length,
             isCorrect, setIsCorrect 
-        } = useContext(Context)
+        } = useContext(Options)
         
         const [status, setStatus] = useState(Status.UNANSWERED)
      

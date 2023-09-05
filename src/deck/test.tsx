@@ -8,7 +8,7 @@ import * as Card from "../card/database"
 import Entry from "../deck"
 import * as Deck from "../deck/database"
 import { decks } from './examples'
-import { langConfigs } from '../settings/examples'
+import { langConfigs } from '../options/examples'
  
 import { openDatabase, Provider as MemoryProvider, LANGUAGES_KEY } 
     from "../memory"
@@ -330,8 +330,8 @@ test.each(decks)("deck can be removed", async ({data, cards}) => {
     await act(() => render(<App id={data.id!}/>))
     await waitForFullLoad()
 
-    const optBtn = screen.getByTestId("more-opt-btn")
-    await act(() => fireEvent.click(optBtn))
+    const showRmvBtn = screen.getByTestId('show-removal-btn')
+    await act(() => fireEvent.click(showRmvBtn))
 
     const removalBtn = screen.getByTestId("deck-remove-btn")
 

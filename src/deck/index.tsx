@@ -5,7 +5,6 @@ import { useMemory } from "../memory"
 import { get, modifyCards, remove, addCards, getData, rename, changeLanguage }
     from './database'
 
-import { Scanner, Text as TextInput } from './input'
 import * as Card from '../card'
 
 import { Link, links } from '../app'
@@ -76,8 +75,6 @@ export default function Deck(props: { id?: number } | Props): JSX.Element {
 
         {state > State.LOADING ? <Properties/> : null}
 
-        {state == State.LOADED ? <Options/> : null}
-
         {state >= State.LOADED ? <Cards/> : null}
 
     </Context.Provider>
@@ -87,24 +84,36 @@ export default function Deck(props: { id?: number } | Props): JSX.Element {
 
 function Quickaccess() {
 
+    const { state } = useContext(Context)
+
+    const [showRemoval, setShowRemoval] = useState(false)
+
     const { t } = useTranslation()
 
     return <nav className={ui.quickaccess}>
 
-        <p className={ui.faraccess}>
+        <p className={ui.wideaccess}>
             <Link role="button" to={links.pocket}>{t`go back`}</Link>
+
+            <span className={style.dangerzone}>
+                <button className={showRemoval ? ui.primary : ''}
+                    onClick={() => setShowRemoval(x => !x)} data-testid='show-removal-btn'>🗑</button>
+
+                {showRemoval ? <RemoveButton/> : null}
+            </span>
         </p>
 
         <div className={ui.thumbaccess}>
 
-            <ExerciseButton/>
-
             <div className={style.buttonstack}>
 
-                <ShuffleButton/>
+                {state == State.LOADED ? <AddButton/> : null}
+                {state == State.EXERCISES ? <ShuffleButton/> : null}
 
                 <LayoutButton/>
             </div>
+
+            <ExerciseButton/>
         </div>
 
     </nav>
@@ -238,63 +247,11 @@ function Language({ subject }: {subject: 'term' | 'def'}) {
 }
 
 
-
-function Options() {
-
-    const [scanning, setScanning] = useState(false)
-    const [showOptions, setShowOptions] = useState(false)
-
-    const { setCards } = useContext(Context)
-
-    const { t } = useTranslation()
-
-    return <section className={style.options}>
-
-        <AddButton/>
-
-        <button
-            data-testid={'more-opt-btn'}
-            onClick={e => setShowOptions(x => !x)}>
-            
-            {!showOptions ? t`more options` : t`less options`}
-        </button>
-
-        {showOptions ? <>
-
-            <button data-testid="scan-btn" onClick={() => setScanning(prev => !prev)}>
-                {scanning ? t`close scanner` : t`scan QR`}
-            </button>
-
-            {scanning ? <Scanner onSuccess={cards => {
-
-                setScanning(false)
-                setCards(prev => [
-                    ...cards, ...prev
-                ])
-
-            }} /> : <>
-            
-                <CopyButton/>
-
-                <TextInput onSuccess={cards => setCards(prev => [
-                    ...cards, ...prev
-                ])} />
-
-                <RemoveButton/>
-            </>}
-
-        </> : null}
-
-    </section>
-}
-
 function AddButton() {
 
     const { id, setCards } = useContext(Context)
 
     const { database } = useMemory()!
-
-    const { t } = useTranslation()
 
     return <button data-testid="add-card-btn" onClick={() => {
 
@@ -307,7 +264,7 @@ function AddButton() {
         addition
             .then(([cardId]) => setCards(prev => [{ ...card, id: Number(cardId) }, ...prev]))
 
-    }} className={ui.primary}>{t`add card`}</button>
+    }} className={ui.primary}>➕</button>
 }
 
 function RemoveButton() {
@@ -326,24 +283,6 @@ function RemoveButton() {
     }} to={links.pocket} data-testid="deck-remove-btn">{t`remove deck`}</Link>
 }
 
-function CopyButton() {
-
-    const { cards } = useContext(Context)
-
-    const { t } = useTranslation()
-
-    return <button data-testid="deck-copy-btn" onClick={() => {
-
-        const text = cards
-            .map(({ term, def }) => `${term} - ${def}`).join('\n')
-        navigator.clipboard.writeText(text)
-
-    }}>
-        {t`copy as text`}
-    </button>
-}
-
-
 
 function Cards() {
 
@@ -355,7 +294,7 @@ function Cards() {
 
         {[...cards].sort((a, b) => {
 
-            if (a.order !== undefined && b.order !== undefined)
+            if (state == State.EXERCISES && a.order !== undefined && b.order !== undefined)
                 return a.order - b.order
             
             return b.id! - a.id!

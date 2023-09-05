@@ -7,7 +7,7 @@ import { Provider as MemoryProvider } from './memory'
 
 import Pocket from './pocket'
 import Deck from './deck'
-import Settings from './settings'
+import Settings from './options'
 
 
 import './globals.css'
@@ -21,7 +21,7 @@ export { Link }
 export const links = {
     pocket: '/',
     decks: `/${t`deck`}/`,
-    settings: `/${t`settings`}`,
+    options: `/${t`options`}`,
     demo: '/demo'
 }
 
@@ -44,7 +44,7 @@ export default (props: { basename?: string }) => <React.StrictMode>
 
             }} />
 
-            <Route path={links.settings} element={<main className={style.panel}>
+            <Route path={links.options} element={<main className={style.panel}>
                 <Settings />
             </main>} />
 

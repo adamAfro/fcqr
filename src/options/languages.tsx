@@ -39,15 +39,12 @@ export default function Languages() {
 
     return <Context.Provider value={{ status, voices, configs, setConfigs }}>
 
-        <h2>{t`voices and languages`}</h2>
-
-        <p>
+        <p className={style.prompt}>
             {t`add any language name and select voice for it`}
             {' - '}
             {t`you will be able to use them in decks`}
+            <AddButton/>
         </p>
-
-        <AddButton/>
 
         <ul className={style.languages}>{[...configs].reverse().map((config) =>
             <li key={config.id}>

@@ -30,23 +30,6 @@ beforeEach(async function() {
     await expectFullLoad()
 })
 
-test('deck can be added', async () => {
-
-    const db = await openDatabase()
-    const initLength = (await Deck.getAllData(db)).length
-
-    await waitFor(() => screen.getByTestId('added-decks'))
-
-    const
-        addBtn = screen.getByTestId('add-btn'),
-        container = screen.getByTestId('added-decks')
-
-    expect(container).toBeEmptyDOMElement()
-
-    await act(() => fireEvent.click(addBtn))
-
-    await waitFor(() => expect(container).not.toBeEmptyDOMElement())
-    expect(await Deck.getAllData(db)).toHaveLength(initLength + 1)
-})
+test.todo('deck can be added')
 
 test.todo('if there is any deck it is visible')

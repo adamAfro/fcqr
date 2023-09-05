@@ -35,6 +35,14 @@
         padding: 1em;
     }
 
+    .quickaccess > .wideaccess {
+
+        display: flex;
+        gap: 1em;
+        align-items: center;
+        padding: 1em;
+    }
+
     .quickaccess > .thumbaccess {
 
         display: flex;

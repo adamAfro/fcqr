@@ -80,22 +80,13 @@
         margin: .5em 0;
     }
 
-.buttons {
+.dangerzone {
     display: flex;
     gap: 1em;
-}
-
-.options {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    margin-bottom: 5em;
-    gap: 1em;
-}
-
-.options textarea {
-    resize: vertical;
-    min-height: 5em;
+} .dangerzone :is(button, a[role=button], [role=button]) { 
+    padding: var(--padding);
+    width: min-content;
+    white-space: nowrap;
 }
 
 .buttonstack {

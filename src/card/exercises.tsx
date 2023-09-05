@@ -22,7 +22,8 @@ interface Props {
 enum InputMode {
     TEXT = 'text',
     VOCAL = 'vocal',
-    SELECTION_TEXT = 'selection-text'
+    SELECTION_TEXT = 'selection-text',
+    PUZZLE_TEXT = 'puzzle-text'
 }
 
 const Context = createContext({
@@ -47,7 +48,8 @@ export default function Exercise(props: Props) {
     const [mode, setMode] = useState(randomFrom([
         InputMode.TEXT,
         InputMode.VOCAL,
-        InputMode.SELECTION_TEXT
+        InputMode.SELECTION_TEXT,
+        InputMode.PUZZLE_TEXT
     ]))
 
     return <Context.Provider value={{
@@ -68,6 +70,9 @@ export default function Exercise(props: Props) {
         {mode == InputMode.VOCAL ? <Vocal.Interactions/> : null}
         {mode == InputMode.SELECTION_TEXT ? 
             <Selection.Text guesses={Selection.randomGuesses(props.term, cards)}/> : null}
+        {mode == InputMode.PUZZLE_TEXT ? 
+            <Puzzle.Text length={props.term.split(' ').length} 
+                guesses={Puzzle.randomGuesses(props.term, cards)}/> : null}
 
         <textarea disabled={true} className={style.def} value={defined ? props.def : ''}/>
 
@@ -318,6 +323,91 @@ namespace Selection {
         }
     
         guesses.splice(randomIndex(guesses), 0, [term, 1])
+    
+        return guesses
+    }
+}
+
+namespace Puzzle {
+
+    const Context = createContext({
+        index: 0, setIndex: (index:number) => {}, length: 0,
+        isCorrect: false, setIsCorrect: (isCorrect:boolean) => {}
+    })
+
+    export function Text({ guesses, length }: { guesses: [string, number][], length: number}) {
+    
+        const [index, setIndex] = useState(0)
+        const [isCorrect, setIsCorrect] = useState(false)
+    
+        return <Context.Provider
+            value={{ index, setIndex, length, isCorrect, setIsCorrect }}>
+    
+            <span className={style.selection}>
+                {guesses.map(([text, order], i) => <Option 
+                    text={text} order={order} key={i}
+                />)}
+            </span>
+    
+        </Context.Provider>
+    }
+
+    enum Status { INCORRECT, UNANSWERED, CORRECT }
+    function Option({ text, order }: { text: string, order: number }) {
+    
+        const { 
+            index, setIndex, length,
+            isCorrect, setIsCorrect 
+        } = useContext(Context)
+        
+        const [status, setStatus] = useState(Status.UNANSWERED)
+     
+        return <button disabled={isCorrect && status != Status.CORRECT} 
+            className={ui.primary} 
+            style={status != Status.UNANSWERED ? {
+                color: color(status == Status.CORRECT ? 1 : 0)
+            } : {}} onClick={() => {
+                
+                if (status == Status.CORRECT)
+                    return
+
+                if (index == order) {
+                    if (index + 1 == length)
+                        setIsCorrect(true)
+                    setIndex(index + 1)
+
+                    return setStatus(Status.CORRECT)
+                }
+
+                return setStatus(Status.INCORRECT)
+            }
+        }>{text}</button>
+    }
+
+    export function randomGuesses(term: string, cards: { term: string }[]) {
+    
+        const corrects = term.split(' ')
+        const words = cards.map(c => c.term.split(' ')).flat()
+            .filter(word => !corrects.includes(word))
+
+        const guesses = [] as [string, number][]
+        for (const word of corrects) {
+            
+            const sims = words.map(w => calcSimilarity(w, word))
+            for (let i = 0, n = Math.random() * 2; i < n; i++) {
+                
+                let index = randomWeighted(sims)
+                if (index == -1)
+                    index = randomFrom([...sims.keys()])
+                
+                guesses.push([words[index], -1])
+                sims.splice(index, 1)
+                words.splice(index, 1)
+            }
+        }
+
+        for (let i = 0; i < corrects.length; i++)
+            guesses.splice(randomIndex(guesses), 0, [ corrects[i], i ])
     
         return guesses
     }

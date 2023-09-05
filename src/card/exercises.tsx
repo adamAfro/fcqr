@@ -130,7 +130,7 @@ namespace Text {
                     if (!audible)
                         return void setAudible(true)
     
-                    return void respond(hint(answer, term))
+                    return void respond(hint(answer, term, { substring: true }))
     
                 }} className={ui.removal}>❔</button> : null}
     
@@ -149,7 +149,7 @@ namespace Text {
         </>
     }
     
-    function hint(answer: string, term: string) {
+    function hint(answer: string, term: string, { substring = false } = {}) {
 
         answer = answer.toLocaleLowerCase()
         term = term.toLocaleLowerCase()
@@ -161,7 +161,7 @@ namespace Text {
         if (calcSimilarity(corrected, term) - initial > 0) 
             return corrected
     
-        corrected = addToGuesses(answer, term)
+        corrected = addToGuesses(answer, term, substring)
         if (calcSimilarity(corrected, term) - initial > 0)
             return corrected
     
@@ -192,7 +192,7 @@ namespace Text {
         return ''
     }
     
-    function addToGuesses(answer: string, term: string) {
+    function addToGuesses(answer: string, term: string, substring = false) {
     
         const all = term.split(' ').filter(x => x.trim())
         const provided = answer.split(' ').filter(x => x.trim())
@@ -202,10 +202,19 @@ namespace Text {
             return randomFrom(all)
             
         const indices = Array.from(all.keys()).filter(i => !provided.includes(all[i]))
-        const randomIndex = randomFrom(indices)
-        const indexToInsert = indexToSubindex(randomIndex, provided, all)
-    
-        provided.splice(indexToInsert, 0, all[randomIndex])
+        const guessIndex = randomFrom(indices)
+        const indexToInsert = indexToSubindex(guessIndex, provided, all)
+        
+        let guess = all[guessIndex]
+        if (substring && guess.length > 2) {
+
+            const start = randomInt(0, guess.length - 2)
+            const end = start + randomInt(start + 1, guess.length)
+
+            guess = all[guessIndex].substring(start, end)
+        }
+        
+        provided.splice(indexToInsert, 0, guess)
     
         return provided.join(' ')
     }

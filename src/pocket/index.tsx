@@ -160,11 +160,5 @@ function handleCSV(scanned: string, meta?: any) {
         .map(line => line.split(separator) as [string, string])
         .map(([term, ...def]: [string, string]) => ({ term, def: def.join(', ') }))
 
-    console.debug({
-        size: scanned.length,
-        n: cardsData.length,
-        meta, endline, separator,
-    })
-
     return cardsData
 }

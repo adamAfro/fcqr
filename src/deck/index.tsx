@@ -58,10 +58,6 @@ export default function Deck(props: { id?: number } | Props): JSX.Element {
     })), [])
 
     useEffect(() => {
-        console.log(termLangCode)
-    }, [termLangCode])
-
-    useEffect(() => {
 
         if (termLang && !termLangCode)
             setTermLangCode(languages.find(l => l.name === termLang)?.code)

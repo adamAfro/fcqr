@@ -60,3 +60,7 @@
     white-space: nowrap;
     margin: .5em;
 }
+
+.selection > :is(button, a[role=button], [role=button])::first-letter { 
+    text-transform: none; 
+}

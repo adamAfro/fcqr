@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next'
 
 export default function Editor({ id, ...props }: Data) {
     
-    const { termLang, defLang } = useContext(WideContext)
+    const { termLang, termLangCode } = useContext(WideContext)
 
     const { database } = useMemory()!
 
@@ -62,7 +62,7 @@ export default function Editor({ id, ...props }: Data) {
             </span>
 
             <span className={style.interactions}>
-                {!termLang || <Speech term={term} termLang={termLang}/>}
+                {termLangCode ? <Speech term={term} termLang={termLang!}/> : null}
             </span>
         
 

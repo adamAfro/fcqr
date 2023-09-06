@@ -26,17 +26,24 @@ interface Props {
 export default function Deck({ id }: { id: number }): JSX.Element;
 export default function Deck(props: Props): JSX.Element;
 
+/** 
+ * termLangCode means that both voice and speech recognition (if they are) are supported 
+ * @TODO
+ * langs should work on ids not names
+ * defLang seems redundant
+ */
 export default function Deck(props: { id?: number } | Props): JSX.Element {
 
     const id = ('id' in props) ? props.id : undefined
 
-    const { database } = useMemory()!
+    const { database, languages } = useMemory()!
 
     const [state, setState] = useState(('id' in props) ? State.LOADING : State.LOADED)
 
     const [name, setName] = useState(('name' in props) ? props.name : undefined)
     const [termLang, setTermLang] = useState(('termLang' in props) ? props.termLang : undefined)
     const [defLang, setDefLang] = useState(('defLang' in props) ? props.defLang : undefined)
+    const [termLangCode, setTermLangCode] = useState(undefined as string | undefined)    
     useEffect(() => void (!id || getData(id, database!).then(data => {
 
         if (!data)
@@ -46,8 +53,20 @@ export default function Deck(props: { id?: number } | Props): JSX.Element {
         setName(data.name)
         setTermLang(data.termLang)
         setDefLang(data.defLang)
+        setTermLangCode(languages.find(l => l.name === termLang)?.code)
 
     })), [])
+
+    useEffect(() => {
+        console.log(termLangCode)
+    }, [termLangCode])
+
+    useEffect(() => {
+
+        if (termLang && !termLangCode)
+            setTermLangCode(languages.find(l => l.name === termLang)?.code)
+
+    }, [languages, termLang])
 
     const [cards, setCards] = useState(('cards' in props) ? props.cards : [])
     useEffect(() => void (!id || get(id, database!).then(({ cards }) => {
@@ -67,6 +86,7 @@ export default function Deck(props: { id?: number } | Props): JSX.Element {
         name, setName,
         termLang, defLang,
         setTermLang, setDefLang, 
+        setTermLangCode, termLangCode,
         cards, setCards, 
         layout, setLayout,
     }}>
@@ -225,7 +245,9 @@ function Name() {
 
 function Language({ subject }: {subject: 'term' | 'def'}) {
 
-    const { id, termLang, setTermLang, defLang, setDefLang } = useContext(Context)
+    const { id, setTermLangCode,
+        termLang, setTermLang, 
+        defLang, setDefLang } = useContext(Context)
 
     const { t } = useTranslation()
     const { database, languages } = useMemory()!
@@ -235,9 +257,10 @@ function Language({ subject }: {subject: 'term' | 'def'}) {
         if (id)
             changeLanguage(id, subject == 'term' ? "termLang" : "defLang", e.target.value, database!)
 
-        if (subject == 'term')
+        if (subject == 'term'){
             setTermLang(e.target.value)
-        else
+            setTermLangCode(languages.find(l => l.name === e.target.value)?.code)
+        } else
             setDefLang(e.target.value)
         
     }} defaultValue={subject == 'term' ? termLang : defLang}>
@@ -282,7 +305,6 @@ function RemoveButton() {
 
     }} to={links.pocket} data-testid="deck-remove-btn">{t`remove deck`}</Link>
 }
-
 
 function Cards() {
 

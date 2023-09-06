@@ -3,7 +3,6 @@ import { useState, useContext, createContext } from 'react'
 import WideContext from '../deck/context'
 import Speech from "./speech"
 import Hearing from "./hearing"
-import { useMemory } from '../memory'
 import { randomInt, randomFrom, randomWeighted, indexToSubindex, randomSubstring } 
     from '../misc'
 
@@ -16,7 +15,7 @@ import ui from "../style.module.css"
 
 interface Props {
     term: string, def: string, 
-    vocal?: boolean, audible?: boolean, defined?: boolean
+    audible?: boolean, defined?: boolean
 }
 
 enum InputMode {
@@ -28,10 +27,7 @@ enum InputMode {
 
 const Context = createContext({
 
-    term: '', 
-    termLang: undefined as string | undefined,
-    termLangCode: undefined as string | undefined, 
-    defLangCode: '' as string | undefined, 
+    term: '',
         
     mode: InputMode.TEXT, setMode: (_:InputMode) => {},
     audible: false, setAudible: (_:boolean) => {},
@@ -40,23 +36,22 @@ const Context = createContext({
 
 export default function Exercise(props: Props) {
 
-    const { termLang, defLang, cards } = useContext(WideContext)
-    const termLangCode = useMemory()!.languages
-        .find(l => l.name === termLang)?.code
+    const { cards, termLangCode } = useContext(WideContext)
 
-    const [audible, setAudible] = useState(props.audible || Math.random() > .5)
+    const [audible, setAudible] = useState(termLangCode ? (props.audible || Math.random() > .5) : false)
     const [defined, setDefined] = useState(props.defined || !audible)
-    const [mode, setMode] = useState(randomFrom([
+    const [mode, setMode] = useState(randomFrom(audible ? [
         InputMode.TEXT,
         InputMode.VOCAL,
+        InputMode.SELECTION_TEXT,
+        InputMode.PUZZLE_TEXT
+    ] : [
+        InputMode.TEXT,
         InputMode.SELECTION_TEXT,
         InputMode.PUZZLE_TEXT
     ]))
 
     return <Context.Provider value={{
-
-        termLang, termLangCode,
-        defLangCode: undefined,
 
         audible, setAudible,
         defined, setDefined,
@@ -84,8 +79,10 @@ namespace Text {
 
     export function Interactions() {
 
+        const { termLang, termLangCode } = useContext(WideContext)
+
         const { 
-            term, termLang, termLangCode, 
+            term,
             audible, setAudible, 
             defined, setDefined 
         } = useContext(Context)
@@ -127,8 +124,7 @@ namespace Text {
     
                 }} className={ui.removal}>❔</button> : null}
    
-                {audible && termLang ? 
-                    <Speech term={term} termLang={termLang}/> : null} 
+                {audible ? <Speech term={term} termLang={termLang!}/> : null} 
     
                 <button className={ui.primary} onClick={e => {
     
@@ -216,8 +212,10 @@ namespace Vocal {
 
     export function Interactions() {
 
+        const { termLang, termLangCode } = useContext(WideContext)
+
         const { 
-            term, termLang, termLangCode, 
+            term, 
             audible, setAudible, 
             defined, setDefined 
         } = useContext(Context)
@@ -257,11 +255,9 @@ namespace Vocal {
     
                 }} className={ui.removal}>❔</button> : null}
 
-                {audible && termLang ? 
-                    <Speech term={term} termLang={termLang}/> : null}
-    
-                <Hearing className={ui.primary}
-                    langCode={termLangCode!} setResult={(heard:string) => respond(heard)}/>
+                {audible ? <Speech term={term} termLang={termLang!}/> : null}
+                {termLangCode ? <Hearing className={ui.primary} langCode={termLangCode!} 
+                    setResult={(heard:string) => respond(heard)}/> : null}
     
             </span>
         
@@ -277,7 +273,9 @@ namespace Selection {
 
     export function Text({ guesses }: { guesses: [string, number][]}) {
 
-        const { term, termLang, audible } = useContext(Context)
+        const { termLang } = useContext(WideContext)
+
+        const { term,  audible } = useContext(Context)
     
         const [isCorrect, setIsCorrect] = useState(false)
     
@@ -292,8 +290,7 @@ namespace Selection {
 
             <span className={style.interactions}>
 
-                {audible && termLang ? 
-                    <Speech term={term} termLang={termLang}/> : null} 
+                {audible ? <Speech term={term} termLang={termLang!}/> : null} 
             </span>
     
         </Options.Provider>
@@ -349,11 +346,13 @@ namespace Puzzle {
     })
 
     export function Text({ guesses, length }: { guesses: [string, number][], length: number}) {
-    
+   
+        const { termLang } = useContext(WideContext)
+
         const [index, setIndex] = useState(0)
         const [isCorrect, setIsCorrect] = useState(false)
 
-        const { term, termLang, audible } = useContext(Context)
+        const { term, audible } = useContext(Context)
     
         return <Options.Provider
             value={{ index, setIndex, length, isCorrect, setIsCorrect }}>
@@ -366,8 +365,7 @@ namespace Puzzle {
 
             <span className={style.interactions}>
 
-                {audible && termLang ? 
-                    <Speech term={term} termLang={termLang}/> : null} 
+                {audible ? <Speech term={term} termLang={termLang!}/> : null} 
             </span>
     
         </Options.Provider>

@@ -22,6 +22,9 @@ export interface Props {
     termLang?: string, 
     setTermLang: Dispatch<SetStateAction<string | undefined>>,
 
+    termLangCode?: string | undefined, 
+    setTermLangCode: Dispatch<SetStateAction<string | undefined>>,
+
     defLang?: string,
     setDefLang: Dispatch<SetStateAction<string | undefined>>,
 
@@ -46,6 +49,9 @@ export default createContext<Props>({
 
     termLang: undefined, 
     setTermLang: () => {},
+
+    termLangCode: undefined, 
+    setTermLangCode: () => {},
     
     defLang: undefined,
     setDefLang: () => {},

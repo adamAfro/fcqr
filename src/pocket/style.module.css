@@ -42,4 +42,5 @@
 
 .options textarea {
     min-height: 12em;
+    overflow-x: scroll;
 }

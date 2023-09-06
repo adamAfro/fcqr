@@ -153,7 +153,7 @@ function getProbableSeparator(lines: string[]) {
 function handleCSV(scanned: string, meta?: any) {
 
     const { endline = '\n' } = meta?.characters || {}
-    const lines = scanned.split(endline)
+    const lines = scanned.split(endline).filter(line => line.trim())
     const { separator = getProbableSeparator(lines) } = meta?.characters || {}
 
     let cardsData = lines

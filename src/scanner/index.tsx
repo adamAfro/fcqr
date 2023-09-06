@@ -21,7 +21,7 @@ export default (props: {
         [checkPoints, setCheckpoints] = useState([] as boolean[]),
         [status, setStatus] = useState(Status.NOT_FOUND)
 
-    let data: Chunk[] = [], 
+    let data: string[] = [], 
         meta: any = {}, 
         indices: number[] = []
     
@@ -47,8 +47,12 @@ export default (props: {
 
         if (indices.length == dataChunk.total) {
 
+            const zip = [] as [number, string][]
+            for (let i = 0; i < data.length; i++)
+                zip.push([indices[i], data[i]])
+
             if (props.handleData)
-                props.handleData(data.sort((a,b) => a.index - b.index).join(''), meta)
+                props.handleData(zip.sort(([a],[b]) => a - b).map(([n, txt]) => txt).join(''), meta)
 
             data = []
             meta = {}

@@ -1,8 +1,10 @@
 .panel {
 
     position: relative;
+    max-width: 100%;
     min-height: 100vh;
     margin: 0 auto;
+    box-sizing: border-box;
     padding: 1em;
 
     display: flex;
@@ -18,6 +20,7 @@
     align-items: flex-end;
     gap: 1em;
 
+    overflow-x: auto;
     width: calc(100% - 4em);
     padding: 0 2em;
     
@@ -26,6 +29,13 @@
 
     white-space: nowrap;
 }
+
+    .quickaccess .buttonstack {
+        font-size: 80%;
+        display: flex;
+        flex-flow: column;
+        gap: 1em;
+    }
 
     .quickaccess > .faraccess {
 

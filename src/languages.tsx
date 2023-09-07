@@ -95,7 +95,6 @@ export async function listen(callback: (result: string[]) => void, options: List
 
 	recognition.onresult = (event) => {
 
-		console.debug(event)
 		const alternatives = Array
 			.from(event.results[event.results.length - 1])
 			.sort((a, b) => b.confidence - a.confidence)
@@ -104,7 +103,6 @@ export async function listen(callback: (result: string[]) => void, options: List
 	}
 
 	recognition.start()
-	console.debug(`listening ${recognition.lang}`)
 	return new Promise((ok, er) => {
 
 		recognition.onspeechend = ok

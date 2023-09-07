@@ -41,17 +41,20 @@ export default function(props: {
 
         <nav className={ui.quickaccess}>
             <div className={ui.faraccess}>
-                <p className={ui.brandname}>FCQR</p>    
-                <p><a target='_blank' href="https://github.com/adamAfro/fcqr">
-                    by adamAfro
-                </a></p>
-                <p><Link role="button" data-testid="preferences-btn" to={links.options}>{t`options`}</Link></p>
+                {showOptions && !input ? <InputOptions/> : <>
+                    <p className={ui.brandname}>FCQR</p>    
+                    <p><a target='_blank' href="https://github.com/adamAfro/fcqr">
+                        by adamAfro
+                    </a></p>
+                    <p><Link role="button" data-testid="preferences-btn" to={links.options}>{t`options`}</Link></p>
+                </>}
             </div>
 
             <div className={ui.thumbaccess}>
 
-                <button className={showOptions ? (input ? ui.removal : '') : ui.primary}
-                    onClick={() => {
+                <p className={ui.buttonstack}>
+                    
+                    <button className={input ? ui.removal : ''} onClick={() => {
 
                         if (!showOptions)
                             return void setShowOptions(true)
@@ -60,6 +63,7 @@ export default function(props: {
                         setInput('')
 
                     }}>📂</button>
+                </p>
 
                 <button disabled={showOptions} className={ui.primary} onClick={() => {
 
@@ -75,13 +79,11 @@ export default function(props: {
 
         <h1 className={ui.title}>{t`your decks`}</h1>
 
-        {showOptions && !input ? <InputOptions/> : null}
-
         <ul className={style.decklist} data-testid="decks">
             
             {decks.map(deck => <li key={deck.id}>
                 
-                <Link className={style.deck} onClick={input ? () => {
+                <Link role="button" onClick={input ? () => {
 
                     Deck.addCards(deck.id!, handleCSV(input), database)
                         .then(() => navigate(links.decks + deck.id!.toString()))

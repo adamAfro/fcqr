@@ -105,43 +105,6 @@ describe("modifying deck's data", () => {
         expect(savedDeck.termLang).toEqual(changes.termLang)
     })
 
-    test.each(decks)("deck's definition language", async ({data}) => {
-
-        await act(() => render(<App id={data.id!}/>))
-        await waitForFullLoad()
-
-        const langsSel = [...screen
-            .getByTestId(`deck-${data.id}`)
-            .querySelectorAll('select')!
-        ]
-
-        await waitFor(() => {
-
-            expect(langsSel[0].children.length)
-                .toBeGreaterThanOrEqual(4)
-        })
-
-        const defLangSel = langsSel[1]
-        const possibleLanguages = [...langsSel[1].querySelectorAll('option')]
-            .map(x => x.value)
-        expect(possibleLanguages.length).toBeGreaterThan(0)
-        
-        const changes = {
-            defLang: possibleLanguages
-                .filter(x => x != defLangSel.value)[0]
-        }
-        
-        expect(defLangSel.value).not.toEqual(changes.defLang)
-        await act(() => fireEvent.change(defLangSel, { target: { value: changes.defLang } }))
-        expect(defLangSel.value).toEqual(changes.defLang)
-        
-        const db = await openDatabase()
-        const savedDeck = await Deck.getData(data.id!, db)
-        db.close()
-
-        expect(savedDeck.defLang).toEqual(changes.defLang)
-    })
-
     test.each(decks)("all at once", async ({data}) => {
 
         await act(() => render(<App id={data.id!}/>))
@@ -161,29 +124,22 @@ describe("modifying deck's data", () => {
         const nameInput = screen.getByTestId(`deck-${data.id}`)
             .querySelector('input')!
         const termLangSel = langsSel[0]
-        const defLangSel = langsSel[1] || screen.getByDisplayValue(data.defLang)
         const possibleTermLanguages = [...langsSel[0].querySelectorAll('option')]
-            .map(x => x.value)
-        const possibleDefLanguages = [...langsSel[1].querySelectorAll('option')]
             .map(x => x.value)
         
         const changes = {
             name: 'Modified deck',
-            termLang: possibleTermLanguages.filter(x => x != termLangSel.value)[0],
-            defLang: possibleDefLanguages.filter(x => x != defLangSel.value)[0],
+            termLang: possibleTermLanguages.filter(x => x != termLangSel.value)[0]
         }
 
         expect(nameInput.value).not.toEqual(changes.name)
         expect(termLangSel.value).not.toEqual(changes.termLang)
-        expect(defLangSel.value).not.toEqual(changes.defLang)
         
         await act(() => fireEvent.input(nameInput, { target: { value: changes.name } }))
         await act(() => fireEvent.change(termLangSel, { target: { value: changes.termLang } }))
-        await act(() => fireEvent.change(defLangSel, { target: { value: changes.defLang } }))
 
         expect(nameInput.value).toEqual(changes.name)
         expect(termLangSel.value).toEqual(changes.termLang)
-        expect(defLangSel.value).toEqual(changes.defLang)
         
         const db = await openDatabase()
         const savedDeck = await Deck.getData(data.id!, db)
@@ -191,7 +147,6 @@ describe("modifying deck's data", () => {
 
         expect(savedDeck.name).toEqual(changes.name)
         expect(savedDeck.termLang).toEqual(changes.termLang)
-        expect(savedDeck.defLang).toEqual(changes.defLang)
     })
 })
 

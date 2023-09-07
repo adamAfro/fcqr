@@ -1,4 +1,4 @@
-# It's a Node and React app
+# It's a React app
 
 Integral components are put in their locations, whilst main files and utilities are in `src` root directory. Tests may be found appropriately as `test.tsx`.
 
@@ -10,6 +10,11 @@ Integral components are put in their locations, whilst main files and utilities 
 - `deploy` - deploy app to netlify;
 - `dev` - deploy app to netlify for testing;
 - `test` - run tests;
+
+## Technical issues
+
+- [ ] remove definition's language completely
+- [ ] change term language logic to use id instead of names
 
 ## :flower_playing_cards: Decks and cards
 
@@ -23,7 +28,11 @@ Decks are stored in pocket - home screen, and each deck has some cards in it tha
 
 - [x] Cards can be read aloud :loud_sound: using [:speech synthesis API](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis) - no idea how widely it is supported. Setup of voices is rather custom - user can set a language for a deck and each language has it's own voice. Deck's could actually have their own voices but but that would complicate interface.
 
-- [x] import and export with :iphone: scanner or text input and clipboard
+- [x] import cards with :iphone: scanner or text input
+
+- [ ] export all data to file
+
+- [ ] import all data from file
 
 ## :brain: Exercise mode
 

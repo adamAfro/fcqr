@@ -1,38 +1,16 @@
 .decklist {
     margin: 0;
     padding: 0;
+    display: flex; gap: 1em;
+    flex-flow: row wrap;
+    justify-content: center;
 }
 
 .decklist li {
     list-style: none;
 }
 
-.deck {
-
-    display: block;
-    width: 18em;
-    padding: 1em 0;
-    margin: auto;
-
-    background-color: var(--primary);
-    color: var(--primary-inverse);
-
-    text-align: center;
-    box-shadow: 0 -1.1em .5em -1em inset var(--primary-shadow);
-    border-top-left-radius: 1em;
-    border-top-right-radius: 1em;
-}
-
-.deck:hover,
-.deck:is([aria-current], :hover, :active, :focus) {
-    --background-color: var(--primary-hover);
-    --border-color: var(--primary-hover);
-    --box-shadow: var(--button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0));
-    --color: var(--primary-inverse);
-}
-
 .options {
-    position: absolute;
     background-color: var(--background-color);
 }
 

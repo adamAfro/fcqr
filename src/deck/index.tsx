@@ -111,17 +111,17 @@ function Quickaccess() {
         <p className={ui.wideaccess}>
             <Link role="button" to={links.pocket}>{t`go back`}</Link>
 
-            <span className={style.dangerzone}>
+            {state == State.LOADED ? <span className={style.dangerzone}>
                 <button className={showRemoval ? ui.primary : ''}
                     onClick={() => setShowRemoval(x => !x)} data-testid='show-removal-btn'>🗑</button>
 
                 {showRemoval ? <RemoveButton/> : null}
-            </span>
+            </span> : null}
         </p>
 
         <div className={ui.thumbaccess}>
 
-            <div className={style.buttonstack}>
+            <div className={ui.buttonstack}>
 
                 {state == State.LOADED ? <AddButton/> : null}
                 {state == State.EXERCISES ? <ShuffleButton/> : null}
@@ -158,13 +158,11 @@ function ExerciseButton() {
 
 function ShuffleButton() {
 
-    const { state, id, cards, setCards } = useContext(Context)
+    const { id, cards, setCards } = useContext(Context)
 
     const { database } = useMemory()!
 
-    return <button className={
-        state == State.EXERCISES ? ui.primary : ''
-    }  onClick={() => {
+    return <button className={ui.primary} onClick={() => {
 
         const shuffled = cards?.map(card => ({ ...card, order: Math.random() }))
             .sort((a, b) => a.order! - b.order!).reverse()
@@ -210,7 +208,6 @@ function Properties() {
         <div className={style.languages}>
 
             <Language subject='term'/>
-            <Language subject='def'/>
         
         </div>
 
@@ -283,7 +280,7 @@ function AddButton() {
         addition
             .then(([cardId]) => setCards(prev => [{ ...card, id: Number(cardId) }, ...prev]))
 
-    }} className={ui.primary}>➕</button>
+    }}>➕</button>
 }
 
 function RemoveButton() {

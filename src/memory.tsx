@@ -5,6 +5,7 @@ import { createContext, ReactNode, Dispatch, SetStateAction }
 import { openDB } from 'idb'
 
 import { LanguageConfig } from './languages'
+import { changeLanguage } from './localisation'
 
 
 type Unwrap <T> = T extends Promise<infer U> ? U : T
@@ -13,8 +14,13 @@ export type Database = Unwrap <ReturnType<typeof openDatabase>>
 
 const Context = createContext <{ 
     database: Database, 
+    
     languages: LanguageConfig[],
-    setLanguages: Dispatch <SetStateAction <LanguageConfig[]>>
+        setLanguages: Dispatch <SetStateAction <LanguageConfig[]>>,
+
+    language: string
+        setLanguage: Dispatch <SetStateAction <string>>
+
 } | null> (null)
 
 export function useMemory() { return useContext(Context) }
@@ -48,7 +54,18 @@ export const openDatabase = () => openDB(DB_NAME, 1, {
 export function Provider({ children }: { children: ReactNode }) {
     
     const [database, setDatabase] = useState(null as Database | null)
+    const [language, setLanguage] = useState(restoreLanguage() || '')
     const [languages, setLanguages] = useState(restoreLanguages())
+
+    useEffect(() => {
+
+        storeLanguage(language)
+        if (language) 
+            changeLanguage(language)
+        else 
+            changeLanguage()
+
+    }, [language])
 
     useEffect(() => void storeLanguages(languages), [languages])
 
@@ -56,7 +73,11 @@ export function Provider({ children }: { children: ReactNode }) {
 
     return <>{database ? 
         
-        <Context.Provider value={{ database, languages, setLanguages }}>{children}</Context.Provider> : 
+        <Context.Provider value={{ 
+            database, 
+            languages, setLanguages,
+            language, setLanguage
+        }}>{children}</Context.Provider> : 
         <div data-testid="database-unloaded">no db</div>
         
     }</>
@@ -65,8 +86,6 @@ export function Provider({ children }: { children: ReactNode }) {
 
 export const LANGUAGES_KEY = 'languages'
 function storeLanguages(languages: LanguageConfig[]) {
-
-    console.debug('storing languages', languages)
     
     localStorage.setItem(LANGUAGES_KEY, JSON.stringify(languages))
 }
@@ -75,8 +94,19 @@ function restoreLanguages() {
 
     const languages = localStorage.getItem(LANGUAGES_KEY)
     const parsed = languages ? JSON.parse(languages) as LanguageConfig[] : []
-
-    console.debug('restoring languages', parsed)
     
     return parsed
+}
+
+export const LANGUAGE_KEY = 'language'
+function storeLanguage(language: string) {
+    
+    localStorage.setItem(LANGUAGE_KEY, language)
+}
+
+function restoreLanguage() {
+
+    const language = localStorage.getItem(LANGUAGE_KEY)
+    
+    return language
 }

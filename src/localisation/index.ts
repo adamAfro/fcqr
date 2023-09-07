@@ -18,16 +18,16 @@ export default function localise() {
 
         fallbackLng: "en",
         resources: {
-            en: { translation: en },
-            pl: { translation: pl }
+            'en': { translation: en },
+            'pl': { translation: pl }
         }
     })
 }
 
-export const supported = {
-    pl: "polski",
-    en: "English"
-}
+export const supported = [
+    ['pl', "polski"],
+    ['en', "English"]
+]
 
 export { useTranslation } from 'react-i18next'
-export { t } from 'i18next'
+export { t, changeLanguage } from 'i18next'

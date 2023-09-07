@@ -1,6 +1,7 @@
 import { HTMLAttributes, useState } from 'react'
 
-import { useTranslation } from '../localisation'
+import { useMemory } from '../memory'
+import { useTranslation, supported } from '../localisation'
 import { unregister } from '../registrar'
 
 import Languages from './languages'
@@ -11,17 +12,19 @@ import { version } from '../meta'
 import ui from '../style.module.css'
 import style from './style.module.css'
 
-enum Pane { NONE, APP, LANGUAGES }
+enum Pane { APP, LANGUAGES }
 
 export default function Settings(props: HTMLAttributes<HTMLDivElement>) {
 
     const { t } = useTranslation()
 
-    const [pane, setPane] = useState(Pane.NONE)
+    const { language, setLanguage } = useMemory()!
+
+    const [pane, setPane] = useState(Pane.APP)
 
     const options = [
-        [Pane.APP, t`settings`],
-        [Pane.LANGUAGES, t`languages and voices`]
+        [Pane.APP, t`application`],
+        [Pane.LANGUAGES, t`decks' languages and voices`]
     ] as [Pane, string][]
 
     return <>
@@ -43,13 +46,20 @@ export default function Settings(props: HTMLAttributes<HTMLDivElement>) {
 
         </nav>
 
-        {pane == Pane.APP ?<section>
+        {pane == Pane.APP ? <section>
 
             <p>FcQR - {t`version`} {version}</p>
 
             <button style={{display:'inline-block',margin: '0 1em'}} onClick={() => 
                 unregister().then(() => window.location.reload())
-            }>{t`refresh`}</button>
+            }>{t`update`}</button>
+
+            <p>Language of interface:<select value={language} onChange={e => { setLanguage(e.target.value) }}>
+                <option key={-1} value=''>{t`of the device`}</option>
+                {supported.map(([code, name], i) => 
+                    <option key={i} value={code}>{name}</option>
+                )}
+            </select></p>
 
         </section> : null}
 

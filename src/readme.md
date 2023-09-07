@@ -101,7 +101,9 @@ Translations should be `JSON` files named `[language name in short].json`, ex. `
 
 - [x] basics for translations;
 
-- [ ] let user select interface language manually;
+- [x] let user select interface language manually;
+
+- [ ] autodetect language of user's device/browser
 
 - [x] choose language based on browser, see `i18next-browser-languagedetector` package;
 

@@ -1,6 +1,6 @@
 {
   "name": "qrfc",
-  "version": "0.8",
+  "version": "0.8.1",
   "private": true,
   "homepage": "/beta",
   "dependencies": {

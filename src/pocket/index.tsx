@@ -305,7 +305,7 @@ async function readFile(file: Blob): Promise <string> {
 }
 
 const separators = [
-    ' — ', ' - ', ' | ', ' , ', ' ; ',
+    ' — ', ' - ', ' | ', ', ', ' , ', ' ; ', '; ',
     '—', '-', '|', ',', ';', '\t', ' '
 ]
 
@@ -326,8 +326,11 @@ function getProbableSeparator(lines: string[]) {
 function handleCSV(scanned: string, meta?: any) {
 
     const { endline = '\n' } = meta?.characters || {}
-    const lines = scanned.split(endline).filter(line => line.trim())
+    let lines = scanned.split(endline)
+        .filter(line => line.trim() || line == endline)
     const { separator = getProbableSeparator(lines) } = meta?.characters || {}
+
+    lines.filter(line => line.length <= 1 || line == separator)
 
     let cardsData = lines
         .map(line => line.split(separator) as [string, string])

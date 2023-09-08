@@ -2,6 +2,10 @@
 
 Flashcards app for language learning
 
+**TODO**: rename to `fliszki`/`flisks`
+
+`offline + fiszki -> offliszki -> fliszki -> flisks` 
+
 ## Features
 
 - :flower_playing_cards: decks and cards
@@ -50,6 +54,35 @@ Main idea behind it is to use flashcards created based on websites' content - se
 
 - Using mobile :iphone: and desktop :desktop_computer:: use [firefox Popup GPT addon](https://addons.mozilla.org/pl/firefox/addon/popup-chat-gpt/) for pasting selection to open.ai chat popup, then select output and use [QR Selection addon](https://addons.mozilla.org/pl/firefox/addon/qr-selection/) to create QR slideshow with it and scan it with your phone.
 
+## Import/Export
+
+### Format
+
+For now CSV is supported with separator being dash `— `, hyphen-minus `-`, tab, vertical line `|`, comma, semicolon or space. Additionally they may be surrounded with spaces for clarity like so ` — `.
+
+Decks can be also moved as packages - `.json` files with raw data:
+
+```ts
+packed: {
+  
+  data: {
+    id?: number
+    name: string
+    termLang: string
+    defLang: string
+  },
+  
+  cards: {
+      id?: number
+      deckId?: number
+      term: string
+      def: string
+      order?: number
+  }
+  
+}[]
+```
+
 ### Making QR codes for scanner
 
 App provides QR reader for reading data from other devices and environment. QR codes should be provided as a slideshow or a set of codes in which every code has following data structure as `JSON` code:
@@ -62,8 +95,6 @@ App provides QR reader for reading data from other devices and environment. QR c
     meta: any // additional informations (not in use for now)
 }
 ```
-
-**Format**: For now only CSV is supported with separator being dash `— `, hyphen-minus `-`, tab, vertical line `|`, comma, semicolon or space. Additionally they may be surrounded with spaces for clarity like so ` — `.
 
 ## Versioning
 

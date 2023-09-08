@@ -15,6 +15,8 @@ Integral components are put in their locations, whilst main files and utilities 
 
 - [ ] remove definition's language completely
 - [ ] change term language logic to use id instead of names
+- [ ] include language's data in package making
+- [ ] add mute button
 
 ## :flower_playing_cards: Decks and cards
 

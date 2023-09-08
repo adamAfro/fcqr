@@ -9,6 +9,36 @@ export interface Data {
     defLang: string
 }
 
+function read(db: Database) {
+
+    const t = db.transaction(Stores.DECKS, 'readonly')
+    return { done: t.done, store: t.objectStore(Stores.DECKS) }
+}
+
+function readwrite(db: Database) {
+
+    const t = db.transaction(Stores.DECKS, 'readwrite')
+    return { done: t.done, store: t.objectStore(Stores.DECKS) }
+}
+
+function readWithCards(db: Database) {
+
+    const t = db.transaction([Stores.DECKS, Stores.CARDS], 'readonly')
+    return { done: t.done, 
+        store: t.objectStore(Stores.DECKS),
+        cardStore: t.objectStore(Stores.CARDS) 
+    }
+}
+
+function readwriteWithCards(db: Database) {
+
+    const t = db.transaction([Stores.DECKS, Stores.CARDS], 'readwrite')
+    return { done: t.done, 
+        store: t.objectStore(Stores.DECKS),
+        cardStore: t.objectStore(Stores.CARDS) 
+    }
+}
+
 export async function add(deck: Data, cards: Card.Data[], db: Database) {
 
     const transaction = db.transaction([Stores.DECKS, Stores.CARDS], 'readwrite')
@@ -187,4 +217,50 @@ export async function getLast(db: Database) {
     await transaction.done
     
     return cursor ? cursor.value : null
+}
+
+export async function createPackage(ids: number[], db: Database) {
+
+    const { done, store, cardStore } = readWithCards(db)
+
+    const cardIndex = cardStore.index('deckId')
+    const packed = Promise.all(ids.map(async (id) => ({
+        data: await store.get(id) as Data,
+        cards: await cardIndex.getAll(IDBKeyRange.only(id)) as Card.Data[]
+    })))
+    
+    await done
+    return packed
+}
+
+type Packed = Awaited <ReturnType <typeof createPackage>>
+
+export async function fromPackage(packed: Packed, db: Database, { replace = false } = {}) {
+
+    const { done, store, cardStore } = readwriteWithCards(db)
+
+    const additions = packed.map(async ({ data, cards }) => {
+
+        if (!replace) {
+            if (data.id)
+                delete data.id
+            for (const card of cards) if (card.id)
+                delete card.id
+        }
+        
+        const deckId = Number(await store.add(data))
+
+        cards = cards.map(card => ({ ...card, deckId }))
+        
+        const additions = cards.map(card => cardStore.add(card))
+
+        const cardsIds = await Promise.all(additions)
+
+        return { deckId, cardsIds: cardsIds as number[] }
+    })
+
+    const ids = await Promise.all(additions)
+    
+    await done
+    return ids
 }

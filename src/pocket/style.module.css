@@ -20,5 +20,15 @@
 
 .options textarea {
     min-height: 12em;
+    white-space: pre;
     overflow-x: scroll;
+    text-align: left;
+    resize: none;
+    padding: 0;
+    margin: 0;
+}
+
+.buttons {
+    display: flex;
+    align-items: center;
 }

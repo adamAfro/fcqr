@@ -330,7 +330,7 @@ function handleCSV(scanned: string, meta?: any) {
         .filter(line => line.trim() || line == endline)
     const { separator = getProbableSeparator(lines) } = meta?.characters || {}
 
-    lines.filter(line => line.length <= 1 || line == separator)
+    lines.filter(line => line.length <= 2 || line == separator)
 
     let cardsData = lines
         .map(line => line.split(separator) as [string, string])

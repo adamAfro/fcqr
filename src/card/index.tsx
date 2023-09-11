@@ -1,6 +1,6 @@
 import { useState, useContext, createContext } from 'react'
 
-import { default as DeckContext, State } from '../deck/context'
+import { Context as DeckContext, State } from '../deck'
 
 import { listen } from '../languages/recognition'
 import { speak } from '../languages/speech'

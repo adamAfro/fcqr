@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react'
 
-import WideContext from '../../deck/context'
+import { Context as DeckContext } from '../../deck'
 
 import { Context, Speech, color } from '../'
 import { randomFrom, indexToSubindex, randomSubstring } from '../../misc'
@@ -15,7 +15,7 @@ import ui from "../../style.module.css"
 
 export default function Text() {
 
-    const { language } = useContext(WideContext)
+    const { language } = useContext(DeckContext)
 
     const { 
         term,

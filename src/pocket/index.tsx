@@ -1,5 +1,4 @@
-import { useState, useEffect, createContext, useContext, useMemo } 
-    from 'react'
+import { useState, useEffect, createContext, useContext } from 'react'
 
 import { links, Link } from '../app'
 import { useNavigate } from "react-router-dom"   
@@ -8,22 +7,29 @@ import { useTranslation } from '../localisation'
 import { useMemory } from '../memory'
 
 import * as Deck from '../deck'
-import Scanner from '../scanner'
+import { read, readwrite } from '../deck/properties'
+
+import { InputButton, InputOptions } from './input'
+import { OutputSelectionButton, OutputOptions } from './output'
 
 
 import style from './style.module.css'
 import ui from '../style.module.css'
 
 
-const Context = createContext({
-    input: '', setInput: (_:string) => {},
-    selection: [] as number[], 
-        setSelection(_:(p: number[]) => number[]) {}
-})
-
 enum Options {
     NONE, INPUT, OUTPUT
 }
+
+export const Context = createContext({
+    input: '', setInput: (_:string) => {},
+    selection: [] as number[], 
+        setSelection(_:(p: number[]) => number[]) {},
+    showOptions: Options.NONE as Options, 
+        setShowOptions(_:(p: Options) => Options) {}
+
+    
+})
 
 export default function(props: {
     decks?: Deck.Data[],
@@ -35,8 +41,18 @@ export default function(props: {
     const [decks, setDecks] = useState(props.decks || [])
 
     const { database } = useMemory()!
-    useEffect(() => void (props.ignoreDatabase || Deck.getAllData(database)
-        .then(decks => setDecks(decks.reverse()))), [database])
+    useEffect(() => {
+
+        if (props.ignoreDatabase) return
+
+        const { done, store } = read(database)
+        store.getAll()
+            .then(decks => void setDecks(decks.reverse()))
+            .then(() => done)
+        
+        return
+
+    }, [database])
 
     const [input, setInput] = useState('')
     const [selection, setSelection] = useState([] as number[])
@@ -44,7 +60,11 @@ export default function(props: {
 
     const { t } = useTranslation()
 
-    return <Context.Provider value={{ input, setInput, selection, setSelection }}>
+    return <Context.Provider value={{ 
+        input, setInput, 
+        selection, setSelection,
+        showOptions, setShowOptions
+    }}>
 
         <nav className={ui.quickaccess}>
             <div className={ui.faraccess}>
@@ -86,11 +106,16 @@ export default function(props: {
                     }}>⏏️</button>
                 </p>
 
-                <button className={ui.primary} onClick={() => {
+                <button className={ui.primary} onClick={async () => {
+                   
+                    if (props.ignoreDatabase) return
+
+                    const { done, store } = readwrite(database)
                     
-                    if (!props.ignoreDatabase)
-                        Deck.addData({ name: '' }, database)
-                            .then(id => navigate(links.decks + id.toString()))
+                    const deckId = Number(await store.add({ name: '' }))
+                
+                    await done
+                    return void navigate(links.decks + deckId.toString())
                         
                 }} data-testid='add-btn'>➕</button>
             </div>
@@ -100,239 +125,27 @@ export default function(props: {
 
         <ul className={style.decklist} data-testid="decks">
             
-            {decks.map(deck => <li key={deck.id}>
-
-                {showOptions == Options.NONE ? 
-                    <DeckLink {...deck}/> : null}
-
-                {showOptions == Options.INPUT ?
-                    <InputButton {...deck}/> : null}
-
-                {showOptions == Options.OUTPUT ?
-                    <OutputSelectionButton {...deck}/> : null}
-
-            </li>)}
+            {decks.map(deck => <li key={deck.id}><DeckButton {...deck}/></li>)}
 
         </ul>
 
     </Context.Provider>
 }
 
-function DeckLink(deck: Deck.Data) {
+function DeckButton(deck: Deck.Data) {
+
+    const { showOptions } = useContext(Context)
 
     const { t } = useTranslation()
+
+    if (showOptions == Options.INPUT)
+        return <InputButton {...deck}/>
+
+    if (showOptions == Options.OUTPUT)
+        return <OutputSelectionButton {...deck}/>
 
     return <Link key={deck.id} role="button" className={ui.primary} 
         to={links.decks + '/' + deck.id!.toString()}>
         {deck.name || t`unnamed deck`}
     </Link>
-}
-
-function OutputSelectionButton(deck: Deck.Data) {
-
-    const { selection, setSelection } = useContext(Context)
-    
-    const [selected, setSelected] = useState(false)
-    useEffect(() => setSelected(selection.includes(deck.id!)), [selection])
-
-    const { t } = useTranslation()
-
-    return <>{selected ? 
-    
-        <button key={deck.id} className={ui.primary} 
-            onClick={() => setSelection(selection => selection.filter(id => id != deck.id!))}>    
-            {deck.name || t`unnamed deck`}
-        </button> 
-        
-        :
-
-        <button key={deck.id} 
-            onClick={() => setSelection(prev => [...prev, deck.id!])}>
-            {deck.name || t`unnamed deck`}
-        </button>
-    }</>
-}
-
-function OutputOptions() {
-
-    const { database } = useMemory()!
-
-    const { t } = useTranslation()
-
-    const { selection, setSelection } = useContext(Context)
-
-    const [href, setHref] = useState('')
-    useEffect(() => void Deck.createPackage(selection, database).then(p => {
-
-        const x = 'data:text/plain;charset=utf-8,' +
-            encodeURIComponent(JSON.stringify(p))
-
-        setHref(x)
-
-    }), [selection])
-
-    return <div className={style.options}>
-
-        <h2>{t`exporting decks`}</h2>
-
-        <p>{t`select decks by clicking on them`}</p>
-
-        <div className={style.buttons}>
-            
-            <a role='button' href={href} download={t`decks` + '.json'}>
-                {t`save`}
-            </a>
-            
-            <button onClick={async () => {
-
-                const packed = await Deck.createPackage([...selection], database)
-                
-                navigator.clipboard.writeText(JSON.stringify(packed))
-
-                setSelection(_ => [])
-
-            }}>{t`copy`}</button>
-        </div>
-
-    </div>
-}
-
-function InputButton(deck: Deck.Data) {
-
-    const navigate = useNavigate()
-
-    const { database } = useMemory()!
-
-    const { input } = useContext(Context)
-
-    const { t } = useTranslation()
-
-    return <Link key={deck.id} role="button" className={ui.primary} onClick={() => {
-
-        Deck.addCards(deck.id!, handleCSV(input), database)
-            .then(() => navigate(links.decks + deck.id!.toString()))
-
-    }} to={links.decks + '/' + deck.id!.toString()}>
-        {deck.name || t`unnamed deck`}
-    </Link>
-}
-
-/** @TODO make it reload all decks instead of window */
-function InputOptions() {
-
-    const { database } = useMemory()!
-
-    const { setInput } = useContext(Context)
-
-    const [scanning, setScanning] = useState(false)
-    const [value, setValue] = useState('')
-
-    const { t } = useTranslation()
-
-    return <div className={style.options}>
-
-        <h2>{t`adding cards to deck`}</h2>
-
-        {scanning ? <Scanner
-            handleData={(txt: string) => {
-
-                setValue(txt)
-                setScanning(false)
-
-            }}/> : <textarea data-testid="cards-input-area"
-            onChange={e => setValue(e.target.value)}
-            placeholder={`${t`write cards below`}:\n\n${t`term`} - ${t`definition`}\n${t`term`} - ${t`definition`}\n...`}
-            className={style.secondary} value={value}></textarea>}
-
-        {!value ? <div className={style.buttons}>
-
-            <button data-testid="scan-btn" onClick={() => setScanning(prev => !prev)}>
-                {scanning ? t`close scanner` : t`scan QR`}
-            </button>
-
-            <label role="button">
-                {t`load file`}<input type="file" onChange={async (e) => {
-
-                    const input = e.target as HTMLInputElement
-
-                    const files = Array.from(input.files!)
-                    const content = await readFile(files[0])
-
-                    let packed = null as any
-                    try { packed = JSON.parse(content) } catch(er) {}
-                    if (packed) {
-
-                        await Deck.fromPackage(packed, database)
-
-                        return void window.location.reload()
-                    }
-
-                    setValue(content)
-
-                }}/>
-            </label>
-
-        </div> : <button data-testid="cards-input-btn" className={style.secondary} 
-            onClick={() => setInput(value)}>{t`add to selected deck`}
-        </button>}
-
-    </div>
-}
-
-async function readFile(file: Blob): Promise <string> {
-    if (!file) {
-        console.error('No file provided.')
-        return ''
-    }
-  
-    const reader = new FileReader()
-    return new Promise((ok, er) => {
-
-        reader.onload = (event) => {
-
-            const fileContent = ArrayBuffer.isView(event.target?.result) ?
-                // @ts-ignore
-                arrayBufferToString(event.target?.result) :
-                event.target?.result as string
-
-            ok(fileContent)
-        }
-        
-        reader.readAsText(file)
-    })
-}
-
-const separators = [
-    ' — ', ' - ', ' | ', ', ', ' , ', ' ; ', '; ',
-    '—', '-', '|', ',', ';', '\t', ' '
-]
-
-function getProbableSeparator(lines: string[]) {
-
-    return separators.find(separator => {
-
-        let count = 0;
-        for (const line of lines)
-            if (line.includes(separator)) count++
-
-        if (count >= 0.80 * lines.length)
-            return true
-
-    }) || ','
-}
-
-function handleCSV(scanned: string, meta?: any) {
-
-    const { endline = '\n' } = meta?.characters || {}
-    let lines = scanned.split(endline)
-        .filter(line => line.trim() || line == endline)
-    const { separator = getProbableSeparator(lines) } = meta?.characters || {}
-
-    lines.filter(line => line.length <= 2 || line == separator)
-
-    let cardsData = lines
-        .map(line => line.split(separator) as [string, string])
-        .map(([term, ...def]: [string, string]) => ({ term, def: def.join(', ') }))
-
-    return cardsData
 }

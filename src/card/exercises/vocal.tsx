@@ -1,6 +1,7 @@
 import { useState, useContext } from 'react'
 
-import WideContext from '../../deck/context'
+import { Context as DeckContext } from '../../deck'
+
 import { Context, Speech, color, Hearing } from '../'
 
 import { stringSimilarity as calcSimilarity }
@@ -11,7 +12,7 @@ import ui from "../../style.module.css"
 
 export default function Vocal() {
 
-    const { language } = useContext(WideContext)
+    const { language } = useContext(DeckContext)
 
     const { 
         term, 

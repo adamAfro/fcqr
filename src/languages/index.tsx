@@ -1,21 +1,29 @@
 import { useEffect, useState, useContext } from 'react';
 import { createContext } from 'react'
 
+import { Database, Stores } from '../memory'
 import { useTranslation } from '../localisation'
-import { Data as Language, changeVoice, getAllData, modifyData, rename, removeData, addData } from './database'
 import { getVoices } from './speech'
 import { useMemory } from '../memory'
+import { readwrite, default as Inputs } from './inputs'
+
 
 import style from './style.module.css'
-import ui from '../style.module.css'
 
 
-enum Status { LOADING, FAILED, LOADED }
+export interface Data {
+    id?: number,
+    name: string,
+    voice?: string,
+	code?: string
+}
+
+export enum Status { LOADING, FAILED, LOADED }
 export const Context = createContext({
     status: Status.LOADING,
     voices: [] as SpeechSynthesisVoice[],
-    configs: [] as Language[],
-        setConfigs: (x: (prev: Language[]) => any[]) => {}
+    configs: [] as Data[],
+        setConfigs: (x: (prev: Data[]) => any[]) => {}
 })
 
 export default function Languages() {
@@ -23,8 +31,17 @@ export default function Languages() {
     const { database } = useMemory()!
     
     const [status, setStatus] = useState(Status.LOADING)
-    const [configs, setConfigs] = useState <Language[]> ([])
-    useEffect(() => void getAllData(database).then(setConfigs), [])
+    const [configs, setConfigs] = useState <Data[]> ([])
+    useEffect(() => void (async function() {
+        
+        const { done, store } = read(database)
+
+        const decks = await store.getAll() as Data[]
+
+        await done
+        return decks
+
+    })().then(setConfigs), [])
 
     const [voices, setVoices] = useState([] as SpeechSynthesisVoice[])
     useEffect(() => {
@@ -50,7 +67,7 @@ export default function Languages() {
 
         <ul className={style.languages}>{[...configs].reverse().map((config) =>
             <li key={config.id}>
-                <Editor {...config}/>
+                <Inputs {...config}/>
             </li>
         )}</ul>
 
@@ -65,7 +82,7 @@ function AddButton() {
 
     const { t } = useTranslation()
 
-    return <button onClick={() => {
+    return <button onClick={async () => {
 
         const added = {
             name: t`new language`,
@@ -75,100 +92,18 @@ function AddButton() {
 
         setConfigs(prev => [...prev, added])
 
-        addData(added, database)
+        const { done, store } = readwrite(database)
+
+        const id = Number(await store.add(added))
+        
+        await done
+        return id
         
     }} data-testid="add-voice-btn">{t`add`}</button>
 }
 
-const EditorContext = createContext({
-    
-    id: undefined as number | undefined,
-    removed: false, setRemoved: (prev: boolean) => {}
-})
+function read(db: Database) {
 
-function Editor({ id, ...props }: Language) {
-
-    const [removed, setRemoved] = useState(false)
-
-    const { t } = useTranslation()
-
-    return <EditorContext.Provider  value={{
-        id, removed, setRemoved
-    }}>
-        
-        {!removed ? <div className={style.language} 
-            data-testid={`language-config-${id}`}>
-        
-            <div className={style.inputs}>
-                <NameInput initValue={props.name}/>
-                <LanguageSelect initValue={props.voice}/>
-            </div>
-            
-            <RemoveButton/>
-
-        </div> : null}
-
-    </EditorContext.Provider>
-}
-
-function NameInput({ initValue }: {initValue:string}) {
-
-    const { database } = useMemory()!
-
-    const { id } = useContext(EditorContext)
-
-    const [name, setName] = useState(initValue)
-
-    const { t } = useTranslation()
-
-    return <input placeholder={t`not named`} type='text' value={name} onChange={e => {
-
-        setName(e.target.value)
-        if (id)
-            rename(id, e.target.value, database)
-    }} />
-}
-
-function LanguageSelect({ initValue }: { initValue: undefined | string }) {
-
-    const { database } = useMemory()!
-   
-    const { voices, status } = useContext(Context)
-
-    const { id } = useContext(EditorContext)
-
-    const [voice, setVoice] = useState(initValue)
-
-    const { t } = useTranslation()
-
-    return <select value={voice} 
-        disabled={status == Status.LOADED ? false : true} 
-        className={status == Status.FAILED ? ui.wrong : ''}
-        onChange={e => {
-
-        setVoice(e.target.value)
-        const [name, code] = e.target.value
-        if (!id)
-            return
-        
-            changeVoice(id, name, code, database)
-
-    }}><option key={-1} value={undefined}>{t`no voice`}</option>{voices.map((voice) =>
-        <option key={Date.now()} value={[voice.name, voice.lang]}>{voice.name}</option>
-    )}</select>
-}
-
-function RemoveButton() {
-
-    const { database } = useMemory()!
-
-    const { id, setRemoved } = useContext(EditorContext)
-
-    return <button className={ui.removal} onClick={() => {
-
-        setRemoved(true)
-        if (id)
-            removeData(id, database)
-
-    }}>❌</button>
+    const t = db.transaction(Stores.LANGUAGES, 'readonly')
+    return { done: t.done, store: t.objectStore(Stores.LANGUAGES) }
 }

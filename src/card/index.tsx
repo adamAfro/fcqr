@@ -66,13 +66,13 @@ export default function({ id, ...props}: Data & {
         
         mode, setMode
 
-    }}><p className={style.card}>
+    }}>{removed || <p className={style.card} data-testid={`card-${id}`}>
 
         <Term/>
 
         <Definition/>
 
-    </p></Context.Provider>
+    </p>}</Context.Provider>
 }
 
 function Term() {
@@ -81,8 +81,16 @@ function Term() {
 
     const { mode, term } = useContext(Context)
 
-    if (state == State.LOADED)
-        return <Inputs.Term/>
+    if (state == State.LOADED) {
+
+        return <>
+            <Inputs.Term/>
+            <Inputs.Options/>
+            <span className={style.interactions}>
+                <Speech term={term}/>
+            </span>
+        </>
+    }
 
     if (mode == ExerciseMode.TEXT)
         return <Exercises.Text/>

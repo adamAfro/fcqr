@@ -21,14 +21,11 @@ export default function Inputs({ id, ...props }: Data) {
 
     const [removed, setRemoved] = useState(false)
 
-    const { t } = useTranslation()
-
     return <InputsContext.Provider  value={{
         id, removed, setRemoved
     }}>
         
-        {!removed ? <div className={style.language} 
-            data-testid={`language-config-${id}`}>
+        {!removed ? <div className={style.language}>
         
             <div className={style.inputs}>
                 <NameInput initValue={props.name}/>
@@ -58,11 +55,9 @@ function NameInput({ initValue }: {initValue:string}) {
         if (!id) return
 
         const { done, store } = readwrite(database)
+        const language = await store.get(id) as Data
 
-        const deck = await store.get(id) as Data
-        deck.name = name
-
-        await store.put(deck)
+        await store.put({ ...language, name: e.target.value })        
         return await done
 
     }} />

@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from 'react'
 import { Database, Stores } from "../memory"
 
 import { useTranslation } from '../localisation'
-import { Data as Language } from '../languages'
+import { Data as Language, read as readLanguages } from '../languages'
 import { useMemory } from "../memory"
 import { Data } from './'
 
@@ -64,14 +64,14 @@ function LanguageSelect() {
     const [languages, setLanguages] = useState([] as Language[])
     useEffect(() => void (async function() {
 
-        const { done, store } = read(database)
+        const { done, store } = readLanguages(database)
 
-        const decks = await store.getAll() as Data[]
+        const languages = await store.getAll() as Data[]
         
         await done
-        return decks
+        return languages
 
-    })().then(l => setLanguages(l)), [])
+    })().then(ls => setLanguages(ls)), [])
 
     const { t } = useTranslation()
 
@@ -82,7 +82,6 @@ function LanguageSelect() {
             .find(({ id }) => id == languageId)
 
         setLanguage(prev => language)
-
         
         const { done, store } = readwrite(database)
         const deck = await store.get(id) as Data
@@ -96,12 +95,6 @@ function LanguageSelect() {
             <option key={id} value={id}>{name}</option>)
         }
     </select>
-}
-
-export function read(db: Database) {
-
-    const t = db.transaction(Stores.DECKS, 'readonly')
-    return { done: t.done, store: t.objectStore(Stores.DECKS) }
 }
 
 export function readwrite(db: Database) {

@@ -28,7 +28,7 @@ export function Term() {
         const card = await store.get(id) as Data
 
         await store.put({ ...card, term: e.target.value })        
-        return await done       
+        return await done
 
     }} placeholder={t`term`} value={term} data-is-long={term.length > 15}/>
 }
@@ -55,7 +55,7 @@ export function Definition() {
     }} placeholder={t`definition`} value={def}/>
 }
 
-export function RemoveButton() {
+export function Options() {
 
     const { database } = useMemory()!
 

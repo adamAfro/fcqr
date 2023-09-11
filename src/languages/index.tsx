@@ -22,8 +22,8 @@ export enum Status { LOADING, FAILED, LOADED }
 export const Context = createContext({
     status: Status.LOADING,
     voices: [] as SpeechSynthesisVoice[],
-    configs: [] as Data[],
-        setConfigs: (x: (prev: Data[]) => any[]) => {}
+    languages: [] as Data[],
+        setLanguages: (x: (prev: Data[]) => any[]) => {}
 })
 
 export default function Languages() {
@@ -31,7 +31,7 @@ export default function Languages() {
     const { database } = useMemory()!
     
     const [status, setStatus] = useState(Status.LOADING)
-    const [configs, setConfigs] = useState <Data[]> ([])
+    const [languages, setLanguages] = useState <Data[]> ([])
     useEffect(() => void (async function() {
         
         const { done, store } = read(database)
@@ -41,7 +41,7 @@ export default function Languages() {
         await done
         return decks
 
-    })().then(setConfigs), [])
+    })().then(setLanguages), [])
 
     const [voices, setVoices] = useState([] as SpeechSynthesisVoice[])
     useEffect(() => {
@@ -56,7 +56,7 @@ export default function Languages() {
 
     const { t } = useTranslation()
 
-    return <Context.Provider value={{ status, voices, configs, setConfigs }}>
+    return <Context.Provider value={{ status, voices, languages, setLanguages }}>
 
         <p className={style.prompt}>
             {t`add any language name and select voice for it`}
@@ -65,9 +65,9 @@ export default function Languages() {
             <AddButton/>
         </p>
 
-        <ul className={style.languages}>{[...configs].reverse().map((config) =>
-            <li key={config.id}>
-                <Inputs {...config}/>
+        <ul className={style.languages}>{[...languages].reverse().map((language) =>
+            <li data-testid={`language-${language.id}`} key={language.id}>
+                <Inputs {...language}/>
             </li>
         )}</ul>
 
@@ -78,7 +78,7 @@ function AddButton() {
 
     const { database } = useMemory()!
 
-    const { setConfigs } = useContext(Context)
+    const { setLanguages } = useContext(Context)
 
     const { t } = useTranslation()
 
@@ -90,19 +90,18 @@ function AddButton() {
             code: undefined
         }
 
-        setConfigs(prev => [...prev, added])
-
         const { done, store } = readwrite(database)
 
-        const id = Number(await store.add(added))
+        const id = await store.add(added)
+
+        setLanguages(prev => [...prev, {...added, id}])
         
         await done
-        return id
         
     }} data-testid="add-voice-btn">{t`add`}</button>
 }
 
-function read(db: Database) {
+export function read(db: Database) {
 
     const t = db.transaction(Stores.LANGUAGES, 'readonly')
     return { done: t.done, store: t.objectStore(Stores.LANGUAGES) }

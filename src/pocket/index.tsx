@@ -1,5 +1,6 @@
 import { useState, useEffect, createContext, useContext } from 'react'
 
+import { Database, Stores } from '../memory'
 import { links, Link } from '../app'
 import { useNavigate } from "react-router-dom"   
 
@@ -7,7 +8,7 @@ import { useTranslation } from '../localisation'
 import { useMemory } from '../memory'
 
 import * as Deck from '../deck'
-import { read, readwrite } from '../deck/properties'
+import { readwrite } from '../deck/properties'
 
 import { InputButton, InputOptions } from './input'
 import { OutputSelectionButton, OutputOptions } from './output'
@@ -148,4 +149,13 @@ function DeckButton(deck: Deck.Data) {
         to={links.decks + '/' + deck.id!.toString()}>
         {deck.name || t`unnamed deck`}
     </Link>
+}
+
+function read(db: Database) {
+
+    const t = db.transaction([Stores.DECKS, Stores.CARDS], 'readonly')
+    return { done: t.done, 
+        store: t.objectStore(Stores.DECKS),
+        cardStore: t.objectStore(Stores.CARDS) 
+    }
 }

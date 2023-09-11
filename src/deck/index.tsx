@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState, createContext } from 'react'
 
-import { Database, Stores } from "../memory"
+import { Database, Stores, read as readAll } from "../memory"
 
 import { Data as Language } from '../languages'
 import { useMemory } from "../memory"
@@ -17,7 +17,9 @@ import style from "./style.module.css"
 export interface Data {
     id?: number
     name: string
-    languageId?: number
+    languageId?: number,
+    muted?: boolean
+    silent?: boolean
 }
 
 export enum State {
@@ -78,9 +80,11 @@ export default function Deck({ id }: { id: number }): JSX.Element {
         const data = await store.get(id) as Data
         const cards = await index.getAll(IDBKeyRange.only(id)) as CardData[]
 
-        const language = data.languageId ? 
+        const language = data.languageId ?
             await languageStore.get(data.languageId) as Language :
             null
+
+        console.log(data.languageId, language)
 
         await done
 
@@ -143,16 +147,6 @@ export function read(db: Database) {
     return { done: t.done, 
         store: t.objectStore(Stores.DECKS),
         cardStore: t.objectStore(Stores.CARDS) 
-    }
-}
-
-function readAll(db: Database) {
-
-    const t = db.transaction([Stores.DECKS, Stores.CARDS, Stores.LANGUAGES], 'readonly')
-    return { done: t.done, 
-        store: t.objectStore(Stores.DECKS),
-        cardStore: t.objectStore(Stores.CARDS),
-        languageStore: t.objectStore(Stores.LANGUAGES) 
     }
 }
 

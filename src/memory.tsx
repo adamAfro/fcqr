@@ -91,3 +91,13 @@ function restoreLanguage() {
     
     return language
 }
+
+export function read(db: Database) {
+
+    const t = db.transaction([Stores.DECKS, Stores.CARDS, Stores.LANGUAGES], 'readonly')
+    return { done: t.done, 
+        store: t.objectStore(Stores.DECKS),
+        cardStore: t.objectStore(Stores.CARDS),
+        languageStore: t.objectStore(Stores.LANGUAGES) 
+    }
+}

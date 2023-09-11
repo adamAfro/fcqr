@@ -103,7 +103,7 @@ function LayoutButton() {
 
 function AddButton() {
 
-    const { id, cards, setCards } = useContext(Context)
+    const { id, setCards } = useContext(Context)
 
     const { database } = useMemory()!
 
@@ -116,9 +116,9 @@ function AddButton() {
 
         const { done, cardStore } = readwrite(database)
         
-        const cardId = cardStore.add({ ...card, deckId: id })
+        const cardId = await cardStore.add({ ...card, deckId: id })
         
-        await done        
+        await done
         setCards(prev => [{ ...card, id: Number(cardId) }, ...prev])
 
     }}>➕</button>

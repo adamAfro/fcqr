@@ -6,7 +6,8 @@ import { useMemory } from "../memory"
 import { get, modifyCards, remove, addCards, rename, changeLanguage }
     from './database'
 
-import * as Card from '../card'
+import { Data as CardData } from '../card'
+import Card from '../card'
 
 import { Link, links } from '../app'
 
@@ -25,13 +26,13 @@ export default function Deck({ id }: { id: number }): JSX.Element {
     const [name, setName] = useState <string | undefined> (undefined)
     const [language, setLanguage] = useState <Language | undefined | null> (undefined)
 
-    const [cards, setCards] = useState <Card.Data[]> ([])
+    const [cards, setCards] = useState <CardData[]> ([])
     useEffect(() => void get(id, database!).then(({ data, cards, language }) => {
 
         console.log(language)
         setName(data.name)
         setLanguage(language)
-        setCards(cards as Card.Data[])
+        setCards(cards as CardData[])
         setState(State.LOADED)
 
     }), [])
@@ -109,7 +110,7 @@ function ExerciseButton() {
 
         setCards([])
         if (id) get(id, database)
-            .then(({ cards }) => setCards(cards as Card.Data[]))
+            .then(({ cards }) => setCards(cards as CardData[]))
     
     }} data-testid="play-btn">
         {state != State.EXERCISES ? '💪' : '📝'}
@@ -222,7 +223,7 @@ function AddButton() {
 
     return <button data-testid="add-card-btn" onClick={() => {
 
-        const card = { term: '', def: '', deckId: id } as Card.Data
+        const card = { term: '', def: '', deckId: id } as CardData
         
         const addition = id ?
             addCards(id, [card], database) : 
@@ -266,10 +267,7 @@ function Cards() {
             return b.id! - a.id!
 
         }).map((card,i) => <li key={card.id}>
-            {state == State.EXERCISES ?
-                <Card.Exercise {...card}/> :
-                <Card.Editor {...card}/>
-            }
+            {<Card {...card}/>}
         </li>)}
 
     </ul>

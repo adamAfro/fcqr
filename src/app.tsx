@@ -21,8 +21,7 @@ export { Link }
 export const links = {
     pocket: '/',
     decks: `/${t`deck`}/`,
-    options: `/${t`options`}`,
-    demo: '/demo'
+    options: `/${t`options`}`
 }
 
 export default (props: { basename?: string }) => <React.StrictMode>
@@ -46,44 +45,6 @@ export default (props: { basename?: string }) => <React.StrictMode>
 
             <Route path={links.options} element={<main className={style.panel}>
                 <Settings />
-            </main>} />
-
-            <Route path={links.demo} element={<main style={{
-                display: "flex", alignItems: 'flex-start', padding: '1em'
-            }}>
-
-
-                <div className={style.panel}>
-
-                    <Pocket ignoreDatabase decks={[
-                        { name: 'Science Quiz', termLang: 'English', defLang: 'French' },
-                        { name: 'Francese', termLang: 'fr', defLang: 'it' },
-                        { name: 'Math', termLang: '', defLang: '' },
-                        { name: '', termLang: '', defLang: '' },
-                        { name: 'Que et que', termLang: 'fr', defLang: 'it' },
-                        { name: 'Trebien', termLang: '', defLang: '' }
-                    ]} />
-
-                </div>
-
-
-                <div className={style.panel}>
-
-                    <Settings />
-
-                </div>
-
-
-                <div className={style.panel}>
-
-                    <Deck name={'demo'} defLang='pl' termLang='en' cards={[
-                        { term: 'Physics', def: 'Physique' },
-                        { term: 'Chemistry', def: 'Chimie' },
-                        { term: 'Biology', def: 'Biologie' },
-                    ]} />
-
-                </div>
-
             </main>} />
 
         </Routes></Router>

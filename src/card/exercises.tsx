@@ -1,10 +1,11 @@
 import { useState, useContext, createContext } from 'react'
 
 import WideContext from '../deck/context'
-import Speech from "./speech"
-import Hearing from "./hearing"
+import { listen } from '../languages/recognition'
 import { randomInt, randomFrom, randomWeighted, indexToSubindex, randomSubstring } 
     from '../misc'
+
+import { speak } from '../languages/speech'
 
 import Color from "color"
 import { stringSimilarity as calcSimilarity }
@@ -36,9 +37,9 @@ const Context = createContext({
 
 export default function Exercise(props: Props) {
 
-    const { cards, termLangCode } = useContext(WideContext)
+    const { cards, language } = useContext(WideContext)
 
-    const [audible, setAudible] = useState(termLangCode ? (props.audible || Math.random() > .5) : false)
+    const [audible, setAudible] = useState(language?.code ? (props.audible || Math.random() > .5) : false)
     const [defined, setDefined] = useState(props.defined || !audible)
     const [mode, setMode] = useState(randomFrom(audible ? [
         InputMode.TEXT,
@@ -79,7 +80,7 @@ namespace Text {
 
     export function Interactions() {
 
-        const { termLang, termLangCode } = useContext(WideContext)
+        const { language } = useContext(WideContext)
 
         const { 
             term,
@@ -105,7 +106,7 @@ namespace Text {
         return <>
     
             <input className={style.term} data-is-long={term.length > 15}
-                value={answer} lang={termLangCode} spellCheck={false}
+                value={answer} lang={language?.code} spellCheck={false}
                 onChange={e => void respond(e.target.value)} 
                 style={{ color: color(similarity) }} 
                 placeholder='?'/>
@@ -124,7 +125,7 @@ namespace Text {
     
                 }} className={ui.removal}>❔</button> : null}
    
-                {audible ? <Speech term={term} termLang={termLang!}/> : null} 
+                {audible ? <Speech term={term}/> : null} 
     
                 <button className={ui.primary} onClick={e => {
     
@@ -212,7 +213,7 @@ namespace Vocal {
 
     export function Interactions() {
 
-        const { termLang, termLangCode } = useContext(WideContext)
+        const { language } = useContext(WideContext)
 
         const { 
             term, 
@@ -238,7 +239,7 @@ namespace Vocal {
         return <>
     
             <input className={style.term} data-is-long={term.length > 15}
-                value={answer} lang={termLangCode} spellCheck={false}
+                value={answer} lang={language?.code} spellCheck={false}
                 onChange={e => void respond(e.target.value)} 
                 style={{ color: color(similarity) }} 
                 placeholder='?' disabled/>
@@ -255,9 +256,8 @@ namespace Vocal {
     
                 }} className={ui.removal}>❔</button> : null}
 
-                {audible ? <Speech term={term} termLang={termLang!}/> : null}
-                {termLangCode ? <Hearing className={ui.primary} langCode={termLangCode!} 
-                    setResult={(heard:string) => respond(heard)}/> : null}
+                {audible ? <Speech term={term}/> : null}
+                <Hearing setResult={(heard:string) => respond(heard)}/>
     
             </span>
         
@@ -272,8 +272,6 @@ namespace Selection {
     })
 
     export function Text({ guesses }: { guesses: [string, number][]}) {
-
-        const { termLang } = useContext(WideContext)
 
         const { term,  audible } = useContext(Context)
     
@@ -290,7 +288,7 @@ namespace Selection {
 
             <span className={style.interactions}>
 
-                {audible ? <Speech term={term} termLang={termLang!}/> : null} 
+                {audible ? <Speech term={term}/> : null} 
             </span>
     
         </Options.Provider>
@@ -346,8 +344,6 @@ namespace Puzzle {
     })
 
     export function Text({ guesses, length }: { guesses: [string, number][], length: number}) {
-   
-        const { termLang } = useContext(WideContext)
 
         const [index, setIndex] = useState(0)
         const [isCorrect, setIsCorrect] = useState(false)
@@ -365,7 +361,7 @@ namespace Puzzle {
 
             <span className={style.interactions}>
 
-                {audible ? <Speech term={term} termLang={termLang!}/> : null} 
+                {audible ? <Speech term={term}/> : null} 
             </span>
     
         </Options.Provider>
@@ -430,6 +426,35 @@ namespace Puzzle {
     
         return guesses
     }
+}
+
+function Hearing({ setResult }: { 
+    setResult: (x:string) => void, 
+}) {
+
+    const { language } = useContext(WideContext)
+
+	const [listening, setListening] = useState(false)
+
+    if (!language || !language.code) return <button>
+        🔇
+    </button>
+
+	return <button onClick={!listening ? () => {
+        
+        setListening(true)
+        listen(alts => setResult(alts[0].trim()), { langCode: language.code! })
+
+    } : () => setListening(false)}>🎤</button>
+}
+
+function Speech({ term }: { term: string }) {
+
+    const { voice = undefined } = useContext(WideContext).language || {}
+
+	return <button onClick={() => speak(term, { voice })}>
+		🔈
+	</button>
 }
 
 function color(value = 0) {

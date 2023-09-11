@@ -1,64 +1,43 @@
-import { createContext, Dispatch, SetStateAction } 
-    from 'react'
+import { createContext } from 'react'
 
 import * as Card from '../card'
+import { Data as Language } from '../languages/database'
 
 export enum State {
     NOT_FOUND,
     REMOVED,
     LOADING,
-    PARTIAL_LOADED,
     LOADED,
     EXERCISES
 }
 
-export interface Props {
-
-    id?: number,
-
-    name?: string,
-    setName: Dispatch<SetStateAction<string | undefined>>,
-
-    termLang?: string, 
-    setTermLang: Dispatch<SetStateAction<string | undefined>>,
-
-    termLangCode?: string | undefined, 
-    setTermLangCode: Dispatch<SetStateAction<string | undefined>>,
-
-    defLang?: string,
-    setDefLang: Dispatch<SetStateAction<string | undefined>>,
-
-    state: State,
-    setState: Dispatch<SetStateAction<State>>
-
-    cards: Card.Data[], 
-    setCards: Dispatch<SetStateAction<Card.Data[]>>,
+export const layouts = {
     
-    layout: string,
-    setLayout: Dispatch<SetStateAction<string>>
-}
+    compact: 'compact',
+    extended: 'extended',
+    quarter: 'quarter',
+    grid: 'grid'
 
-export default createContext<Props>({ 
+} as const
 
-    id: undefined,
+export type Layout = keyof typeof layouts;
+
+export default createContext({ 
+
+    id: -1,
+
     state: State.LOADING, 
-    setState: () => {},
+    setState(c:State | ((p:State) => State)) {},
 
-    name: undefined,
-    setName: () => {},
+    name: <string | undefined> undefined,
+    setName(c:string|((p:string | undefined) => string)) {},
 
-    termLang: undefined, 
-    setTermLang: () => {},
+    language: <Language | undefined | null> undefined,
+    setLanguage(c:Language|((p:Language | undefined) => Language)) {},
 
-    termLangCode: undefined, 
-    setTermLangCode: () => {},
+    cards: <Card.Data[]> [], 
+    setCards(c:Card.Data[]|((p:Card.Data[]) => Card.Data[])) {},
     
-    defLang: undefined,
-    setDefLang: () => {},
-
-    cards: [], 
-    setCards: () => {},
-
-    layout: '', 
-    setLayout: () => {}
+    layout: layouts.compact as Layout,
+    setLayout(c:Layout|((p:Layout) => Layout)) {},
 })

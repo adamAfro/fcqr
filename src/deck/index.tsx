@@ -1,89 +1,49 @@
 import { useContext, useEffect, useState, ChangeEvent } from 'react'
 
 import { useTranslation } from '../localisation'
+import { Data as Language, getAllData as getLanguages } from '../languages/database'
 import { useMemory } from "../memory"
-import { get, modifyCards, remove, addCards, getData, rename, changeLanguage }
+import { get, modifyCards, remove, addCards, rename, changeLanguage }
     from './database'
 
 import * as Card from '../card'
 
 import { Link, links } from '../app'
 
-import { default as Context, State } from './context'
+import { default as Context, Layout, State, layouts } from './context'
 
 import ui from "../style.module.css"
 import style from "./style.module.css"
 
 export * from './database'
 
-interface Props {
-    name: string,
-    termLang: string,
-    defLang: string,
-    cards: Card.Data[]
-}
+export default function Deck({ id }: { id: number }): JSX.Element {
 
-export default function Deck({ id }: { id: number }): JSX.Element;
-export default function Deck(props: Props): JSX.Element;
+    const { database } = useMemory()!
 
-/** 
- * termLangCode means that both voice and speech recognition (if they are) are supported 
- * @TODO
- * langs should work on ids not names
- * defLang seems redundant
- */
-export default function Deck(props: { id?: number } | Props): JSX.Element {
+    const [state, setState] = useState(State.LOADING)
+    const [name, setName] = useState <string | undefined> (undefined)
+    const [language, setLanguage] = useState <Language | undefined | null> (undefined)
 
-    const id = ('id' in props) ? props.id : undefined
+    const [cards, setCards] = useState <Card.Data[]> ([])
+    useEffect(() => void get(id, database!).then(({ data, cards, language }) => {
 
-    const { database, languages } = useMemory()!
-
-    const [state, setState] = useState(('id' in props) ? State.LOADING : State.LOADED)
-
-    const [name, setName] = useState(('name' in props) ? props.name : undefined)
-    const [termLang, setTermLang] = useState(('termLang' in props) ? props.termLang : undefined)
-    const [defLang, setDefLang] = useState(('defLang' in props) ? props.defLang : undefined)
-    const [termLangCode, setTermLangCode] = useState(undefined as string | undefined)    
-    useEffect(() => void (!id || getData(id, database!).then(data => {
-
-        if (!data)
-            return void setState(State.NOT_FOUND)
-
-        setState(State.PARTIAL_LOADED)
+        console.log(language)
         setName(data.name)
-        setTermLang(data.termLang)
-        setDefLang(data.defLang)
-        setTermLangCode(languages.find(l => l.name === termLang)?.code)
-
-    })), [])
-
-    useEffect(() => {
-
-        if (termLang && !termLangCode)
-            setTermLangCode(languages.find(l => l.name === termLang)?.code)
-
-    }, [languages, termLang])
-
-    const [cards, setCards] = useState(('cards' in props) ? props.cards : [])
-    useEffect(() => void (!id || get(id, database!).then(({ cards }) => {
-
-        if (state != State.PARTIAL_LOADED)
-            return
-
+        setLanguage(language)
         setCards(cards as Card.Data[])
         setState(State.LOADED)
 
-    })), [state])
+    }), [])
 
-    const [layout, setLayout] = useState(layouts.compact)
+    const [layout, setLayout] = useState <Layout> (layouts.compact)
 
     return <Context.Provider value={{ 
-        id, state, setState,
+        id, 
+        state, setState,
         name, setName,
-        termLang, defLang,
-        setTermLang, setDefLang, 
-        setTermLangCode, termLangCode,
-        cards, setCards, 
+        language, setLanguage,
+        cards, setCards,
         layout, setLayout,
     }}>
 
@@ -175,13 +135,6 @@ function ShuffleButton() {
     }} data-testid="shuffle-cards-btn">🔀</button>
 }
 
-const layouts = {
-    compact: 'compact',
-    extended: 'extended',
-    quarter: 'quarter',
-    grid: 'grid'
-}
-
 function LayoutButton() {
 
     const { layout, setLayout } = useContext(Context)
@@ -205,11 +158,7 @@ function Properties() {
         
         <Name/>
 
-        <div className={style.languages}>
-
-            <Language subject='term'/>
-        
-        </div>
+        <LanguageSelect/>
 
     </header>
 }
@@ -236,29 +185,31 @@ function Name() {
     }} placeholder={t`unnamed deck`} type="text" value={name}/>
 }
 
-function Language({ subject }: {subject: 'term' | 'def'}) {
+function LanguageSelect() {
 
-    const { id, setTermLangCode,
-        termLang, setTermLang, 
-        defLang, setDefLang } = useContext(Context)
+    const { database } = useMemory()!
+
+    const { id, language, setLanguage } = useContext(Context)
+
+    const [languages, setLanguages] = useState([] as Language[])
+    useEffect(() => void getLanguages(database).then(l => setLanguages(l)), [])
 
     const { t } = useTranslation()
-    const { database, languages } = useMemory()!
 
-    return <select onChange={(e) => {
+    return <select onChange={async (e) => {
 
-        if (id)
-            changeLanguage(id, subject == 'term' ? "termLang" : "defLang", e.target.value, database!)
+        const languageId = Number(e.target.value)
+        const language = languages
+            .find(({ id }) => id == languageId)
 
-        if (subject == 'term'){
-            setTermLang(e.target.value)
-            setTermLangCode(languages.find(l => l.name === e.target.value)?.code)
-        } else
-            setDefLang(e.target.value)
+        await changeLanguage(id, languageId, database)
+        setLanguage(prev => language)
         
-    }} defaultValue={subject == 'term' ? termLang : defLang}>
+    }} value={language?.id}>
         <option key={-1}>{t`no language`}</option>
-        {languages.map(({ id, name }, i) => <option key={id} value={name}>{name}</option>)}
+        {languages.map(({ id, name }) => 
+            <option key={id} value={id}>{name}</option>)
+        }
     </select>
 }
 

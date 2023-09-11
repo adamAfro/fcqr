@@ -1,0 +1,31 @@
+.language {
+    margin: 1em 0;
+    display: flex;
+    align-items: flex-end;
+}
+
+.language .inputs > * {
+    width: calc(100% - 1em);
+    text-align: left;
+}
+
+.languages li:empty {
+    display: none;
+}
+
+.bug {
+    color: red;
+    opacity: .7;
+}
+
+.panes {
+    display: flex;
+    gap: 1em;
+    margin: 1em 0;
+}
+
+.language button,
+.prompt button {
+    width: min-content !important;
+    display: inline-block !important;
+}

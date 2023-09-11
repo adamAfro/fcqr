@@ -1,11 +1,11 @@
-import { useState, ChangeEvent, useContext } from 'react'
+import { useState, useContext, createContext } from 'react'
 
 import WideContext from '../deck/context'
 
 import { useMemory } from '../memory'
 import { Data, modifyData, removeData } from './database'
 
-import Speech from "./speech"
+import { speak } from '../languages/speech'
 
 import ui from "../style.module.css"
 import style from "./style.module.css"
@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next'
 
 export default function Editor({ id, ...props }: Data) {
     
-    const { termLang, termLangCode } = useContext(WideContext)
+    const { language } = useContext(WideContext)
 
     const { database } = useMemory()!
 
@@ -62,10 +62,19 @@ export default function Editor({ id, ...props }: Data) {
             </span>
 
             <span className={style.interactions}>
-                {termLangCode ? <Speech term={term} termLang={termLang!}/> : null}
+                {language ? <Speech term={term}/> : null}
             </span>
         
 
         </p> : null
     }</>
+}
+
+function Speech({ term }: { term: string }) {
+
+    const { language } = useContext(WideContext)
+
+	return <button onClick={() => speak(term, { voice: language?.voice })}>
+		🔈
+	</button>
 }

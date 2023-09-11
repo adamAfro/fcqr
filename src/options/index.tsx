@@ -4,7 +4,7 @@ import { useMemory } from '../memory'
 import { useTranslation, supported } from '../localisation'
 import { unregister } from '../registrar'
 
-import Languages from './languages'
+import Languages from '../languages'
 
 import { Link, links } from "../app"
 import { version } from '../meta'

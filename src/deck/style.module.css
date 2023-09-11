@@ -58,27 +58,14 @@
     font-size: calc(var(--split-screen-font-size) * 2 / 3);
 } 
 
-.languages {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.properites select {
+    width: min-content;
+    margin: auto;
 }
-
-    .languages > select {
-        width: min-content;
-    }
-
-    .languages > select:nth-child(even) {
-        margin-left: 4em;
-    }
 
 .properites {
     margin-bottom: 5em;
 }
-
-    .properites select {
-        margin: .5em 0;
-    }
 
 .dangerzone {
     display: flex;

@@ -2,7 +2,8 @@ import { useEffect, useState, useContext } from 'react';
 import { createContext } from 'react'
 
 import { useTranslation } from '../localisation'
-import { LanguageConfig, getVoices } from '../languages'
+import { Data as Language, changeVoice, getAllData, modifyData, rename, removeData, addData } from './database'
+import { getVoices } from './speech'
 import { useMemory } from '../memory'
 
 import style from './style.module.css'
@@ -13,18 +14,19 @@ enum Status { LOADING, FAILED, LOADED }
 export const Context = createContext({
     status: Status.LOADING,
     voices: [] as SpeechSynthesisVoice[],
-    configs: [] as LanguageConfig[],
-        setConfigs: (x: (prev: LanguageConfig[]) => any[]) => {}
+    configs: [] as Language[],
+        setConfigs: (x: (prev: Language[]) => any[]) => {}
 })
 
 export default function Languages() {
-    
-    const { languages } = useMemory()!
+
+    const { database } = useMemory()!
     
     const [status, setStatus] = useState(Status.LOADING)
-    const [configs, setConfigs] = useState(languages)
-    const [voices, setVoices] = useState([] as SpeechSynthesisVoice[])
+    const [configs, setConfigs] = useState <Language[]> ([])
+    useEffect(() => void getAllData(database).then(setConfigs), [])
 
+    const [voices, setVoices] = useState([] as SpeechSynthesisVoice[])
     useEffect(() => {
 
         const voicesLoad = getVoices()
@@ -57,9 +59,7 @@ export default function Languages() {
 
 function AddButton() {
 
-    const { languages, setLanguages } = useMemory()!
-    const getLastId = () =>
-        languages.reduce((acc, lang) => Math.max(acc, lang.id ?? 0), 0) || 0
+    const { database } = useMemory()!
 
     const { setConfigs } = useContext(Context)
 
@@ -68,13 +68,14 @@ function AddButton() {
     return <button onClick={() => {
 
         const added = {
-            id: getLastId() + 1,
             name: t`new language`,
-            voice: undefined as string | undefined
+            voice: undefined as string | undefined,
+            code: undefined
         }
 
         setConfigs(prev => [...prev, added])
-        setLanguages([...languages, added ])
+
+        addData(added, database)
         
     }} data-testid="add-voice-btn">{t`add`}</button>
 }
@@ -85,7 +86,7 @@ const EditorContext = createContext({
     removed: false, setRemoved: (prev: boolean) => {}
 })
 
-function Editor({ id, ...props }: LanguageConfig) {
+function Editor({ id, ...props }: Language) {
 
     const [removed, setRemoved] = useState(false)
 
@@ -112,7 +113,7 @@ function Editor({ id, ...props }: LanguageConfig) {
 
 function NameInput({ initValue }: {initValue:string}) {
 
-    const { setLanguages } = useMemory()!
+    const { database } = useMemory()!
 
     const { id } = useContext(EditorContext)
 
@@ -123,21 +124,14 @@ function NameInput({ initValue }: {initValue:string}) {
     return <input placeholder={t`not named`} type='text' value={name} onChange={e => {
 
         setName(e.target.value)
-        setLanguages(prev => {
-
-            const index = prev.findIndex(lang => lang.id === id)
-            return [
-                ...prev.slice(0, index),
-                { ...prev[index], name: e.target.value }, 
-                ...prev.slice(index + 1)
-            ]
-        })
+        if (id)
+            rename(id, e.target.value, database)
     }} />
 }
 
 function LanguageSelect({ initValue }: { initValue: undefined | string }) {
 
-    const { setLanguages } = useMemory()!
+    const { database } = useMemory()!
    
     const { voices, status } = useContext(Context)
 
@@ -153,42 +147,28 @@ function LanguageSelect({ initValue }: { initValue: undefined | string }) {
         onChange={e => {
 
         setVoice(e.target.value)
-        setLanguages(prev => {
-
-            const index = prev.findIndex(lang => lang.id === id)
-            return [
-                ...prev.slice(0, index),
-                { ...prev[index],
-                    voice: e.target.value, 
-                    code: voices
-                        .find(voice => voice.name === e.target.value)?.lang
-                },
-                ...prev.slice(index + 1)
-            ]
-        })
+        const [name, code] = e.target.value
+        if (!id)
+            return
+        
+            changeVoice(id, name, code, database)
 
     }}><option key={-1} value={undefined}>{t`no voice`}</option>{voices.map((voice) =>
-        <option key={Date.now()} value={voice.name}>{voice.name}</option>
+        <option key={Date.now()} value={[voice.name, voice.lang]}>{voice.name}</option>
     )}</select>
 }
 
 function RemoveButton() {
 
-    const { setLanguages } = useMemory()!
+    const { database } = useMemory()!
 
     const { id, setRemoved } = useContext(EditorContext)
 
     return <button className={ui.removal} onClick={() => {
 
         setRemoved(true)
-        setLanguages(prev => {
-
-            const index = prev.findIndex(lang => lang.id === id)
-            return [
-                ...prev.slice(0, index),
-                ...prev.slice(index + 1)
-            ]
-        })
+        if (id)
+            removeData(id, database)
 
     }}>❌</button>
 }

@@ -87,11 +87,9 @@ export default function(props: {
                 </p>
 
                 <button className={ui.primary} onClick={() => {
-
-                    const deck = { name: '', termLang: '', defLang: '' }
                     
                     if (!props.ignoreDatabase)
-                        Deck.addData(deck, database)
+                        Deck.addData({ name: '' }, database)
                             .then(id => navigate(links.decks + id.toString()))
                         
                 }} data-testid='add-btn'>➕</button>

@@ -66,6 +66,10 @@ input[type=file] {
     display: none;
 }
 
+label {
+    white-space: nowrap;
+}
+
 input[type=checkbox],
 input[type=radio] { 
     display: inline-block; 

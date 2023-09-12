@@ -58,7 +58,13 @@ export const Context = createContext({
     setCards(c:CardData[]|((p:CardData[]) => CardData[])) {},
     
     layout: layouts.compact as Layout,
-    setLayout(c:Layout|((p:Layout) => Layout)) {}
+    setLayout(c:Layout|((p:Layout) => Layout)) {},
+
+    muted: false,
+    setMuted(c:boolean|((p:boolean) => boolean)) {},
+
+    silent: false,
+    setSilent(c:boolean|((p:boolean) => boolean)) {}
 })
 
 export default function Deck({ id }: { id: number }): JSX.Element {
@@ -68,6 +74,9 @@ export default function Deck({ id }: { id: number }): JSX.Element {
     const [state, setState] = useState(State.LOADING)
     const [name, setName] = useState <string | undefined> (undefined)
     const [language, setLanguage] = useState <Language | undefined | null> (undefined)
+
+    const [muted, setMuted] = useState(false)
+    const [silent, setSilent] = useState(false)
 
     const [cards, setCards] = useState <CardData[]> ([])
 
@@ -84,8 +93,6 @@ export default function Deck({ id }: { id: number }): JSX.Element {
             await languageStore.get(data.languageId) as Language :
             null
 
-        console.log(data.languageId, language)
-
         await done
 
         return { data, cards, language }
@@ -95,6 +102,11 @@ export default function Deck({ id }: { id: number }): JSX.Element {
         setName(data.name)
         setLanguage(language)
         setCards(cards as CardData[])
+        if (data.muted || !(language && language.voice))
+            setMuted(true)
+        if (data.silent || !(language && language.code))
+            setSilent(true)
+
         setState(State.LOADED)
 
     }), [])
@@ -108,6 +120,8 @@ export default function Deck({ id }: { id: number }): JSX.Element {
         language, setLanguage,
         cards, setCards,
         layout, setLayout,
+        muted, setMuted,
+        silent, setSilent
     }}>
 
         <Quickaccess/>

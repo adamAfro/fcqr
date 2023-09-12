@@ -20,7 +20,7 @@ export default function Puzzle({ guesses, length }: { guesses: [string, number][
     const [index, setIndex] = useState(0)
     const [isCorrect, setIsCorrect] = useState(false)
 
-    const { term, audible } = useContext(Context)
+    const { audible } = useContext(Context)
 
     return <Options.Provider
         value={{ index, setIndex, length, isCorrect, setIsCorrect }}>
@@ -31,10 +31,9 @@ export default function Puzzle({ guesses, length }: { guesses: [string, number][
             />)}
         </span>
 
-        <span className={style.interactions}>
-
-            {audible ? <Speech term={term}/> : null} 
-        </span>
+        {audible ? <span className={style.interactions}>
+            <Speech/>
+        </span>:null}
 
     </Options.Provider>
 }

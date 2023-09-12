@@ -17,7 +17,7 @@ const Options = createContext({
 
 export default function Selection({ guesses }: { guesses: [string, number][]}) {
 
-    const { term,  audible } = useContext(Context)
+    const { audible } = useContext(Context)
 
     const [isCorrect, setIsCorrect] = useState(false)
 
@@ -30,10 +30,9 @@ export default function Selection({ guesses }: { guesses: [string, number][]}) {
             />)}
         </span>
 
-        <span className={style.interactions}>
-
-            {audible ? <Speech term={term}/> : null} 
-        </span>
+        {audible ? <span className={style.interactions}>
+            <Speech/>
+        </span>:null}
 
     </Options.Provider>
 }
@@ -66,8 +65,6 @@ export function randomGuesses(term: string, cards: { term: string }[]) {
         console.log(i, term, index, cards[index]?.term, sims[index])
         if (index == -1)
             index = randomFrom([...sims.keys()])
-
-        console.log(i, term, index, cards[index].term, sims[index])
         
         guesses.push([texts[index], sims[index]])
         sims.splice(index, 1)

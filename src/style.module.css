@@ -96,6 +96,12 @@ a {
     background-color: var(--primary-active);
 }
 
+:is(button, a[role=button], [role=button], select).widget {
+    background-color: none;
+    padding: var(--padding);
+    width: min-content;
+}
+
 .removed {
     display:none;
 }

@@ -71,9 +71,11 @@ function LanguageSelect({ initValue }: { initValue: undefined | string }) {
 
     const { id } = useContext(InputsContext)
 
+    const [value, setValue] = useState(initValue)
+
     const { t } = useTranslation()
 
-    return <select defaultValue={initValue}
+    return <select value={value}
         disabled={status == Status.LOADED ? false : true} 
         className={status == Status.FAILED ? ui.wrong : ''}
         onChange={async (e) => {
@@ -81,17 +83,19 @@ function LanguageSelect({ initValue }: { initValue: undefined | string }) {
         if (!id) return
 
         const voice = e.target.value
+        setValue(voice)
         
         const { done, store } = readwrite(database)
         const language = await store.get(id) as Data
 
         const code = voices.find(v => v.name == voice)?.lang
-
+        
         await store.put({ ...language, voice, code })
+
         return await done
 
-    }}><option key={-1} value={undefined}>{t`no voice`}</option>{voices.map((voice) =>
-        <option key={Date.now()} value={voice.name}>{voice.name}</option>
+    }}><option key={crypto.randomUUID()} value={undefined}>{t`no voice`}</option>{voices.map((voice) =>
+        <option key={crypto.randomUUID()} value={voice.name}>{voice.name}</option>
     )}</select>
 }
 

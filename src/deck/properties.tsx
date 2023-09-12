@@ -22,7 +22,15 @@ export default function Properties() {
         
         <Name/>
 
-        <LanguageSelect/>
+        <div style={{display:'flex', gap:'1em'}}>
+
+            <LanguageSelect/>
+
+            <MuteButton/>
+
+            <SilenceButton/>
+
+        </div>
 
     </header>
 }
@@ -95,6 +103,58 @@ function LanguageSelect() {
             <option key={id} value={id}>{name}</option>)
         }
     </select>
+}
+
+function MuteButton() {
+
+    const { database } = useMemory()!
+
+    const { id, muted, setMuted, language } = useContext(Context)
+
+    return <label role='button' className={ui.widget}>
+        
+        🔇
+        <input type="checkbox" checked={muted} 
+            disabled={!language || !language.voice}
+            onChange={async () => {
+
+                const { done, store } = readwrite(database)
+                const deck = await store.get(id) as Data
+                
+                await store.put({ ...deck, muted: !muted })
+                await done
+                
+                setMuted(p => !p)
+            
+            }}/>
+
+    </label>
+}
+
+function SilenceButton() {
+
+    const { database } = useMemory()!
+
+    const { id, silent, setSilent, language } = useContext(Context)
+
+    return <label role='button' className={ui.widget}>
+        
+        🤫
+        <input type="checkbox" checked={silent} 
+            disabled={!language || !language.code}
+            onChange={async () => {
+
+                const { done, store } = readwrite(database)
+                const deck = await store.get(id) as Data
+                
+                await store.put({ ...deck, silent: !silent })
+                await done
+                
+                setSilent(p => !p)
+            
+            }}/>
+
+    </label>
 }
 
 export function readwrite(db: Database) {

@@ -1,4 +1,4 @@
-import { useState, useContext, createContext } from 'react'
+import { useState, useContext, createContext, useEffect } from 'react'
 
 import { Context as DeckContext, State } from '../deck'
 
@@ -40,19 +40,18 @@ export const Context = createContext({
     defined: false, setDefined: (_:boolean) => {}
 })
 
-export default function({ id, ...props}: Data & {
-    audible?: boolean, defined?: boolean
-}) {
+export default function({ id, ...props}: Data) {
 
-    const { language } = useContext(DeckContext)
+    const { muted, silent } = useContext(DeckContext)
 
     const [removed, setRemoved] = useState(false)
     const [term, setTerm] = useState(props.term)
     const [def, setDef] = useState(props.def)
 
-    const [audible, setAudible] = useState(language?.code ? (props.audible || Math.random() > .5) : false)
-    const [defined, setDefined] = useState(props.defined || !audible)
-    const [mode, setMode] = useState(Exercises.random({ audible: false }))
+    const [audible, setAudible] = useState(!muted && Math.random() > .5)
+    useEffect(() => setAudible(!muted && Math.random() > .5), [muted])
+    const [defined, setDefined] = useState(!audible)
+    const [mode, setMode] = useState(Exercises.random({ silent }))
 
     return <Context.Provider value={{
 
@@ -77,7 +76,7 @@ export default function({ id, ...props}: Data & {
 
 function Term() {
 
-    const { state, cards } = useContext(DeckContext)
+    const { state, cards, muted } = useContext(DeckContext)
 
     const { mode, term } = useContext(Context)
 
@@ -86,9 +85,9 @@ function Term() {
         return <>
             <Inputs.Term/>
             <Inputs.Options/>
-            <span className={style.interactions}>
-                <Speech term={term}/>
-            </span>
+            {!muted ? <span className={style.interactions}>
+                <Speech/>
+            </span>:null}
         </>
     }
 
@@ -143,7 +142,9 @@ export function Hearing({ setResult }: {
     } : () => setListening(false)}>🎤</button>
 }
 
-export function Speech({ term }: { term: string }) {
+export function Speech() {
+
+    const { term } = useContext(Context)
 
     const { voice = undefined } = useContext(DeckContext).language || {}
 

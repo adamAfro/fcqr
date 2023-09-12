@@ -60,7 +60,7 @@ export default function Text() {
 
             }} className={ui.removal}>❔</button> : null}
 
-            {audible ? <Speech term={term}/> : null} 
+            {audible ? <Speech/> : null} 
 
             <button className={ui.primary} onClick={e => {
 

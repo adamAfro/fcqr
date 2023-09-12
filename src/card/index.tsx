@@ -50,7 +50,10 @@ export default function({ id, ...props}: Data) {
 
     const [audible, setAudible] = useState(!muted && Math.random() > .5)
     useEffect(() => setAudible(!muted && Math.random() > .5), [muted])
+    
     const [defined, setDefined] = useState(!audible)
+    useEffect(() => !defined ? setDefined(true) : void null, [audible])
+    
     const [mode, setMode] = useState(Exercises.random({ silent }))
 
     return <Context.Provider value={{

@@ -188,7 +188,7 @@ function Reference() {
             await done
 
         }}/> : (reference ? 
-            <a className={style.string} target='_blank' href={reference}>{new URL(reference).host}</a> : 
+            <a className={style.string} target='_blank' href={reference}>{reference}</a> : 
             <span className={style.string}>{t`no reference`}</span>
         )}
 

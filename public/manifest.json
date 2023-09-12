@@ -1,6 +1,6 @@
 {
-  "short_name": "FCQR",
-  "name": "Flashcards with QR Codes",
+  "short_name": "Flisqs",
+  "name": "Flisqs",
   "description": "Installation component for Progressive Web Application DEMO",
   "icons": [
     {

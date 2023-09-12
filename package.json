@@ -1,6 +1,6 @@
 {
-  "name": "qrfc",
-  "version": "0.10",
+  "name": "flisqs",
+  "version": "0.11",
   "private": true,
   "homepage": "/beta",
   "dependencies": {

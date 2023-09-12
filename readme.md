@@ -1,10 +1,6 @@
-# FcQR :black_joker:
+# Flisqs :black_joker:
 
 Flashcards app for language learning
-
-**TODO**: rename to `fliszki`/`flisks`
-
-`offline + fiszki -> offliszki -> fliszki -> flisks` 
 
 ## Features
 

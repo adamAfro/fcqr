@@ -24,30 +24,35 @@ export const links = {
     options: `/${t`options`}`
 }
 
-export default (props: { basename?: string }) => <React.StrictMode>
-    <MemoryProvider>
+export default (props: { basename?: string }) => {
 
-        <Router basename={props.basename || '/'}><Routes>
+    React.useEffect(() => void (document.title = t`fliscs`), [])
 
-            <Route path={links.pocket} element={<main className={style.panel}>
-                <Pocket />
-            </main>} />
+    return <React.StrictMode>
+        <MemoryProvider>
 
-            <Route path={links.decks + ':id'} Component={() => {
+            <Router basename={props.basename || '/'}><Routes>
 
-                const { id } = useParams()
+                <Route path={links.pocket} element={<main className={style.panel}>
+                    <Pocket />
+                </main>} />
 
-                return <main className={style.panel}>
-                    <Deck id={Number(id)} />
-                </main>
+                <Route path={links.decks + ':id'} Component={() => {
 
-            }} />
+                    const { id } = useParams()
 
-            <Route path={links.options} element={<main className={style.panel}>
-                <Settings />
-            </main>} />
+                    return <main className={style.panel}>
+                        <Deck id={Number(id)} />
+                    </main>
 
-        </Routes></Router>
+                }} />
 
-    </MemoryProvider>
-</React.StrictMode>
+                <Route path={links.options} element={<main className={style.panel}>
+                    <Settings />
+                </main>} />
+
+            </Routes></Router>
+
+        </MemoryProvider>
+    </React.StrictMode>
+}

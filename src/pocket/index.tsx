@@ -70,11 +70,10 @@ export default function(props: {
         <nav className={ui.quickaccess}>
             <div className={ui.faraccess}>
 
-                {showOptions == Options.NONE ? <>
-                    <p className={ui.brandname}>FCQR</p>    
-                    <p><a target='_blank' href="https://github.com/adamAfro/fcqr">
-                        by adamAfro
-                    </a></p>
+                {showOptions == Options.NONE ? <>    
+                    <a className={ui.brandname} target='_blank' href="https://github.com/adamAfro/flisqs">
+                        {t`flisqs`}
+                    </a>
                     <p><Link role="button" data-testid="preferences-btn" to={links.options}>{t`options`}</Link></p>
                 </> : null}
 

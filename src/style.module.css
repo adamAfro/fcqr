@@ -114,5 +114,5 @@ a {
 .brandname {
     font: 2em var(--handwritten);
     margin: 0;
+    color: inherit;
 }
-

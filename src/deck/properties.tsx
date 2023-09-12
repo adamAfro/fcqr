@@ -165,11 +165,16 @@ function Reference() {
 
     const { id, reference, setReference } = useContext(Context)
 
+    const [edition, setEdition] = useState(false)
+
     const { t } = useTranslation()
 
     return <p className={style.reference}>
 
-        <input placeholder={t`reference link 🔗`}
+        <button className={edition ? ui.primary : ''}
+            onClick={() => setEdition(p => !p)}>📝</button>
+
+        {edition ? <input placeholder={t`reference link`} className={style.string}
             spellCheck={false} type="text" value={reference} onChange={async (e) => {
 
             const reference = e.target.value
@@ -181,9 +186,11 @@ function Reference() {
             
             await store.put({ ...deck, reference })
             await done
-        }}/>
 
-        {reference ? <a target='_blank' href={reference}>🔗</a> : null}
+        }}/> : (reference ? 
+            <a className={style.string} target='_blank' href={reference}>{new URL(reference).host}</a> : 
+            <span className={style.string}>{t`no reference`}</span>
+        )}
 
     </p>
 }

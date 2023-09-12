@@ -85,4 +85,12 @@
 .reference {
     display: flex;
     gap: 1em;
+    align-items: center;
+    justify-content: center;
+}
+
+.reference > .string {
+    font-size: 1em;
+    text-align: center;
+    width: min-content;
 }

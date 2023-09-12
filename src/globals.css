@@ -39,7 +39,8 @@ select {
     border: none;
     border-radius: var(--padding);
     box-sizing: border-box;
-    width: 100%;
+    width: min-content;
+    white-space: nowrap;
     
     cursor: pointer;
     background: none;

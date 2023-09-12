@@ -21,8 +21,8 @@ Flashcards app for language learning
   - [x] get correct answer
 - :writing_hand: user experience
   - [x] act native\*
-  - [ ] run offline
-  - [ ] update
+  - [x] run offline
+  - [x] update button
 - :flags: localisations
   - [x] :england: English (base)
   - [x] :poland: Polish

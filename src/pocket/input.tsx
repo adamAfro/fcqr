@@ -12,7 +12,6 @@ import { useMemory } from '../memory'
 
 import { Context } from '.'
 
-import * as Deck from '../deck'
 import Scanner from '../scanner'
 
 
@@ -171,16 +170,18 @@ export async function fromPackage(packed: Packed, db: Database, { replace = fals
 
     const { done, store, cardStore } = readwrite(db)
 
-    const additions = packed.map(async ({ data, cards }) => {
+    const additions = packed.map(async ({ data, cards, language }) => {
 
         if (!replace) {
+            if (language?.id)
+                delete language.id
             if (data.id)
                 delete data.id
             for (const card of cards) if (card.id)
                 delete card.id
         }
         
-        const deckId = Number(await store.add(data))
+        const deckId = Number(await store.add({...data, languageId: language?.id || null }))
 
         cards = cards.map(card => ({ ...card, deckId }))
         

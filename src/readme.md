@@ -11,11 +11,6 @@ Integral components are put in their locations, whilst main files and utilities 
 - `dev` - deploy app to netlify for testing;
 - `test` - run tests;
 
-## Technical issues
-
-- [ ] include language's data in package making
-- [ ] add mute button
-
 ## :flower_playing_cards: Decks and cards
 
 Decks are stored in pocket - home screen, and each deck has some cards in it that can be easily added, arranged (shuffle) and deleted.

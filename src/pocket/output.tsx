@@ -1,12 +1,13 @@
 import { useState, useEffect, useContext } from 'react'
 
-import { Database } from '../memory'
+import { Database, read as readAll } from '../memory'
+import { Data as Language } from '../languages'
 import { useTranslation } from '../localisation'
 import { useMemory } from '../memory'
 
 import { Context } from '.'
 
-import { read, Data } from '../deck'
+import { Data } from '../deck'
 import { Data as Card } from '../card'
 
 
@@ -85,12 +86,18 @@ export function OutputSelectionButton(deck: Data) {
 
 async function createPackage(ids: number[], db: Database) {
 
-    const { done, store, cardStore } = read(db)
+    const { done, store, cardStore, languageStore } = readAll(db)
 
     const cardIndex = cardStore.index('deckId')
-    const packed = Promise.all(ids.map(async (id) => ({
+    const prepacked = Promise.all(ids.map(async (id) => ({
         data: await store.get(id) as Data,
         cards: await cardIndex.getAll(IDBKeyRange.only(id)) as Card[]
+    })))
+
+    const packed = Promise.all((await prepacked).map(async ({ data, cards }) => ({
+        data, cards, language: data.languageId ? 
+            await languageStore.get(data.languageId) as Language :
+            null
     })))
     
     await done

@@ -22,15 +22,17 @@ export default function Properties() {
         
         <Name/>
 
-        <div style={{display:'flex', gap:'1em'}}>
+        <LanguageSelect/>
 
-            <LanguageSelect/>
+        <div className={style.sounds}>
 
             <MuteButton/>
 
             <SilenceButton/>
 
         </div>
+
+        <Reference/>
 
     </header>
 }
@@ -83,7 +85,7 @@ function LanguageSelect() {
 
     const { t } = useTranslation()
 
-    return <select onChange={async (e) => {
+    return <select className={style.language} onChange={async (e) => {
 
         const languageId = Number(e.target.value)
         const language = languages
@@ -155,6 +157,35 @@ function SilenceButton() {
             }}/>
 
     </label>
+}
+
+function Reference() {
+
+    const { database } = useMemory()!
+
+    const { id, reference, setReference } = useContext(Context)
+
+    const { t } = useTranslation()
+
+    return <p className={style.reference}>
+
+        <input placeholder={t`reference link 🔗`}
+            spellCheck={false} type="text" value={reference} onChange={async (e) => {
+
+            const reference = e.target.value
+            
+            setReference(reference)
+            
+            const { done, store } = readwrite(database)
+            const deck = await store.get(id) as Data
+            
+            await store.put({ ...deck, reference })
+            await done
+        }}/>
+
+        {reference ? <a target='_blank' href={reference}>🔗</a> : null}
+
+    </p>
 }
 
 export function readwrite(db: Database) {

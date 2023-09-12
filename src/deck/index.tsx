@@ -17,9 +17,10 @@ import style from "./style.module.css"
 export interface Data {
     id?: number
     name: string
-    languageId?: number,
+    languageId?: number
     muted?: boolean
     silent?: boolean
+    reference?: string
 }
 
 export enum State {
@@ -64,7 +65,10 @@ export const Context = createContext({
     setMuted(c:boolean|((p:boolean) => boolean)) {},
 
     silent: false,
-    setSilent(c:boolean|((p:boolean) => boolean)) {}
+    setSilent(c:boolean|((p:boolean) => boolean)) {},
+
+    reference: '',
+    setReference(c:string|((p:string) => string)) {}
 })
 
 export default function Deck({ id }: { id: number }): JSX.Element {
@@ -74,6 +78,7 @@ export default function Deck({ id }: { id: number }): JSX.Element {
     const [state, setState] = useState(State.LOADING)
     const [name, setName] = useState <string | undefined> (undefined)
     const [language, setLanguage] = useState <Language | undefined | null> (undefined)
+    const [reference, setReference] = useState('')
 
     const [muted, setMuted] = useState(false)
     const [silent, setSilent] = useState(false)
@@ -100,6 +105,7 @@ export default function Deck({ id }: { id: number }): JSX.Element {
     })().then(({ data, language, cards }) => {
 
         setName(data.name)
+        setReference(data.reference || '')
         setLanguage(language)
         setCards(cards as CardData[])
         if (data.muted || !(language && language.voice))
@@ -110,7 +116,6 @@ export default function Deck({ id }: { id: number }): JSX.Element {
         setState(State.LOADED)
 
     }), [])
-
     const [layout, setLayout] = useState <Layout> (layouts.compact)
 
     return <Context.Provider value={{ 
@@ -121,7 +126,8 @@ export default function Deck({ id }: { id: number }): JSX.Element {
         cards, setCards,
         layout, setLayout,
         muted, setMuted,
-        silent, setSilent
+        silent, setSilent,
+        reference, setReference
     }}>
 
         <Quickaccess/>

@@ -1,4 +1,4 @@
-# [Flisqs](flisqs.devadam.pl) :black_joker:
+# [Flisqs](https://flisqs.devadam.pl/) :black_joker:
 
 Free and offline flashcards app for language learning
 

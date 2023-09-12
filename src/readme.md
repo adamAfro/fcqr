@@ -30,9 +30,9 @@ Decks are stored in pocket - home screen, and each deck has some cards in it tha
 
 - [x] import cards with :iphone: scanner or text input
 
-- [ ] export all data to file
+- [x] export all data to file
 
-- [ ] import all data from file
+- [x] import all data from file
 
 ## :brain: Exercise mode
 
@@ -40,11 +40,7 @@ Exercise mode is another way of viewing deck:
 
 - [x] user either gets definition or audio of a term;
 
-- [ ] what user gets is based on what cards has to offer - ex. if there is no deck's language set then audio should not be provided, and without definition it should;
-
 - [x] user can respond with text and/or voice;
-
-- [ ] text and voice input should be completely separate so that user may (not must) have 2 input methods;
 
 - [x] if answer is supplied correctly, then it's color is rather green, otherwise red, based on `string-similarity-js`;
 
@@ -55,10 +51,6 @@ Exercise mode is another way of viewing deck:
 For better experience user may install app as PWA, which needs a browser. Main focus is on Chrome and less on Firefox, since it does not support speech recognition. Having the app a need for a browser provides issues:
 
 - [x] Firefox and Chrome have slightly different implementations of speech synthesis - in chrome you need to specify `(msg as SpeechSynthesisUtterance).lang` which is not needed in Firefox. Another thing is about language codes - Chrome uses `pl_PL` and Firefox `pl-PL` - a matter of `(code as string).replace('_', '-')`
-
-- [ ] chrome provides unwanted bottom bar for input elements with saved passwords and other utilities
-
-- [ ] window size may not be stable - sometimes app shrinks vertically by few percentages
 
 ### :evergreen_tree: Offline access
 
@@ -100,7 +92,6 @@ In conclusion: installing app with Chrome will make it with starting path specif
 Main element is card so all other elements are styled in reference to it.
 
 - [x] make `src/demo` with important components together, where they can be easily tested manually and their look may be modified in wider context for CSS design purposes;
-- [ ] make it look nice!
 
 ## :flags: Localisations
 

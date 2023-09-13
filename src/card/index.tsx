@@ -33,24 +33,16 @@ export const Context = createContext({
     def: '', setDef(_:string) {},
     removed: false, setRemoved(_:boolean) {},
         
-    mode: ExerciseMode.TEXT, setMode: (_:ExerciseMode) => {},
-    audible: false, setAudible: (_:boolean) => {},
-    defined: false, setDefined: (_:boolean) => {}
+    mode: ExerciseMode.TEXT, setMode: (_:ExerciseMode) => {}
 })
 
 export default function({ id, ...props}: Data) {
 
-    const { muted, silent } = useContext(DeckContext)
+    const { silent } = useContext(DeckContext)
 
     const [removed, setRemoved] = useState(false)
     const [term, setTerm] = useState(props.term)
     const [def, setDef] = useState(props.def)
-
-    const [audible, setAudible] = useState(!muted && Math.random() > .5)
-    useEffect(() => setAudible(!muted && Math.random() > .5), [muted])
-    
-    const [defined, setDefined] = useState(!audible)
-    useEffect(() => !defined ? setDefined(true) : void null, [audible])
     
     const [mode, setMode] = useState(Exercises.random({ silent }))
 
@@ -60,22 +52,16 @@ export default function({ id, ...props}: Data) {
         removed, setRemoved,
         term, setTerm,
         def, setDef,
-
-        audible, setAudible,
-        defined, setDefined,
-        
         mode, setMode
 
     }}>{removed || <p className={style.root} data-testid={`card-${id}`}>
 
-        <Term/>
-
-        <Definition/>
+        <Content/>
 
     </p>}</Context.Provider>
 }
 
-function Term() {
+function Content() {
 
     const { state, cards, muted } = useContext(DeckContext)
 
@@ -84,8 +70,13 @@ function Term() {
     if (state == State.LOADED) {
 
         return <>
+
             <Inputs.Term/>
+        
+            <Inputs.Definition/>
+        
             <Inputs.Options/>
+        
             {!muted ? <span className={style.interactions}>
                 <Speech/>
             </span>:null}
@@ -108,20 +99,6 @@ function Term() {
 
     return <p>?</p>
 }
-
-function Definition() {
-
-    const { state } = useContext(DeckContext)
-
-    const { def, defined } = useContext(Context)
-
-    if (state == State.LOADED)
-        return <Inputs.Definition/>
-
-    return <textarea disabled={true} className={style.def} value={defined ? def : ''}/>
-}
-
-
 
 export function Hearing({ setResult }: { 
     setResult: (x:string) => void, 

@@ -136,8 +136,8 @@ export default function Deck({ id }: { id: number }): JSX.Element {
             <div className='stack'>
 
                 {state == State.EXERCISES ? 
-                    <Actions.AddButton/> : 
-                    <Actions.ShuffleButton/>
+                    <Actions.ShuffleButton/> :
+                    <Actions.AddButton/>
                 }
 
                 <Actions.LayoutButton/>

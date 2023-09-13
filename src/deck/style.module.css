@@ -58,11 +58,6 @@
     font-size: calc(var(--split-screen-font-size) * 2 / 3);
 } 
 
-.language {
-    width: min-content;
-    margin: 1em auto;
-}
-
 .properites {
     margin-bottom: 5em;
 }
@@ -72,22 +67,24 @@
     gap: 1em;
 }
 
-.properites .sounds {
+.properites .sounds, .reference {
     display: flex;
-    gap:1em;
     justify-content: center;
     align-items: center;
+    position: relative;
+
+    --gap: 1em
+}
+
+.sounds, .reference {
+    padding: 0 var(--gap);
 }
 
 .reference {
-    display: flex; gap: 1em;
-    align-items: center;
-    justify-content: center;
-    position: relative;
+    margin-top: calc(2 * var(--gap));
 }
 
 .link {
-    font-size: 1em;
     text-align: center;
     white-space: nowrap;
     padding-left: 0;
@@ -98,5 +95,5 @@
 
 .edit {
     position: absolute;
-    right: 0;
+    right: var(--gap);
 }

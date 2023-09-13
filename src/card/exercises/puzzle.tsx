@@ -1,5 +1,6 @@
-import { useState, useContext, createContext } from 'react'
+import { useState, useContext, useEffect, createContext } from 'react'
 
+import { Context as DeckContext } from '../../deck'
 import { Context, Speech, color } from '../'
 import { randomInt, randomFrom, randomWeighted } from '../../misc'
 
@@ -9,20 +10,36 @@ import { stringSimilarity as calcSimilarity }
 import style from "../style.module.css"
 
 
-const Options = createContext({
+const ExerciseContext = createContext({
     index: 0, setIndex: (index:number) => {}, length: 0,
-    isCorrect: false, setIsCorrect: (isCorrect:boolean) => {}
+    isCorrect: false, setIsCorrect: (isCorrect:boolean) => {},
+
+    audible: false, setAudible: (_:boolean) => {},
+    defined: false, setDefined: (_:boolean) => {}
 })
 
 export default function Puzzle({ guesses, length }: { guesses: [string, number][], length: number}) {
 
-    const [index, setIndex] = useState(0)
+    const { muted } = useContext(DeckContext)
+
     const [isCorrect, setIsCorrect] = useState(false)
+    const [index, setIndex] = useState(0)
 
-    const { audible } = useContext(Context)
+    const [audible, setAudible] = useState(!muted && Math.random() > .5)
+    useEffect(() => setAudible(!muted && Math.random() > .5), [muted])
+    
+    const [defined, setDefined] = useState(!audible)
+    useEffect(() => (!defined && !audible) ? setDefined(true) : void null, [
+        defined, audible
+    ])
 
-    return <Options.Provider
-        value={{ index, setIndex, length, isCorrect, setIsCorrect }}>
+    return <ExerciseContext.Provider value={{ 
+        isCorrect, setIsCorrect,
+        index, setIndex, length,
+        
+        audible, setAudible, 
+        defined, setDefined
+    }}>
 
         <span className={style.selection}>
             {guesses.map(([text, order], i) => <Option 
@@ -30,11 +47,27 @@ export default function Puzzle({ guesses, length }: { guesses: [string, number][
             />)}
         </span>
 
-        {audible ? <span className={style.interactions}>
-            <Speech/>
-        </span>:null}
+        <Definition/>
+    
+        <span className={style.interactions}>
 
-    </Options.Provider>
+            {!(audible && defined) ? <HintButton/> : null}
+
+            {audible ? <Speech/> : null}
+
+        </span>
+
+    </ExerciseContext.Provider>
+}
+
+function Definition() {
+
+    const { def } = useContext(Context)
+
+    const { defined } = useContext(ExerciseContext)
+
+    return <textarea className={style.def} 
+        disabled={true} value={defined ? def : ''}/>
 }
 
 enum Status { INCORRECT, UNANSWERED, CORRECT }
@@ -43,7 +76,7 @@ function Option({ text, order }: { text: string, order: number }) {
     const { 
         index, setIndex, length,
         isCorrect, setIsCorrect 
-    } = useContext(Options)
+    } = useContext(ExerciseContext)
     
     const [status, setStatus] = useState(Status.UNANSWERED)
  
@@ -94,4 +127,19 @@ export function randomGuesses(term: string, cards: { term: string }[]) {
         guesses.splice(randomInt(0, guesses.length), 0, [ corrects[i], i ])
 
     return guesses
+}
+
+function HintButton() {
+
+    const { audible, setAudible, defined, setDefined } = useContext(ExerciseContext)
+
+    return <button className='icon' onClick={() => {
+
+        if (!defined)
+            return void setDefined(true)
+
+        if (!audible)
+            return void setAudible(true)
+
+    }}>❔</button>
 }

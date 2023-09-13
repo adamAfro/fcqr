@@ -70,7 +70,7 @@ export function OutputSelectionButton(deck: Data) {
 
     return <>{selected ? 
     
-        <button key={deck.id} className={ui.primary} 
+        <button key={deck.id} data-attention='correct'
             onClick={() => setSelection(selection => selection.filter(id => id != deck.id!))}>    
             {deck.name || t`unnamed deck`}
         </button> 

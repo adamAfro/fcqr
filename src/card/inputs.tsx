@@ -63,7 +63,7 @@ export function Options() {
 
     return <span className={style.options}>
         
-        <button data-role="removal" className={ui.removal} onClick={async () => {
+        <button data-role="removal" onClick={async () => {
 
             setRemoved(true)
             if (!id) return

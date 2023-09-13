@@ -24,7 +24,7 @@ export default function Settings(props: HTMLAttributes<HTMLDivElement>) {
 
     const options = [
         [Pane.APP, t`application`],
-        [Pane.LANGUAGES, t`decks' languages and voices`]
+        [Pane.LANGUAGES, t`languages`]
     ] as [Pane, string][]
 
     return <>
@@ -33,22 +33,21 @@ export default function Settings(props: HTMLAttributes<HTMLDivElement>) {
             <p className={ui.faraccess}>
                 <Link role="button" data-testid="preferences-btn" to={links.pocket}>{t`go back`}</Link>
             </p>
+
+            <p className={ui.thumbaccess}>
+                <span className={ui.buttonstack}>
+                    {options.map(([p, text]) => <button 
+                        onClick={() => setPane(p)}
+                    >{text}</button>)}
+                </span>
+            </p>
         </nav>
 
         <h1 className={ui.title}>{t`options`}</h1>
 
-        <nav className={style.panes}>
-
-            {options.map(([p, text]) => <button 
-                onClick={() => setPane(p)}
-                className={p == pane ? '' : ui.primary}
-            >{text}</button>)}
-
-        </nav>
-
         {pane == Pane.APP ? <section>
 
-            <p>FcQR - {t`version`} {version}</p>
+            <p>{t`flisqs`} - {t`version`} {version}</p>
 
             <button style={{display:'inline-block',margin: '0 1em'}} onClick={() => 
                 unregister().then(() => window.location.reload())

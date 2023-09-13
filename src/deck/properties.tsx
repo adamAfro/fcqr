@@ -47,7 +47,7 @@ function Name() {
 
     const [name, setName] = useState(context.name)
 
-    return <input className={ui.title} onChange={async (e) => {
+    return <input className={ui.title} data-attention={name ? 'weak' : 'primary'} onChange={async (e) => {
 
         const target = e.target as HTMLInputElement
         
@@ -85,7 +85,7 @@ function LanguageSelect() {
 
     const { t } = useTranslation()
 
-    return <select className={style.language} onChange={async (e) => {
+    return <select className={style.language} data-attention={language ? 'weak' : 'primary'} onChange={async (e) => {
 
         const languageId = Number(e.target.value)
         const language = languages
@@ -113,7 +113,7 @@ function MuteButton() {
 
     const { id, muted, setMuted, language } = useContext(Context)
 
-    return <label role='button' className={ui.widget}>
+    return <label className={ui.icon} role='button' data-attention={!language || !language.voice ? 'weak' : false}>
         
         🔇
         <input type="checkbox" checked={muted} 
@@ -139,7 +139,7 @@ function SilenceButton() {
 
     const { id, silent, setSilent, language } = useContext(Context)
 
-    return <label role='button' className={ui.widget}>
+    return <label className={ui.icon} role='button' data-attention={!language || !language.code ? 'weak' : false}>
         
         🤫
         <input type="checkbox" checked={silent} 
@@ -171,9 +171,6 @@ function Reference() {
 
     return <p className={style.reference}>
 
-        <button className={edition ? ui.primary : ''}
-            onClick={() => setEdition(p => !p)}>📝</button>
-
         {edition ? <input placeholder={t`reference link`} className={style.string}
             spellCheck={false} type="text" value={reference} onChange={async (e) => {
 
@@ -188,9 +185,12 @@ function Reference() {
             await done
 
         }}/> : (reference ? 
-            <a className={style.string} target='_blank' href={reference}>{reference}</a> : 
+            <a className={style.string} target='_blank' role='button' href={reference}>{reference}</a> : 
             <span className={style.string}>{t`no reference`}</span>
         )}
+
+        <button className={ui.icon} data-attention={!reference || edition ? 'cancel' : 'weak'}
+            onClick={() => setEdition(p => !p)}>📝</button>
 
     </p>
 }

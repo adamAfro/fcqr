@@ -27,17 +27,13 @@ export const Context = createContext({
     selection: [] as number[], 
         setSelection(_:(p: number[]) => number[]) {},
     showOptions: Options.NONE as Options, 
-        setShowOptions(_:(p: Options) => Options) {}
-
-    
+        setShowOptions(_: Options) {}
 })
 
 export default function(props: {
     decks?: Deck.Data[],
     ignoreDatabase?: boolean
 }) {
-
-    const navigate = useNavigate()
 
     const [decks, setDecks] = useState(props.decks || [])
 
@@ -67,59 +63,7 @@ export default function(props: {
         showOptions, setShowOptions
     }}>
 
-        <nav className={ui.quickaccess}>
-            <div className={ui.faraccess}>
-
-                {showOptions == Options.NONE ? <>    
-                    <a className={ui.brandname} target='_blank' href="https://github.com/adamAfro/flisqs">
-                        {t`flisqs`}
-                    </a>
-                    <p><Link role="button" data-testid="preferences-btn" to={links.options}>{t`options`}</Link></p>
-                </> : null}
-
-                {showOptions == Options.INPUT && !input ? <InputOptions/> : null}
-                {showOptions == Options.OUTPUT && !input ? <OutputOptions/> : null}
-            
-            </div>
-
-            <div className={ui.thumbaccess}>
-
-                <p className={ui.buttonstack}>
-                    
-                    <button className={input ? ui.removal : ''} onClick={() => {
-
-                        if (showOptions != Options.INPUT)
-                            return void setShowOptions(Options.INPUT)
-
-                        setShowOptions(Options.NONE)
-                        setInput('')
-
-                    }}>📝</button>
-
-                    <button onClick={() => {
-
-                        if (showOptions != Options.OUTPUT)
-                            return void setShowOptions(Options.OUTPUT)
-
-                        setShowOptions(Options.NONE)
-
-                    }}>⏏️</button>
-                </p>
-
-                <button className={ui.primary} onClick={async () => {
-                   
-                    if (props.ignoreDatabase) return
-
-                    const { done, store } = readwrite(database)
-                    
-                    const deckId = Number(await store.add({ name: '' }))
-                
-                    await done
-                    return void navigate(links.decks + deckId.toString())
-                        
-                }} data-testid='add-btn'>➕</button>
-            </div>
-        </nav>
+        <Quickaccess/>
 
         <h1 className={ui.title}>{t`your decks`}</h1>
 
@@ -130,6 +74,91 @@ export default function(props: {
         </ul>
 
     </Context.Provider>
+}
+
+function Quickaccess() {
+
+    const { showOptions, input } = useContext(Context)
+
+    const { t } = useTranslation()
+
+    return <nav className={ui.quickaccess}>
+
+        <div className={ui.faraccess}>
+
+            {showOptions == Options.NONE ? <>    
+                <a className={ui.brandname} target='_blank' href="https://github.com/adamAfro/flisqs">
+                    {t`flisqs`}
+                </a>
+                <p><Link role="button" data-testid="preferences-btn" to={links.options}>{t`options`}</Link></p>
+            </> : null}
+
+            {showOptions == Options.INPUT && !input ? <InputOptions/> : null}
+            {showOptions == Options.OUTPUT && !input ? <OutputOptions/> : null}
+        
+        </div>
+
+        <div className={ui.thumbaccess}>
+
+            <p className={ui.buttonstack}>
+
+                <ImportButton/>
+                
+                <ExportButton/>
+                
+            </p>
+
+            <AddButton/>
+
+        </div>
+    </nav>
+}
+
+function AddButton() {
+
+    const navigate = useNavigate()
+
+    const { database } = useMemory()!
+
+    return <button className={ui.widget} onClick={async () => {
+
+        const { done, store } = readwrite(database)
+        
+        const deckId = Number(await store.add({ name: '' }))
+    
+        await done
+        return void navigate(links.decks + deckId.toString())
+            
+    }} data-testid='add-btn'>➕</button>
+}
+
+function ExportButton() {
+
+    const { showOptions, setShowOptions } = useContext(Context)
+
+    return <button className={ui.widget} onClick={() => {
+
+        if (showOptions != Options.OUTPUT)
+            return void setShowOptions(Options.OUTPUT)
+
+        setShowOptions(Options.NONE)
+
+    }}>⏏️</button>
+}
+
+function ImportButton() {
+
+    const { showOptions, setShowOptions, setInput } = useContext(Context)
+
+    return <button className={ui.widget} onClick={() => {
+
+        if (showOptions != Options.INPUT)
+            return void setShowOptions(Options.INPUT)
+
+        setShowOptions(Options.NONE)
+        setInput('')
+
+    }}>📝</button>
 }
 
 function DeckButton(deck: Deck.Data) {
@@ -144,7 +173,7 @@ function DeckButton(deck: Deck.Data) {
     if (showOptions == Options.OUTPUT)
         return <OutputSelectionButton {...deck}/>
 
-    return <Link key={deck.id} role="button" className={ui.primary} 
+    return <Link key={deck.id} role="button" 
         to={links.decks + '/' + deck.id!.toString()}>
         {deck.name || t`unnamed deck`}
     </Link>

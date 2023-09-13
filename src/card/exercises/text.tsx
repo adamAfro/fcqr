@@ -58,11 +58,11 @@ export default function Text() {
 
                 return void respond(hint(answer, term, { substring: true }))
 
-            }} className={ui.removal}>❔</button> : null}
+            }}>❔</button> : null}
 
             {audible ? <Speech/> : null} 
 
-            <button className={ui.primary} onClick={e => {
+            <button onClick={e => {
 
                 respond('')
 

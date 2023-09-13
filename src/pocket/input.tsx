@@ -91,7 +91,7 @@ export function InputButton(deck: Data) {
 
     const { t } = useTranslation()
 
-    return <Link key={deck.id} role="button" className={ui.primary} onClick={async () => {
+    return <Link key={deck.id} role="button" onClick={async () => {
 
         const { done, cardStore } = readwrite(database)
     

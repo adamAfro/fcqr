@@ -53,7 +53,7 @@ export default function Vocal() {
                 if (!audible)
                     return void setAudible(true)
 
-            }} className={ui.removal}>❔</button> : null}
+            }}>❔</button> : null}
 
             {audible ? <Speech/> : null}
             <Hearing setResult={(heard:string) => respond(heard)}/>

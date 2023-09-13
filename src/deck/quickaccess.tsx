@@ -19,8 +19,6 @@ export default function Quickaccess() {
 
     const { state } = useContext(Context)
 
-    const [showRemoval, setShowRemoval] = useState(false)
-
     const { t } = useTranslation()
 
     return <nav className={ui.quickaccess}>
@@ -28,12 +26,7 @@ export default function Quickaccess() {
         <p className={ui.wideaccess}>
             <Link role="button" to={links.pocket}>{t`go back`}</Link>
 
-            {state == State.LOADED ? <span className={style.dangerzone}>
-                <button className={showRemoval ? ui.primary : ''}
-                    onClick={() => setShowRemoval(x => !x)} data-testid='show-removal-btn'>🗑</button>
-
-                {showRemoval ? <RemoveButton/> : null}
-            </span> : null}
+            <Dangerzone/>
         </p>
 
         <div className={ui.thumbaccess}>
@@ -46,21 +39,65 @@ export default function Quickaccess() {
                 <LayoutButton/>
             </div>
 
-            <ExerciseButton/>
+            {state == State.EXERCISES ? <EditButton/> : null}
+            {state == State.LOADED ? <ExerciseButton/> : null}
         </div>
 
     </nav>
 }
 
+function Dangerzone() {
+
+    const { database } = useMemory()!
+
+    const { id, setState } = useContext(Context)
+
+    const [show, setShow] = useState(false)
+
+    const { t } = useTranslation()
+
+    return <p style={{display:"flex"}}>
+
+        <button className={ui.icon} data-attention={show ? 'cancel' : 'removal'}
+            onClick={() => setShow(p => !p)}>{show ? '🔙' : '🗑'}</button>
+
+        {show ? <Link role='button' data-attention='removal' onClick={async () => {
+
+            setState(State.REMOVED)
+
+            if (!id) return 
+
+            const { done, store, cardStore } = readwrite(database)
+
+            await store.delete(id)
+
+            const index = cardStore.index('deckId')
+            const cards = await index.getAll(IDBKeyRange.only(id)) as CardData[]
+            const removals = cards.map(card => cardStore.delete(card.id!))
+
+            await Promise.all(removals)
+
+            return await done
+
+        }} to={links.pocket}>{t`remove deck`}</Link> : null}
+
+    </p>
+}
+
 function ExerciseButton() {
 
-    const { state, setState } = useContext(Context)
+    const { setState } = useContext(Context)
 
-    return <button className={
-        state == State.EXERCISES ? '' : ui.primary
-    } onClick={() => state != State.EXERCISES ? setState(State.EXERCISES) : setState(State.LOADED)} data-testid="play-btn">
-        {state != State.EXERCISES ? '💪' : '📝'}
-    </button>
+    return <button className={ui.widget} data-attention='primary' 
+        onClick={() => setState(State.EXERCISES)}>💪</button>
+}
+
+function EditButton() {
+
+    const { setState } = useContext(Context)
+
+    return <button className={ui.widget} 
+        onClick={() => setState(State.LOADED)}>📝</button>
 }
 
 function ShuffleButton() {
@@ -69,7 +106,7 @@ function ShuffleButton() {
 
     const { database } = useMemory()!
 
-    return <button className={ui.primary} onClick={async () => {
+    return <button className={ui.widget} onClick={async () => {
 
         const shuffled = cards?.map(card => ({ ...card, order: Math.random() }))
             .sort((a, b) => a.order! - b.order!).reverse()
@@ -92,7 +129,7 @@ function LayoutButton() {
 
     const { layout, setLayout } = useContext(Context)
 
-    return <button data-testid="layout-cards-btn" onClick={() => {
+    return <button className={ui.widget} data-testid="layout-cards-btn" onClick={() => {
 
         const values = Object.values(layouts)
         const index = values.findIndex(v => v == layout)
@@ -107,7 +144,7 @@ function AddButton() {
 
     const { database } = useMemory()!
 
-    return <button data-testid="add-card-btn" onClick={async () => {
+    return <button className={ui.widget} onClick={async () => {
 
         if (!id) 
             return void setCards(prev => [{ ...card, id: -1 }, ...prev])
@@ -132,7 +169,7 @@ function RemoveButton() {
 
     const { t } = useTranslation()
 
-    return <Link role='button' className={ui.removal} onClick={async () => {
+    return <Link role='button' onClick={async () => {
 
         setState(State.REMOVED)
 

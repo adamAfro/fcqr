@@ -43,7 +43,7 @@ function Option({ text, sim }: { text: string, sim: number }) {
 
     const [showSim, setShowSim] = useState(false)
 
-    return <button disabled={isCorrect && sim != 1} className={ui.primary}
+    return <button disabled={isCorrect && sim != 1}
         style={showSim ? {color: color(sim)} : {}} 
         onClick={() => {
             setShowSim(true)

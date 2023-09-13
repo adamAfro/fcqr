@@ -25,8 +25,7 @@ body {
 
 input, 
 textarea,
-:is(button, a[role=button], [role=button]),
-select {
+:is(button, a[role=button], [role=button], select) {
 
     --padding: .5em;
     text-align: center;
@@ -59,8 +58,39 @@ select {
     --positive: #a8f8b6;
     --positive-active: #35b61b;
     
+    --cancel: #fce66b;
+    --cancel-active: #fffc3e;
+    
     --secondary: #c0c0c0;
     --secondary-active: #6b6b6b;
+}
+
+[data-attention=primary]:is(button, a[role=button], [role=button], select) {
+    background-color: var(--primary);
+}
+
+[data-attention=primary]:is(button, a[role=button], [role=button], select):active {
+    background-color: var(--primary-active);
+}
+
+[data-attention=removal]:is(button, a[role=button], [role=button], select) {
+    background-color: var(--dangerous);
+}
+
+[data-attention=removal]:is(button, a[role=button], [role=button], select):active {
+    background-color: var(--dangerous-active);
+}
+
+[data-attention=correct]:is(button, a[role=button], [role=button], select) {
+    background-color: var(--positive);
+}
+
+[data-attention=cancel]:is(button, a[role=button], [role=button], select) {
+    background-color: var(--cancel);
+}
+
+[data-attention=weak]:is(button, a[role=button], [role=button], select) {
+    background-color: transparent;
 }
 
 input[type=file] {

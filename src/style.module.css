@@ -11,7 +11,6 @@
     flex-flow: column;
     align-items: center;
 }
-    .panel .quickaccess ~ :last-child { margin-bottom: 50vh; }
     .panel > :not(.quickaccess) { max-width: 48em; }
 
 .quickaccess {
@@ -43,6 +42,7 @@
         flex-flow: column;
         align-items: center;
         padding: 1em;
+        gap:1em;
     }
 
     .quickaccess > .wideaccess {
@@ -63,43 +63,23 @@
         padding: 1em;
     }
 
-    .quickaccess > .thumbaccess :is(button, a[role=button], [role=button]) {
-        padding: calc(2*var(--padding));
-        border-radius: 100%;
-    }
-
-    .card
-
 a {
     color: inherit;
     text-decoration: none;
 }
 
-:is(button, a[role=button], [role=button], select).wrong,
-:is(button, a[role=button], [role=button], select).removal {
-    background-color: var(--dangerous);
-}
 
-:is(button, a[role=button], [role=button], select).correct {
-    background-color: var(--positive);
-}
+.icon:is(button, a[role=button], [role=button], select) {
 
-:is(button, a[role=button], [role=button], select).removal:active {
-    background-color: var(--dangerous-active);
-}
-
-:is(button, a[role=button], [role=button], select).primary {
-    background-color: var(--primary);
-}
-
-:is(button, a[role=button], [role=button], select).primary:active {
-    background-color: var(--primary-active);
-}
-
-:is(button, a[role=button], [role=button], select).widget {
-    background-color: none;
-    padding: var(--padding);
     width: min-content;
+    padding: var(--padding);
+}
+
+.widget:is(button, a[role=button], [role=button], select) {
+
+    width: min-content;
+    border-radius: 100%;
+    padding: calc(2*var(--padding));
 }
 
 .removed {

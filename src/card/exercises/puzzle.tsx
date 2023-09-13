@@ -48,8 +48,7 @@ function Option({ text, order }: { text: string, order: number }) {
     
     const [status, setStatus] = useState(Status.UNANSWERED)
  
-    return <button disabled={isCorrect && status != Status.CORRECT} 
-        className={ui.primary} 
+    return <button disabled={isCorrect && status != Status.CORRECT}
         style={status != Status.UNANSWERED ? {
             color: color(status == Status.CORRECT ? 1 : 0)
         } : {}} onClick={() => {

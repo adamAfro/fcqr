@@ -105,7 +105,7 @@ function RemoveButton() {
 
     const { id, setRemoved } = useContext(InputsContext)
 
-    return <button className={ui.removal} onClick={async () => {
+    return <button onClick={async () => {
 
         setRemoved(true)
         if (!id) return

@@ -8,7 +8,6 @@ import { stringSimilarity as calcSimilarity }
     from 'string-similarity-js'
 
 import style from "../style.module.css"
-import ui from "../../style.module.css"
 
 
 const Options = createContext({
@@ -43,7 +42,7 @@ function Option({ text, sim }: { text: string, sim: number }) {
 
     const [showSim, setShowSim] = useState(false)
 
-    return <button disabled={isCorrect && sim != 1}
+    return <button className='icon' disabled={isCorrect && sim != 1}
         style={showSim ? {color: color(sim)} : {}} 
         onClick={() => {
             setShowSim(true)

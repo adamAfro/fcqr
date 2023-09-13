@@ -1,0 +1,51 @@
+.root {
+
+    display: flex;
+    align-items: flex-end;
+    gap: 1em;
+
+    overflow-x: auto;
+    width: calc(100% - 4em);
+    padding: 0 2em;
+    
+    position: fixed; bottom: 0; z-index: 10;
+    backdrop-filter: blur(2pt);
+
+    white-space: nowrap;
+}
+
+.left {
+
+    display: flex;
+    flex-flow: column;
+    align-items: flex-start;
+    padding: 1em;
+    gap:1em;
+}
+
+.right {
+
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    margin-left: auto;
+    margin-bottom: 2em;
+    padding: 1em;
+}
+
+.nav {
+    text-align: center;
+}
+
+.brandname {
+    display: block;
+    font: 2em var(--handwritten);
+    margin-bottom: .5em;
+    color: inherit;
+}
+
+.popup {
+    padding: 0 1em;
+    border-radius: 1em;
+    box-shadow: var(--illuminated);
+}

@@ -7,9 +7,7 @@ import { getVoices } from './speech'
 import { useMemory } from '../memory'
 import { readwrite, default as Inputs } from './inputs'
 
-
 import style from './style.module.css'
-
 
 export interface Data {
     id?: number,
@@ -58,6 +56,8 @@ export default function Languages() {
 
     return <Context.Provider value={{ status, voices, languages, setLanguages }}>
 
+        <h2>{t`languages`}</h2>
+
         <p className={style.prompt}>
             {t`add any language name and select voice for it`}
             {' - '}
@@ -82,7 +82,7 @@ function AddButton() {
 
     const { t } = useTranslation()
 
-    return <button onClick={async () => {
+    return <button className='inline' onClick={async () => {
 
         const added = {
             name: t`new language`,

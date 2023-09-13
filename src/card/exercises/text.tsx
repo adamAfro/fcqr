@@ -10,7 +10,6 @@ import { stringSimilarity as calcSimilarity }
 
 
 import style from "../style.module.css"
-import ui from "../../style.module.css"
 
 
 export default function Text() {
@@ -62,7 +61,7 @@ export default function Text() {
 
             {audible ? <Speech/> : null} 
 
-            <button onClick={e => {
+            <button className='icon' onClick={e => {
 
                 respond('')
 

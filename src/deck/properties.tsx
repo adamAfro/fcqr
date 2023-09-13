@@ -9,10 +9,7 @@ import { Data } from './'
 
 import { Context } from './'
 
-
-import ui from "../style.module.css"
 import style from "./style.module.css"
-
 
 export default function Properties() {
 
@@ -22,9 +19,9 @@ export default function Properties() {
         
         <Name/>
 
-        <LanguageSelect/>
-
         <div className={style.sounds}>
+
+            <LanguageSelect/>
 
             <MuteButton/>
 
@@ -47,11 +44,9 @@ function Name() {
 
     const [name, setName] = useState(context.name)
 
-    return <input className={ui.title} data-attention={name ? 'weak' : 'primary'} onChange={async (e) => {
-
-        const target = e.target as HTMLInputElement
+    return <input className='title' data-attention={name ? 'none' : 'primary'} onChange={async (e) => {
         
-        setName(target.value)
+        setName(e.target.value)
         
         if (!id) return
 
@@ -59,7 +54,7 @@ function Name() {
 
         const deck = await store.get(id) as Data
 
-        await store.put({ ...deck, name })        
+        await store.put({ ...deck, name: e.target.value })        
         return await done
         
     }} placeholder={t`unnamed deck`} type="text" value={name}/>
@@ -85,7 +80,7 @@ function LanguageSelect() {
 
     const { t } = useTranslation()
 
-    return <select className={style.language} data-attention={language ? 'weak' : 'primary'} onChange={async (e) => {
+    return <select className={style.language} data-attention={language ? 'none' : 'primary'} onChange={async (e) => {
 
         const languageId = Number(e.target.value)
         const language = languages
@@ -113,7 +108,7 @@ function MuteButton() {
 
     const { id, muted, setMuted, language } = useContext(Context)
 
-    return <label className={ui.icon} role='button' data-attention={!language || !language.voice ? 'weak' : false}>
+    return <label className='icon' role='button' data-attention='none'>
         
         🔇
         <input type="checkbox" checked={muted} 
@@ -139,7 +134,7 @@ function SilenceButton() {
 
     const { id, silent, setSilent, language } = useContext(Context)
 
-    return <label className={ui.icon} role='button' data-attention={!language || !language.code ? 'weak' : false}>
+    return <label className='icon' role='button' data-attention='none'>
         
         🤫
         <input type="checkbox" checked={silent} 
@@ -171,7 +166,7 @@ function Reference() {
 
     return <p className={style.reference}>
 
-        {edition ? <input placeholder={t`reference link`} className={style.string}
+        {edition ? <input placeholder={t`reference link`} className='widget'
             spellCheck={false} type="text" value={reference} onChange={async (e) => {
 
             const reference = e.target.value
@@ -184,13 +179,13 @@ function Reference() {
             await store.put({ ...deck, reference })
             await done
 
-        }}/> : (reference ? 
-            <a className={style.string} target='_blank' role='button' href={reference}>{reference}</a> : 
-            <span className={style.string}>{t`no reference`}</span>
-        )}
+        }}/> : (reference ? <a target='_blank' href={reference} role='button' className='widget'>🔗</a> :
+            <button disabled className='widget'>🔗</button>)}
 
-        <button className={ui.icon} data-attention={!reference || edition ? 'cancel' : 'weak'}
-            onClick={() => setEdition(p => !p)}>📝</button>
+        <div className={style.edit}>
+            <button className='icon' data-attention={!reference ? '' : 'weak'} data-active={edition}
+                onClick={() => setEdition(p => !p)}>📝</button>
+        </div>
 
     </p>
 }

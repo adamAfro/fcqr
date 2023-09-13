@@ -7,8 +7,6 @@ import { useTranslation } from 'react-i18next'
 
 import { Context } from './'
 
-
-import ui from "../style.module.css"
 import style from "./style.module.css"
 
 export function Term() {
@@ -63,7 +61,7 @@ export function Options() {
 
     return <span className={style.options}>
         
-        <button data-role="removal" onClick={async () => {
+        <button className='icon' data-attention="removal" onClick={async () => {
 
             setRemoved(true)
             if (!id) return

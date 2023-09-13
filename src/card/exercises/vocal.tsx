@@ -8,7 +8,6 @@ import { stringSimilarity as calcSimilarity }
     from 'string-similarity-js'
 
 import style from "../style.module.css"
-import ui from "../../style.module.css"
 
 export default function Vocal() {
 
@@ -45,7 +44,7 @@ export default function Vocal() {
     
         <span className={style.interactions}>
 
-            {similarity < 1 && (!defined || !audible)  ? <button onClick={() => {
+            {similarity < 1 && (!defined || !audible)  ? <button className='icon' onClick={() => {
 
                 if (!defined)
                     return void setDefined(true)

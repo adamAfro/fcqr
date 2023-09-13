@@ -9,13 +9,9 @@ import Pocket from './pocket'
 import Deck from './deck'
 import Settings from './options'
 
-
-import './globals.css'
-import style from './style.module.css'
-
+import './theme/default.css'
 
 localise()
-
 
 export { Link }
 export const links = {
@@ -33,7 +29,7 @@ export default (props: { basename?: string }) => {
 
             <Router basename={props.basename || '/'}><Routes>
 
-                <Route path={links.pocket} element={<main className={style.panel}>
+                <Route path={links.pocket} element={<main className='panel'>
                     <Pocket />
                 </main>} />
 
@@ -41,13 +37,13 @@ export default (props: { basename?: string }) => {
 
                     const { id } = useParams()
 
-                    return <main className={style.panel}>
+                    return <main className='panel'>
                         <Deck id={Number(id)} />
                     </main>
 
                 }} />
 
-                <Route path={links.options} element={<main className={style.panel}>
+                <Route path={links.options} element={<main className='panel'>
                     <Settings />
                 </main>} />
 

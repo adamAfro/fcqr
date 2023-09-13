@@ -7,7 +7,6 @@ import { stringSimilarity as calcSimilarity }
     from 'string-similarity-js'
 
 import style from "../style.module.css"
-import ui from "../../style.module.css"
 
 
 const Options = createContext({
@@ -48,7 +47,7 @@ function Option({ text, order }: { text: string, order: number }) {
     
     const [status, setStatus] = useState(Status.UNANSWERED)
  
-    return <button disabled={isCorrect && status != Status.CORRECT}
+    return <button className='icon' disabled={isCorrect && status != Status.CORRECT}
         style={status != Status.UNANSWERED ? {
             color: color(status == Status.CORRECT ? 1 : 0)
         } : {}} onClick={() => {

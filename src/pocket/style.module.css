@@ -1,4 +1,4 @@
-.decklist {
+.decks {
     margin: 0;
     padding: 0;
     display: flex; gap: 1em;
@@ -6,7 +6,7 @@
     justify-content: center;
 }
 
-.decklist li {
+.decks li {
     list-style: none;
 }
 
@@ -26,6 +26,7 @@
     resize: none;
     padding: 0;
     margin: 0;
+    width: 100%;
 }
 
 .buttons {

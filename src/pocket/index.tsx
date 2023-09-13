@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom"
 import { useTranslation } from '../localisation'
 import { useMemory } from '../memory'
 
+import Quickaccess from '../quickaccess'
+
 import * as Deck from '../deck'
 import { readwrite } from '../deck/properties'
 
@@ -15,7 +17,6 @@ import { OutputSelectionButton, OutputOptions } from './output'
 
 
 import style from './style.module.css'
-import ui from '../style.module.css'
 
 
 enum Options {
@@ -63,11 +64,26 @@ export default function(props: {
         showOptions, setShowOptions
     }}>
 
-        <Quickaccess/>
+        <Quickaccess home={true} popup={showOptions == Options.INPUT && !input ? 
+            <InputOptions/> : (showOptions == Options.OUTPUT && !input ? 
+            <OutputOptions/> : null)
+        }>
 
-        <h1 className={ui.title}>{t`your decks`}</h1>
+            <p className='stack'>
 
-        <ul className={style.decklist} data-testid="decks">
+                <ImportButton/>
+
+                <ExportButton/>
+
+            </p>
+
+            <AddButton/>
+
+        </Quickaccess>
+
+        <h1 className='title'>{t`your decks`}</h1>
+
+        <ul className={style.decks} data-testid="decks">
             
             {decks.map(deck => <li key={deck.id}><DeckButton {...deck}/></li>)}
 
@@ -76,51 +92,13 @@ export default function(props: {
     </Context.Provider>
 }
 
-function Quickaccess() {
-
-    const { showOptions, input } = useContext(Context)
-
-    const { t } = useTranslation()
-
-    return <nav className={ui.quickaccess}>
-
-        <div className={ui.faraccess}>
-
-            {showOptions == Options.NONE ? <>    
-                <a className={ui.brandname} target='_blank' href="https://github.com/adamAfro/flisqs">
-                    {t`flisqs`}
-                </a>
-                <p><Link role="button" data-testid="preferences-btn" to={links.options}>{t`options`}</Link></p>
-            </> : null}
-
-            {showOptions == Options.INPUT && !input ? <InputOptions/> : null}
-            {showOptions == Options.OUTPUT && !input ? <OutputOptions/> : null}
-        
-        </div>
-
-        <div className={ui.thumbaccess}>
-
-            <p className={ui.buttonstack}>
-
-                <ImportButton/>
-                
-                <ExportButton/>
-                
-            </p>
-
-            <AddButton/>
-
-        </div>
-    </nav>
-}
-
 function AddButton() {
 
     const navigate = useNavigate()
 
     const { database } = useMemory()!
 
-    return <button className={ui.widget} onClick={async () => {
+    return <button className='widget' data-attention='primary' onClick={async () => {
 
         const { done, store } = readwrite(database)
         
@@ -136,7 +114,7 @@ function ExportButton() {
 
     const { showOptions, setShowOptions } = useContext(Context)
 
-    return <button className={ui.widget} onClick={() => {
+    return <button className='widget' data-active={showOptions == Options.OUTPUT} onClick={() => {
 
         if (showOptions != Options.OUTPUT)
             return void setShowOptions(Options.OUTPUT)
@@ -150,7 +128,7 @@ function ImportButton() {
 
     const { showOptions, setShowOptions, setInput } = useContext(Context)
 
-    return <button className={ui.widget} onClick={() => {
+    return <button className='widget' data-active={showOptions == Options.INPUT} onClick={() => {
 
         if (showOptions != Options.INPUT)
             return void setShowOptions(Options.INPUT)

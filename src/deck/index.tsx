@@ -5,14 +5,15 @@ import { Database, Stores, read as readAll } from "../memory"
 import { Data as Language } from '../languages'
 import { useMemory } from "../memory"
 
-import Quickaccess from './quickaccess'
+
+
+import Quickaccess from '../quickaccess'
+import * as Actions from './actions'
 import Properties from './properties'
 
 import { default as Card, Data as CardData } from '../card'
 
-
 import style from "./style.module.css"
-
 
 export interface Data {
     id?: number
@@ -130,7 +131,25 @@ export default function Deck({ id }: { id: number }): JSX.Element {
         reference, setReference
     }}>
 
-        <Quickaccess/>
+        <Quickaccess popup={state == State.LOADED ? <Actions.Dangerzone/> : null}>
+
+            <div className='stack'>
+
+                {state == State.EXERCISES ? 
+                    <Actions.AddButton/> : 
+                    <Actions.ShuffleButton/>
+                }
+
+                <Actions.LayoutButton/>
+
+            </div>
+
+            {state == State.EXERCISES ? 
+                <Actions.EditButton/> : 
+                <Actions.ExerciseButton/>
+            }
+
+        </Quickaccess>
 
         {state > State.LOADING ? <Properties/> : null}
 
@@ -143,7 +162,7 @@ function Cards() {
 
     const { cards, state, layout } = useContext(Context)
 
-    return <ul className={style.cardlist}
+    return <ul className={style.cards}
         data-testid='cards'
         data-layout={layout}>
 

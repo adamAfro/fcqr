@@ -9,9 +9,7 @@ import Color from "color"
 import * as Exercises from './exercises'
 import * as Inputs from './inputs'
 
-
 import style from "./style.module.css"
-
 
 export interface Data {
     id?: number
@@ -68,7 +66,7 @@ export default function({ id, ...props}: Data) {
         
         mode, setMode
 
-    }}>{removed || <p className={style.card} data-testid={`card-${id}`}>
+    }}>{removed || <p className={style.root} data-testid={`card-${id}`}>
 
         <Term/>
 
@@ -137,7 +135,7 @@ export function Hearing({ setResult }: {
         🔇
     </button>
 
-	return <button onClick={!listening ? () => {
+	return <button className='icon' onClick={!listening ? () => {
         
         setListening(true)
         listen(alts => setResult(alts[0].trim()), { langCode: language.code! })
@@ -151,7 +149,7 @@ export function Speech() {
 
     const { voice = undefined } = useContext(DeckContext).language || {}
 
-	return <button onClick={() => speak(term, { voice })}>
+	return <button className='icon' onClick={() => speak(term, { voice })}>
 		🔈
 	</button>
 }

@@ -1,4 +1,4 @@
-.cardlist {
+.cards {
 
     display: flex;
     flex-flow: column;
@@ -15,45 +15,45 @@
     gap: var(--gap);
 }
 
-    .cardlist li {
+    .cards li {
         list-style: none;
         position: relative;        
     }
 
-    .cardlist li:empty {
+    .cards li:empty {
         display: none;
     }
 
-.cardlist[data-layout=extended] li {
+.cards[data-layout=extended] li {
     margin-bottom: var(--extend-margin);
     font-size: 80%;
 }
 
-.cardlist[data-layout=quarter] {
+.cards[data-layout=quarter] {
 
     --gap: 1em;
     
     flex-flow: row wrap;
     justify-content: center;
 
-} .cardlist[data-layout=quarter] li {
+} .cards[data-layout=quarter] li {
     
     font-size: var(--split-screen-font-size);
     flex-basis: calc(50% - 2*var(--gap));
 } 
-    .cardlist[data-layout=quarter] li:nth-child(4n + 3), 
-    .cardlist[data-layout=quarter] li:nth-child(4n + 4) { margin-bottom: var(--extend-margin); } 
+    .cards[data-layout=quarter] li:nth-child(4n + 3), 
+    .cards[data-layout=quarter] li:nth-child(4n + 4) { margin-bottom: var(--extend-margin); } 
     
-    .cardlist[data-layout=quarter] li:nth-child(odd) > * { margin-left: auto }
-    .cardlist[data-layout=quarter] li:nth-child(even) > * { margin-right: auto }
+    .cards[data-layout=quarter] li:nth-child(odd) > * { margin-left: auto }
+    .cards[data-layout=quarter] li:nth-child(even) > * { margin-right: auto }
 
-.cardlist[data-layout=grid] {
+.cards[data-layout=grid] {
 
     --gap: 1em;
     flex-flow: row wrap;
     justify-content: center;
 
-} .cardlist[data-layout=grid] li {
+} .cards[data-layout=grid] li {
     
     font-size: calc(var(--split-screen-font-size) * 2 / 3);
 } 
@@ -70,26 +70,23 @@
 .dangerzone {
     display: flex;
     gap: 1em;
-} .dangerzone :is(button, a[role=button], [role=button]) { 
-    padding: var(--padding);
-    width: min-content;
-    white-space: nowrap;
 }
 
 .properites .sounds {
     display: flex;
     gap:1em;
     justify-content: center;
+    align-items: center;
 }
 
 .reference {
-    display: flex;
-    gap: 1em;
+    display: flex; gap: 1em;
     align-items: center;
     justify-content: center;
+    position: relative;
 }
 
-.reference > .string {
+.link {
     font-size: 1em;
     text-align: center;
     white-space: nowrap;
@@ -97,4 +94,9 @@
     padding-right: 0;
     width: 8em;
     overflow: hidden;
+}
+
+.edit {
+    position: absolute;
+    right: 0;
 }

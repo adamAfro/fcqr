@@ -1,41 +1,42 @@
-.card {
+.root {
 
     font-family: var(--handwritten);
 
-    display: flex;
+    display: flex; gap: 1em;
     flex-flow: column;
     justify-content: center;
-    
+
     box-sizing: border-box;
 
     --size: 24em;
+
     width: var(--size);
     height: var(--size);
     box-shadow: var(--illuminated);
 
     --padding: 2.4em;
-    border-radius: 10%;
+    border-radius: var(--padding);
     padding: var(--padding);
 
     position: relative;
 }
 
-    .card :is(button, a[role=button], [role=button]) {
-        padding: var(--padding);
-    }
-
 .term { font-size: 2em;}
 .term[data-is-long=true] {
     font-size: 1.2em;
 }
+
 .term, .def {
 
-    padding: 1em 0;
+    padding: 0 !important;
+    background: none !important;
     width: 100%;
     
     text-align: center;
     border: 0; resize: vertical;
-    outline: none;
+    outline: none !important;
+
+    white-space: pre-wrap;
 }
 
 .options {

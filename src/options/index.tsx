@@ -1,20 +1,18 @@
-import { HTMLAttributes, useState } from 'react'
+import { useState } from 'react'
 
 import { useMemory } from '../memory'
 import { useTranslation, supported } from '../localisation'
 import { unregister } from '../registrar'
 
+import Quickaccess from '../quickaccess'
 import Languages from '../languages'
+import Theme from '../theme'
 
-import { Link, links } from "../app"
 import { version } from '../meta'
 
-import ui from '../style.module.css'
-import style from './style.module.css'
+enum Pane { APP, LANGUAGES, THEME }
 
-enum Pane { APP, LANGUAGES }
-
-export default function Settings(props: HTMLAttributes<HTMLDivElement>) {
+export default function Options() {
 
     const { t } = useTranslation()
 
@@ -24,45 +22,58 @@ export default function Settings(props: HTMLAttributes<HTMLDivElement>) {
 
     const options = [
         [Pane.APP, t`application`],
-        [Pane.LANGUAGES, t`languages`]
+        [Pane.LANGUAGES, t`languages`],
+        [Pane.THEME, t`theme`]
     ] as [Pane, string][]
+
+    function PaneButton({ name, text }: { name: Pane, text: string}) {
+
+        return  <button data-attention='primary' data-active={pane == name}
+            onClick={() => setPane(name)}
+        >{text}</button>
+    }
 
     return <>
 
-        <nav className={ui.quickaccess}>
-            <p className={ui.faraccess}>
-                <Link role="button" data-testid="preferences-btn" to={links.pocket}>{t`go back`}</Link>
-            </p>
+        <Quickaccess>
+            <span className='stack'>
+                {options.map(([name, text], i) => PaneButton({ name, text }))}
+            </span>
+        </Quickaccess>
 
-            <p className={ui.thumbaccess}>
-                <span className={ui.buttonstack}>
-                    {options.map(([p, text]) => <button 
-                        onClick={() => setPane(p)}
-                    >{text}</button>)}
-                </span>
-            </p>
-        </nav>
+        <h1 className='title'>{t`options`}</h1>
 
-        <h1 className={ui.title}>{t`options`}</h1>
+        {pane == Pane.APP ? <>
 
-        {pane == Pane.APP ? <section>
+            <h2>{t`settings`}</h2>
 
             <p>{t`flisqs`} - {t`version`} {version}</p>
 
-            <button style={{display:'inline-block',margin: '0 1em'}} onClick={() => 
-                unregister().then(() => window.location.reload())
-            }>{t`update`}</button>
+            <div className='row'>
+                
+                <div>
 
-            <p>Language of interface:<select value={language} onChange={e => { setLanguage(e.target.value) }}>
-                <option key={-1} value=''>{t`of the device`}</option>
-                {supported.map(([code, name], i) => 
-                    <option key={i} value={code}>{name}</option>
-                )}
-            </select></p>
+                    <button style={{display:'inline-block',margin: '0 1em'}} onClick={() => 
+                        unregister().then(() => window.location.reload())
+                    }>{t`update`}</button>
+                </div>
 
-        </section> : null}
+                <div>
+                    <p>Language of interface:</p>
+
+                    <select value={language} onChange={e => { setLanguage(e.target.value) }}>
+                        <option key={-1} value=''>{t`of the device`}</option>
+                        {supported.map(([code, name], i) => 
+                            <option key={i} value={code}>{name}</option>
+                        )}
+                    </select>
+                </div>
+            </div>
+
+        </> : null}
 
         {pane == Pane.LANGUAGES ? <Languages/> : null}
+        {pane == Pane.THEME ? <Theme/> : null}
 
     </>
 }

@@ -6,10 +6,7 @@ import { useTranslation } from '../localisation'
 import { useMemory } from '../memory'
 import { Data, Status, Context } from './'
 
-
 import style from './style.module.css'
-import ui from '../style.module.css'
-
 
 const InputsContext = createContext({
     
@@ -77,7 +74,7 @@ function LanguageSelect({ initValue }: { initValue: undefined | string }) {
 
     return <select value={value}
         disabled={status == Status.LOADED ? false : true} 
-        className={status == Status.FAILED ? ui.wrong : ''}
+        className={status == Status.FAILED ? 'wrong' : ''}
         onChange={async (e) => {
 
         if (!id) return
@@ -105,7 +102,7 @@ function RemoveButton() {
 
     const { id, setRemoved } = useContext(InputsContext)
 
-    return <button onClick={async () => {
+    return <button className='icon' onClick={async () => {
 
         setRemoved(true)
         if (!id) return

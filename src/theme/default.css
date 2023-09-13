@@ -1,0 +1,170 @@
+@import url('https://fonts.googleapis.com/css2?family=Itim&family=Noto+Color+Emoji&display=swap');
+
+:root {
+
+    --background-color: white;
+
+    --illuminated: 0 0 2em -1em;
+    --clicked: 0 0 .25em;
+    --handwritten:
+        'Itim',
+        sans-serif, 
+        'Noto Color Emoji';
+
+    font-family: sans;
+}
+
+body {
+
+    font-size: min(1em, 3.2vw);
+
+} #root {} .panel {
+
+    position: relative;
+    max-width: 100%;
+    min-height: 100vh;
+    margin: 0 auto;
+    box-sizing: border-box;
+    padding: 1em;
+
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+}
+
+:is(p, h1, h2, h3, h4, h5, h6, button, [role=button])::first-letter { 
+    text-transform: uppercase;
+}
+
+button, a[role=button], [role=button], select, input, textarea {
+
+    --padding: .5em;
+    text-align: center;
+
+    font: inherit;
+    font-size: 1.2em;
+
+    display: block;
+    padding: var(--padding) calc(3.2*var(--padding));
+    border: none;
+    border-radius: var(--padding);
+    box-sizing: border-box;
+    width: min-content;
+    white-space: nowrap;
+    
+    cursor: pointer;
+    background: none;
+    outline: none;
+
+    color: inherit;
+    text-decoration: none;
+    transition: background .3s;
+    
+    --secondary: #9cd197;
+    --secondary-active: #7ae989;
+
+    --primary: #7cb5ff;
+    --primary-active: #5457fa;
+    
+    --dangerous: #f1974e;
+    --dangerous-active: #d41e1e;
+    
+    --positive: #24ff48;
+    --positive-active: #40c901;
+}
+
+input[type=file] {
+    display: none;
+} input[type=checkbox],
+input[type=radio] { 
+    display: inline-block; 
+    width: min-content; 
+}
+
+:is(button, a[role=button], [role=button], select) {
+    background-color: var(--secondary);
+} :is(button, a[role=button], [role=button]):is(:active, [data-active=true]) {
+    background-color: var(--secondary-active);
+}
+
+[data-attention=primary]:is(button, a[role=button], [role=button], select) {
+    background-color: var(--primary);
+} [data-attention=primary]:is(button, a[role=button], [role=button], select):is(:active, [data-active=true]) {
+    background-color: var(--primary-active);
+}
+
+[data-attention=removal]:is(button, a[role=button], [role=button], select) {
+    background-color: var(--dangerous);
+} [data-attention=error]:is(button, a[role=button], [role=button], select),
+[data-attention=removal]:is(button, a[role=button], [role=button], select):is(:active, [data-active=true]) {
+    background-color: var(--dangerous-active);
+}
+
+[data-attention=correct]:is(button, a[role=button], [role=button], select) {
+    background-color: var(--positive);
+} [data-attention=correct]:is(button, a[role=button], [role=button], select):is(:active, [data-active=true]) {
+    background-color: var(--positive-active);
+}
+
+[data-attention=weak]:is(button, a[role=button], [role=button], select):not(:is(:active, [data-active=true])) {
+    opacity:.5;
+}
+
+[data-attention=none]:is(button, a[role=button], [role=button], select):not(:is(:active, [data-active=true])) {
+    background: none;
+}
+
+[disabled]:is(button, a[role=button], [role=button], select, input, textarea) {
+    pointer-events: none;
+    filter: contrast(.5);
+}
+
+    :is(button, a[role=button], [role=button], select, input, textarea):is(:focus, :hover, :active) {
+        box-shadow: var(--clicked);
+    }
+
+.icon:is(button, a[role=button], [role=button], select, input, textarea) {
+
+    width: min-content;
+    padding: var(--padding);
+}
+
+.widget:is(button, a[role=button], [role=button], select, input, textarea) {
+
+    min-width: 3.2em;
+    text-align: center;
+    width: min-content;
+    border-radius: 3.2em;
+    padding: calc(2*var(--padding));
+}
+
+.inline:is(button, a[role=button], [role=button], select, input, textarea) {
+
+    width: min-content;
+    display: inline-block;
+    padding: var(--padding);
+    margin: 0 var(--padding);
+}
+
+.removed {
+    display:none;
+}
+
+.title {
+    font: 2em var(--handwritten);
+    text-align: center;
+}
+
+.stack {
+    font-size: 80%;
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 1em;
+}
+
+.row {
+    display: flex; gap: 1em;
+    flex-flow: row wrap;
+    align-items: flex-start;
+    justify-content: flex-start;
+}

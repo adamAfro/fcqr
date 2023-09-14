@@ -5,7 +5,6 @@ import { useTranslation, supported } from '../localisation'
 import { unregister } from '../registrar'
 
 import Quickaccess from '../quickaccess'
-import Languages from '../languages'
 import Theme from '../theme'
 
 import { version } from '../meta'
@@ -22,7 +21,6 @@ export default function Options() {
 
     const options = [
         [Pane.APP, t`application`],
-        [Pane.LANGUAGES, t`languages`],
         [Pane.THEME, t`theme`]
     ] as [Pane, string][]
 
@@ -72,7 +70,6 @@ export default function Options() {
 
         </> : null}
 
-        {pane == Pane.LANGUAGES ? <Languages/> : null}
         {pane == Pane.THEME ? <Theme/> : null}
 
     </>

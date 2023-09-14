@@ -5,7 +5,8 @@ import { Database, Stores } from '../memory'
 import { useTranslation } from '../localisation'
 import { getVoices } from './speech'
 import { useMemory } from '../memory'
-import { readwrite, default as Inputs } from './inputs'
+import { readwrite, default as Inputs } from './entry'
+import { Context as PocketContext } from '../pocket'
 
 import style from './style.module.css'
 
@@ -30,6 +31,7 @@ export default function Languages() {
     
     const [status, setStatus] = useState(Status.LOADING)
     const [languages, setLanguages] = useState <Data[]> ([])
+
     useEffect(() => void (async function() {
         
         const { done, store } = read(database)
@@ -52,26 +54,34 @@ export default function Languages() {
 
     }, [])
 
-    const { t } = useTranslation()
+    return <Context.Provider value={{ status, voices, 
+        languages, setLanguages
+    }}>
 
-    return <Context.Provider value={{ status, voices, languages, setLanguages }}>
-
-        <h2>{t`languages`}</h2>
-
-        <p className={style.prompt}>
-            {t`add any language name and select voice for it`}
-            {' - '}
-            {t`you will be able to use them in decks`}
-            <AddButton/>
-        </p>
-
-        <ul className={style.languages}>{[...languages].reverse().map((language) =>
+        <ul className={style.entries}>
+            <li>
+                <ShowAllButton/>
+            </li>
+            <li>
+                <AddButton/>
+            </li>{[...languages].reverse().map((language) =>
             <li data-testid={`language-${language.id}`} key={language.id}>
                 <Inputs {...language}/>
             </li>
         )}</ul>
 
     </Context.Provider>
+}
+
+function ShowAllButton() {
+
+    const { activeLanguageId, setActiveLanguageId } = useContext(PocketContext)
+
+    const { t } = useTranslation()
+
+    return <button data-active={activeLanguageId == -1} onClick={() => setActiveLanguageId(-1)}>
+        {t`show all`}
+    </button>
 }
 
 function AddButton() {
@@ -82,7 +92,7 @@ function AddButton() {
 
     const { t } = useTranslation()
 
-    return <button className='inline' onClick={async () => {
+    return <button className='icon' onClick={async () => {
 
         const added = {
             name: t`new language`,
@@ -98,7 +108,7 @@ function AddButton() {
         
         await done
         
-    }} data-testid="add-voice-btn">{t`add`}</button>
+    }} data-testid="add-voice-btn">➕</button>
 }
 
 export function read(db: Database) {

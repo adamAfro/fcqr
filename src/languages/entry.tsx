@@ -1,52 +1,56 @@
 import { useState, useContext } from 'react';
 import { createContext } from 'react'
 
-import { Database, Stores } from '../memory';
+import { Database, Stores, useMemory } from '../memory';
 import { useTranslation } from '../localisation'
-import { useMemory } from '../memory'
-import { Data, Status, Context } from './'
+import { Data, Status, Context } from '.'
+import { Context as PocketContext } from '../pocket'
 
 import style from './style.module.css'
 
-const InputsContext = createContext({
+const EntryContext = createContext({
     
     id: undefined as number | undefined,
-    removed: false, setRemoved: (prev: boolean) => {}
+    removed: false, setRemoved: (prev: boolean) => {},
+    name: '', setName(_:string) {}
 })
 
-export default function Inputs({ id, ...props }: Data) {
+export default function Entry({ id, ...props }: Data) {
 
+    const { activeLanguageId, setActiveLanguageId } = useContext(PocketContext)
+
+    const [name, setName] = useState(props.name)
     const [removed, setRemoved] = useState(false)
 
-    return <InputsContext.Provider  value={{
-        id, removed, setRemoved
+    if (removed)
+        return null
+
+    return <EntryContext.Provider  value={{
+        id, removed, setRemoved, name, setName
     }}>
         
-        {!removed ? <div className={style.language}>
-        
-            <div className={style.inputs}>
-                <NameInput initValue={props.name}/>
-                <LanguageSelect initValue={props.voice}/>
-            </div>
-            
+        {activeLanguageId == id ? <div className={style.entry} onClick={() => setActiveLanguageId(id)}>
+
+            <NameInput/>
+
             <RemoveButton/>
+    
+            <VoiceSelect initValue={props.voice}/>
 
-        </div> : null}
+        </div> : <button className={style.entry} onClick={() => setActiveLanguageId(id!)}>{name}</button>}
 
-    </InputsContext.Provider>
+    </EntryContext.Provider>
 }
 
-function NameInput({ initValue }: {initValue:string}) {
+function NameInput() {
 
     const { database } = useMemory()!
 
-    const { id } = useContext(InputsContext)
-
-    const [name, setName] = useState(initValue)
+    const { id, name, setName } = useContext(EntryContext)
 
     const { t } = useTranslation()
 
-    return <input placeholder={t`not named`} type='text' value={name} onChange={async (e) => {
+    return <input data-active={true} onChange={async (e) => {
 
         setName(e.target.value)
         if (!id) return
@@ -57,23 +61,23 @@ function NameInput({ initValue }: {initValue:string}) {
         await store.put({ ...language, name: e.target.value })        
         return await done
 
-    }} />
+    }} placeholder={t`not named`} value={name}/>
 }
 
-function LanguageSelect({ initValue }: { initValue: undefined | string }) {
+function VoiceSelect({ initValue }: { initValue: undefined | string }) {
 
     const { database } = useMemory()!
    
     const { voices, status } = useContext(Context)
 
-    const { id } = useContext(InputsContext)
+    const { id } = useContext(EntryContext)
 
     const [value, setValue] = useState(initValue)
 
     const { t } = useTranslation()
 
     return <select value={value}
-        disabled={status == Status.LOADED ? false : true} 
+        disabled={status == Status.LOADED ? false : true}
         className={status == Status.FAILED ? 'wrong' : ''}
         onChange={async (e) => {
 
@@ -100,7 +104,7 @@ function RemoveButton() {
 
     const { database } = useMemory()!
 
-    const { id, setRemoved } = useContext(InputsContext)
+    const { id, setRemoved } = useContext(EntryContext)
 
     return <button className='icon' onClick={async () => {
 

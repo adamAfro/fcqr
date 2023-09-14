@@ -1,36 +1,37 @@
-.languages {
+.entries {
+
     list-style: none;
     margin: 0; padding: 0;
+    display: flex; gap: 1em;
+    flex-flow: row wrap;
+    margin-left: min(25vw, 8em);
+    margin-bottom: min(25vw, 8em);
+
+} .entries li:empty { display: none; }
+
+.entries > li > * {
+    font-size: 1em;
 }
 
-.language {
-    margin: 1em 0;
+.entry > * {
+    font-size: 1em;
+}
+
+.entry {
     display: flex;
+    font-size: 1em;
+    width: 10em;
     align-items: flex-end;
+    position: relative; --gap: 1em;
 }
 
-.language .inputs > * {
-    width: calc(100% - 1em);
-    text-align: left;
+.entry > input {
+    width: 100%;
 }
 
-.languages li:empty {
-    display: none;
-}
-
-.bug {
-    color: red;
-    opacity: .7;
-}
-
-.panes {
-    display: flex;
-    gap: 1em;
-    margin: 1em 0;
-}
-
-.language button,
-.prompt button {
-    width: min-content !important;
-    display: inline-block !important;
+.entry > select {
+    position: absolute; z-index: 3;
+    top: 100%; margin-top: var(--gap);
+    
+    width: 100%;
 }

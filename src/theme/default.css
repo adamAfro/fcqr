@@ -26,6 +26,8 @@ body {
     margin: 0 auto;
     box-sizing: border-box;
     padding: 1em;
+    
+    padding-bottom: 12em;
 
     display: flex;
     flex-flow: column;
@@ -117,6 +119,7 @@ input[type=radio] {
 [disabled]:is(button, a[role=button], [role=button], select, input, textarea) {
     pointer-events: none;
     filter: contrast(.5);
+    opacity: 1;
 }
 
     :is(button, a[role=button], [role=button], select, input, textarea):is(:focus, :hover, :active) {

@@ -54,27 +54,31 @@ Saving and copying uses packages: `.json` files with raw data:
 ```ts
 packed: {
 
-  data: {
-    id?: number
-    name: string
-    termLang: string
-    defLang: string
-  },
+  decks: {
 
-  cards: {
+    data: {
       id?: number
-      deckId?: number
-      term: string
-      def: string
-      order?: number
-  },
+      name: string
+      termLang: string
+      defLang: string
+    },
 
-  language: {
+    cards: {
+        id?: number
+        deckId?: number
+        term: string
+        def: string
+        order?: number
+    },
+    
+  }[]
+
+  tags: {
       id?: number,
       name: string,
       voice?: string,
       code?: string  
-  }
+  }[]
 
-}[]
+}
 ```

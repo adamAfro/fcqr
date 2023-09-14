@@ -95,3 +95,13 @@ export function read(db: Database) {
         tagStore: t.objectStore(Stores.TAGS) 
     }
 }
+
+export function readwrite(db: Database) {
+
+    const t = db.transaction([Stores.DECKS, Stores.CARDS, Stores.TAGS], 'readwrite')
+    return { done: t.done, 
+        store: t.objectStore(Stores.DECKS),
+        cardStore: t.objectStore(Stores.CARDS),
+        tagStore: t.objectStore(Stores.TAGS) 
+    }
+}

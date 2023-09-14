@@ -2,7 +2,8 @@ import { useState, useContext } from 'react'
 
 import { Database } from '../memory'
 import { Packed } from './output'
-import { readwrite, Data } from '../deck'
+import { Data, readwrite } from '../deck'
+import { readwrite as readwriteAll } from '../memory'
 
 import { links, Link } from '../app'
 import { useNavigate } from "react-router-dom"   
@@ -168,26 +169,21 @@ function handleCSV(scanned: string, meta?: any) {
 
 export async function fromPackage(packed: Packed, db: Database, { replace = false } = {}) {
 
-    const { done, store, cardStore } = readwrite(db)
+    const { done, store, cardStore, tagStore } = readwriteAll(db)
 
-    const additions = packed.map(async ({ data, cards, tag }) => {
+    const tagsMappedIds = await Promise.all(packed.tags.map(async ({ id, ...props }) => ({ 
+        packed: id, idb: Number(await tagStore.add(props))
+    })))
 
-        if (!replace) {
-            if (tag?.id)
-                delete tag.id
-            if (data.id)
-                delete data.id
-            for (const card of cards) if (card.id)
-                delete card.id
-        }
-        
-        const deckId = Number(await store.add({...data, tagId: tag?.id || null }))
+    const additions = packed.decks.map(async ({ data, cards }) => {
 
-        cards = cards.map(card => ({ ...card, deckId }))
-        
-        const additions = cards.map(card => cardStore.add(card))
+        const { id, ...props } = data
+        const deckId = Number(await store.add({...props,
+            tagId: tagsMappedIds.find(({ packed }) => packed == data.tagId)?.idb
+        }))
 
-        const cardsIds = await Promise.all(additions)
+        const cardsIds = await Promise
+            .all(cards.map(({ id, ...props }) => cardStore.add({...props, deckId})))
 
         return { deckId, cardsIds: cardsIds as number[] }
     })

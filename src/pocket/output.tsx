@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react'
 
 import { Database, read as readAll } from '../memory'
-import { Data as Language } from '../tags'
+import { Data as Tag } from '../tags'
 import { useTranslation } from '../localisation'
 import { useMemory } from '../memory'
 
@@ -89,19 +89,29 @@ async function createPackage(ids: number[], db: Database) {
     const { done, store, cardStore, tagStore } = readAll(db)
 
     const cardIndex = cardStore.index('deckId')
-    const prepacked = Promise.all(ids.map(async (id) => ({
+    const decks = await Promise.all(ids.map(async (id) => ({
         data: await store.get(id) as Data,
         cards: await cardIndex.getAll(IDBKeyRange.only(id)) as Card[]
     })))
 
-    const packed = Promise.all((await prepacked).map(async ({ data, cards }) => ({
-        data, cards, tag: data.tagId ? 
-            await tagStore.get(data.tagId) as Language :
-            null
-    })))
+    const tags = [] as Tag[]
+    for (const { data } of decks) {
+
+        if (!data.tagId)
+            continue
+
+        const tag = await tagStore.get(data.tagId) as Tag
+        if (!tag)
+            continue
+
+        if (tags.some(({ id }) => id == tag.id))
+            continue
+
+        tags.push(tag)
+    }
     
     await done
-    return packed
+    return { tags, decks }
 }
 
 export type Packed = Awaited <ReturnType <typeof createPackage>>

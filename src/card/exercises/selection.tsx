@@ -48,9 +48,9 @@ export default function Selection({ guesses }: { guesses: [string, number][]}) {
     
         <span className={style.interactions}>
 
-            {!(audible && defined) ? <HintButton/> : null}
+            {!isCorrect && !(audible && defined) ? <HintButton/> : null}
 
-            {audible ? <Speech/> : null}
+            {(audible || isCorrect) ? <Speech/> : null}
 
         </span>
 
@@ -61,10 +61,10 @@ function Definition() {
 
     const { def } = useContext(Context)
 
-    const { defined } = useContext(ExerciseContext)
+    const { isCorrect, defined } = useContext(ExerciseContext)
 
     return <textarea className={style.def} 
-        disabled={true} value={defined ? def : ''}/>
+        disabled={true} value={(defined || isCorrect) ? def : ''}/>
 }
 
 function Option({ text, sim }: { text: string, sim: number }) {

@@ -8,7 +8,7 @@ import { useTranslation } from '../localisation'
 import { useMemory } from '../memory'
 
 import Quickaccess from '../quickaccess'
-import Languages from '../languages'
+import Tags from '../tags'
 
 import * as Deck from '../deck'
 import { readwrite } from '../deck/properties'
@@ -31,8 +31,8 @@ export const Context = createContext({
     showOptions: Options.NONE as Options, 
         setShowOptions(_: Options) {},
 
-    activeLanguageId: -1,
-        setActiveLanguageId(_:number) {}
+    activeTagId: -1,
+        setActiveTagId(_:number) {}
 })
 
 export default function(props: {
@@ -59,7 +59,7 @@ export default function(props: {
     const [input, setInput] = useState('')
     const [selection, setSelection] = useState([] as number[])
     const [showOptions, setShowOptions] = useState(Options.NONE)
-    const [activeLanguageId, setActiveLanguageId] = useState(-1)
+    const [activeTagId, setActiveTagId] = useState(-1)
 
     const { t } = useTranslation()
 
@@ -67,7 +67,7 @@ export default function(props: {
         input, setInput, 
         selection, setSelection,
         showOptions, setShowOptions,
-        activeLanguageId, setActiveLanguageId
+        activeTagId, setActiveTagId
     }}>
 
         <Quickaccess home={true} popup={showOptions == Options.INPUT && !input ? 
@@ -89,11 +89,11 @@ export default function(props: {
 
         <h1 className='title'>{t`your decks`}</h1>
 
-        <Languages/>
+        <Tags/>
 
         <ul className={style.decks} data-testid="decks">
             
-            {(activeLanguageId >= 0 ? decks.filter(deck => deck.languageId == activeLanguageId) : decks)
+            {(activeTagId >= 0 ? decks.filter(deck => deck.tagId == activeTagId) : decks)
                 .map(deck => <li key={deck.id}><DeckButton {...deck}/></li>)}
 
         </ul>

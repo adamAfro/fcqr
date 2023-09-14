@@ -24,7 +24,7 @@ Decks with cards are stored in the pocket - home screen. Deck has it's name and 
 
 Cards can be easily edited and viewed in exercise mode which provides some minigames, which may include voice input, thanks to [speech recognition API]([SpeechRecognition - Web APIs | MDN](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition)). Cards are also optionally read aloud thanks to [speech synthesis API](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis).
 
-Pocket provides functionalities for importing and exporting cards, decks and languages. There are 3 methods:
+Pocket provides functionalities for importing and exporting cards, decks and tags. There are 3 methods:
 
 - save as a file / read from file;
 

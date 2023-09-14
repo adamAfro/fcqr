@@ -15,7 +15,7 @@ const ExerciseContext = createContext({
 
 export default function Vocal() {
 
-    const { language, muted } = useContext(DeckContext)
+    const { tag, muted } = useContext(DeckContext)
 
     const { term } = useContext(Context)
 
@@ -48,7 +48,7 @@ export default function Vocal() {
     }}>
 
         <input className={style.term} data-is-long={term.length > 15}
-            value={answer} lang={language?.code} spellCheck={false}
+            value={answer} lang={tag?.code} spellCheck={false}
             onChange={e => void respond(e.target.value)} 
             style={{ color: color(similarity) }} 
             placeholder='?' disabled/>

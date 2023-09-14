@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react'
 
 import { Database, read as readAll } from '../memory'
-import { Data as Language } from '../languages'
+import { Data as Language } from '../tags'
 import { useTranslation } from '../localisation'
 import { useMemory } from '../memory'
 
@@ -86,7 +86,7 @@ export function OutputSelectionButton(deck: Data) {
 
 async function createPackage(ids: number[], db: Database) {
 
-    const { done, store, cardStore, languageStore } = readAll(db)
+    const { done, store, cardStore, tagStore } = readAll(db)
 
     const cardIndex = cardStore.index('deckId')
     const prepacked = Promise.all(ids.map(async (id) => ({
@@ -95,8 +95,8 @@ async function createPackage(ids: number[], db: Database) {
     })))
 
     const packed = Promise.all((await prepacked).map(async ({ data, cards }) => ({
-        data, cards, language: data.languageId ? 
-            await languageStore.get(data.languageId) as Language :
+        data, cards, tag: data.tagId ? 
+            await tagStore.get(data.tagId) as Language :
             null
     })))
     

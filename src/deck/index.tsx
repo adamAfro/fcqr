@@ -2,7 +2,7 @@ import { useContext, useEffect, useState, createContext } from 'react'
 
 import { Database, Stores, read as readAll } from "../memory"
 
-import { Data as Language } from '../languages'
+import { Data as Language } from '../tags'
 import { useMemory } from "../memory"
 
 
@@ -18,7 +18,7 @@ import style from "./style.module.css"
 export interface Data {
     id?: number
     name: string
-    languageId?: number
+    tagId?: number
     muted?: boolean
     silent?: boolean
     reference?: string
@@ -53,8 +53,8 @@ export const Context = createContext({
     name: undefined as string | undefined,
     setName(c:string|((p:string | undefined) => string)) {},
 
-    language: undefined as Language | undefined | null,
-    setLanguage(c:Language|((p:Language | undefined) => Language)) {},
+    tag: undefined as Language | undefined | null,
+    setTag(c:Language|((p:Language | undefined) => Language)) {},
 
     cards: [] as CardData[], 
     setCards(c:CardData[]|((p:CardData[]) => CardData[])) {},
@@ -78,7 +78,7 @@ export default function Deck({ id }: { id: number }): JSX.Element {
 
     const [state, setState] = useState(State.LOADING)
     const [name, setName] = useState <string | undefined> (undefined)
-    const [language, setLanguage] = useState <Language | undefined | null> (undefined)
+    const [tag, setTag] = useState <Language | undefined | null> (undefined)
     const [reference, setReference] = useState('')
 
     const [muted, setMuted] = useState(false)
@@ -88,30 +88,30 @@ export default function Deck({ id }: { id: number }): JSX.Element {
 
     useEffect(() => void (async (ok) => {
 
-        const { done, store, cardStore, languageStore } = readAll(database)
+        const { done, store, cardStore, tagStore } = readAll(database)
 
         const index = cardStore.index('deckId')
 
         const data = await store.get(id) as Data
         const cards = await index.getAll(IDBKeyRange.only(id)) as CardData[]
 
-        const language = data.languageId ?
-            await languageStore.get(data.languageId) as Language :
+        const tag = data.tagId ?
+            await tagStore.get(data.tagId) as Language :
             null
 
         await done
 
-        return { data, cards, language }
+        return { data, cards, tag }
 
-    })().then(({ data, language, cards }) => {
+    })().then(({ data, tag, cards }) => {
 
         setName(data.name)
         setReference(data.reference || '')
-        setLanguage(language)
+        setTag(tag)
         setCards(cards as CardData[])
-        if (data.muted || !(language && language.voice))
+        if (data.muted || !(tag && tag.voice))
             setMuted(true)
-        if (data.silent || !(language && language.code))
+        if (data.silent || !(tag && tag.code))
             setSilent(true)
 
         setState(State.LOADED)
@@ -123,7 +123,7 @@ export default function Deck({ id }: { id: number }): JSX.Element {
         id, 
         state, setState,
         name, setName,
-        language, setLanguage,
+        tag, setTag,
         cards, setCards,
         layout, setLayout,
         muted, setMuted,

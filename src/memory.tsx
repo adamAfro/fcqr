@@ -25,28 +25,22 @@ export const DB_NAME = 'db'
 export enum Stores {
     DECKS = 'decks',
     CARDS = 'cards',
-    LANGUAGES = 'languages'
+    TAGS = 'tags'
 }
 
-export const openDatabase = () => openDB(DB_NAME, 106, {
+export const openDatabase = () => openDB(DB_NAME, 200, {
 
     async upgrade(db, oldVersion, newVersion, transaction, event) {
         
-        if (!db.objectStoreNames.contains(Stores.DECKS)) {
-
-            const deckStore = db.createObjectStore(Stores.DECKS, { keyPath: 'id', autoIncrement: true })
-        }
+        if (!db.objectStoreNames.contains(Stores.DECKS)) 
+            db.createObjectStore(Stores.DECKS, { keyPath: 'id', autoIncrement: true })
     
-        if (!db.objectStoreNames.contains(Stores.CARDS)) {
+        if (!db.objectStoreNames.contains(Stores.CARDS))
+            db.createObjectStore(Stores.CARDS, { keyPath: 'id', autoIncrement: true })
+                .createIndex('deckId', 'deckId')
 
-            const cardStore = db.createObjectStore(Stores.CARDS, { keyPath: 'id', autoIncrement: true })
-            cardStore.createIndex('deckId', 'deckId')
-        }
-
-        if (!db.objectStoreNames.contains(Stores.LANGUAGES)) {
-
-            const languageStore = db.createObjectStore(Stores.LANGUAGES, { keyPath: 'id', autoIncrement: true })
-        }
+        if (!db.objectStoreNames.contains(Stores.TAGS))
+            db.createObjectStore(Stores.TAGS, { keyPath: 'id', autoIncrement: true })
     }
 })
 
@@ -94,10 +88,10 @@ function restoreLanguage() {
 
 export function read(db: Database) {
 
-    const t = db.transaction([Stores.DECKS, Stores.CARDS, Stores.LANGUAGES], 'readonly')
+    const t = db.transaction([Stores.DECKS, Stores.CARDS, Stores.TAGS], 'readonly')
     return { done: t.done, 
         store: t.objectStore(Stores.DECKS),
         cardStore: t.objectStore(Stores.CARDS),
-        languageStore: t.objectStore(Stores.LANGUAGES) 
+        tagStore: t.objectStore(Stores.TAGS) 
     }
 }

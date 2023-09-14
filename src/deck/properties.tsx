@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from 'react'
 import { Database, Stores } from "../memory"
 
 import { useTranslation } from '../localisation'
-import { Data as Language, read as readLanguages } from '../languages'
+import { Data as Language, read as readLanguages } from '../tags'
 import { useMemory } from "../memory"
 import { Data } from './'
 
@@ -21,7 +21,7 @@ export default function Properties() {
 
         <div className={style.sounds}>
 
-            <LanguageSelect/>
+            <TagSelect/>
 
             <MuteButton/>
 
@@ -60,43 +60,43 @@ function Name() {
     }} placeholder={t`unnamed deck`} type="text" value={name}/>
 }
 
-function LanguageSelect() {
+function TagSelect() {
 
     const { database } = useMemory()!
 
-    const { id, language, setLanguage } = useContext(Context)
+    const { id, tag, setTag } = useContext(Context)
 
-    const [languages, setLanguages] = useState([] as Language[])
+    const [tags, setTags] = useState([] as Language[])
     useEffect(() => void (async function() {
 
         const { done, store } = readLanguages(database)
 
-        const languages = await store.getAll() as Data[]
+        const tags = await store.getAll() as Data[]
         
         await done
-        return languages
+        return tags
 
-    })().then(ls => setLanguages(ls)), [])
+    })().then(ls => setTags(ls)), [])
 
     const { t } = useTranslation()
 
-    return <select className={style.language} data-attention={language ? 'none' : 'primary'} onChange={async (e) => {
+    return <select className={style.tag} data-attention={tag ? 'none' : 'primary'} onChange={async (e) => {
 
-        const languageId = Number(e.target.value)
-        const language = languages
-            .find(({ id }) => id == languageId)
+        const tagId = Number(e.target.value)
+        const tag = tags
+            .find(({ id }) => id == tagId)
 
-        setLanguage(prev => language)
+        setTag(prev => tag)
         
         const { done, store } = readwrite(database)
         const deck = await store.get(id) as Data
         
-        await store.put({ ...deck, languageId })
+        await store.put({ ...deck, tagId })
         return await done
         
-    }} value={language?.id}>
-        <option key={-1}>{t`no language`}</option>
-        {languages.map(({ id, name }) => 
+    }} value={tag?.id}>
+        <option key={-1}>{t`no tag`}</option>
+        {tags.map(({ id, name }) => 
             <option key={id} value={id}>{name}</option>)
         }
     </select>
@@ -106,13 +106,13 @@ function MuteButton() {
 
     const { database } = useMemory()!
 
-    const { id, muted, setMuted, language } = useContext(Context)
+    const { id, muted, setMuted, tag } = useContext(Context)
 
     return <label className='icon' role='button' data-attention='none'>
         
         🔇
         <input type="checkbox" checked={muted} 
-            disabled={!language || !language.voice}
+            disabled={!tag || !tag.voice}
             onChange={async () => {
 
                 const { done, store } = readwrite(database)
@@ -132,13 +132,13 @@ function SilenceButton() {
 
     const { database } = useMemory()!
 
-    const { id, silent, setSilent, language } = useContext(Context)
+    const { id, silent, setSilent, tag } = useContext(Context)
 
     return <label className='icon' role='button' data-attention='none'>
         
         🤫
         <input type="checkbox" checked={silent} 
-            disabled={!language || !language.code}
+            disabled={!tag || !tag.code}
             onChange={async () => {
 
                 const { done, store } = readwrite(database)

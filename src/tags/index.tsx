@@ -3,7 +3,7 @@ import { createContext } from 'react'
 
 import { Database, Stores } from '../memory'
 import { useTranslation } from '../localisation'
-import { getVoices } from './speech'
+import { getVoices } from '../speech'
 import { useMemory } from '../memory'
 import { readwrite, default as Inputs } from './entry'
 import { Context as PocketContext } from '../pocket'
@@ -21,8 +21,8 @@ export enum Status { LOADING, FAILED, LOADED }
 export const Context = createContext({
     status: Status.LOADING,
     voices: [] as SpeechSynthesisVoice[],
-    languages: [] as Data[],
-        setLanguages: (x: (prev: Data[]) => any[]) => {}
+    tags: [] as Data[],
+        setTags: (x: (prev: Data[]) => any[]) => {}
 })
 
 export default function Languages() {
@@ -30,7 +30,7 @@ export default function Languages() {
     const { database } = useMemory()!
     
     const [status, setStatus] = useState(Status.LOADING)
-    const [languages, setLanguages] = useState <Data[]> ([])
+    const [tags, setTags] = useState <Data[]> ([])
 
     useEffect(() => void (async function() {
         
@@ -41,7 +41,7 @@ export default function Languages() {
         await done
         return decks
 
-    })().then(setLanguages), [])
+    })().then(setTags), [])
 
     const [voices, setVoices] = useState([] as SpeechSynthesisVoice[])
     useEffect(() => {
@@ -55,7 +55,7 @@ export default function Languages() {
     }, [])
 
     return <Context.Provider value={{ status, voices, 
-        languages, setLanguages
+        tags, setTags
     }}>
 
         <ul className={style.entries}>
@@ -64,7 +64,7 @@ export default function Languages() {
             </li>
             <li>
                 <AddButton/>
-            </li>{[...languages].reverse().map((language) =>
+            </li>{[...tags].reverse().map((language) =>
             <li data-testid={`language-${language.id}`} key={language.id}>
                 <Inputs {...language}/>
             </li>
@@ -75,11 +75,11 @@ export default function Languages() {
 
 function ShowAllButton() {
 
-    const { activeLanguageId, setActiveLanguageId } = useContext(PocketContext)
+    const { activeTagId, setActiveTagId } = useContext(PocketContext)
 
     const { t } = useTranslation()
 
-    return <button data-active={activeLanguageId == -1} onClick={() => setActiveLanguageId(-1)}>
+    return <button data-active={activeTagId == -1} onClick={() => setActiveTagId(-1)}>
         {t`show all`}
     </button>
 }
@@ -88,7 +88,7 @@ function AddButton() {
 
     const { database } = useMemory()!
 
-    const { setLanguages } = useContext(Context)
+    const { setTags } = useContext(Context)
 
     const { t } = useTranslation()
 
@@ -104,7 +104,7 @@ function AddButton() {
 
         const id = await store.add(added)
 
-        setLanguages(prev => [...prev, {...added, id}])
+        setTags(prev => [...prev, {...added, id}])
         
         await done
         
@@ -113,6 +113,6 @@ function AddButton() {
 
 export function read(db: Database) {
 
-    const t = db.transaction(Stores.LANGUAGES, 'readonly')
-    return { done: t.done, store: t.objectStore(Stores.LANGUAGES) }
+    const t = db.transaction(Stores.TAGS, 'readonly')
+    return { done: t.done, store: t.objectStore(Stores.TAGS) }
 }

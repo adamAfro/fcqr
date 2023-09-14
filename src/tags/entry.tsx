@@ -17,7 +17,7 @@ const EntryContext = createContext({
 
 export default function Entry({ id, ...props }: Data) {
 
-    const { activeLanguageId, setActiveLanguageId } = useContext(PocketContext)
+    const { activeTagId, setActiveTagId } = useContext(PocketContext)
 
     const [name, setName] = useState(props.name)
     const [removed, setRemoved] = useState(false)
@@ -29,7 +29,7 @@ export default function Entry({ id, ...props }: Data) {
         id, removed, setRemoved, name, setName
     }}>
         
-        {activeLanguageId == id ? <div className={style.entry} onClick={() => setActiveLanguageId(id)}>
+        {activeTagId == id ? <div className={style.entry} onClick={() => setActiveTagId(id)}>
 
             <NameInput/>
 
@@ -37,7 +37,7 @@ export default function Entry({ id, ...props }: Data) {
     
             <VoiceSelect initValue={props.voice}/>
 
-        </div> : <button className={style.entry} onClick={() => setActiveLanguageId(id!)}>{name}</button>}
+        </div> : <button className={style.entry} onClick={() => setActiveTagId(id!)}>{name}</button>}
 
     </EntryContext.Provider>
 }
@@ -56,9 +56,9 @@ function NameInput() {
         if (!id) return
 
         const { done, store } = readwrite(database)
-        const language = await store.get(id) as Data
+        const tag = await store.get(id) as Data
 
-        await store.put({ ...language, name: e.target.value })        
+        await store.put({ ...tag, name: e.target.value })        
         return await done
 
     }} placeholder={t`not named`} value={name}/>
@@ -87,11 +87,11 @@ function VoiceSelect({ initValue }: { initValue: undefined | string }) {
         setValue(voice)
         
         const { done, store } = readwrite(database)
-        const language = await store.get(id) as Data
+        const tag = await store.get(id) as Data
 
         const code = voices.find(v => v.name == voice)?.lang
         
-        await store.put({ ...language, voice, code })
+        await store.put({ ...tag, voice, code })
 
         return await done
 
@@ -122,6 +122,6 @@ function RemoveButton() {
 
 export function readwrite(db: Database) {
 
-    const t = db.transaction(Stores.LANGUAGES, 'readwrite')
-    return { done: t.done, store: t.objectStore(Stores.LANGUAGES) }
+    const t = db.transaction(Stores.TAGS, 'readwrite')
+    return { done: t.done, store: t.objectStore(Stores.TAGS) }
 }

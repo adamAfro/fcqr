@@ -6,7 +6,7 @@ import { useTranslation } from '../localisation'
 import { Data, Status, Context } from '.'
 import { Context as PocketContext } from '../pocket'
 
-import { Button, Widget } from '../interactions'
+import { Button, Widget, Input } from '../interactions'
 
 import style from './style.module.css'
 
@@ -39,7 +39,7 @@ export default function Entry({ id, ...props }: Data) {
     
             <VoiceSelect initValue={props.voice}/>
 
-        </div> : <Button contents={name} className={style.entry} 
+        </div> : <Button className={style.entry} contents={name} attention='weak' 
             onClick={() => setActiveTagId(id!)}/>}
 
     </EntryContext.Provider>
@@ -53,7 +53,7 @@ function NameInput() {
 
     const { t } = useTranslation()
 
-    return <input data-active={true} onChange={async (e) => {
+    return <Input active={true} onChange={async (e) => {
 
         setName(e.target.value)
         if (!id) return
@@ -109,7 +109,7 @@ function RemoveButton() {
 
     const { id, setRemoved } = useContext(EntryContext)
 
-    return <Widget symbol='❌' onClick={async () => {
+    return <Widget symbol='Bin' attention='removal' onClick={async () => {
 
         setRemoved(true)
         if (!id) return

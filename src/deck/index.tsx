@@ -131,14 +131,13 @@ export default function Deck({ id }: { id: number }): JSX.Element {
         reference, setReference
     }}>
 
-        <Quickaccess popup={state == State.LOADED ? <Actions.Dangerzone/> : null}>
+        <Quickaccess>
 
             <div className='stack'>
 
                 {state == State.EXERCISES ? 
                     <Actions.ShuffleButton/> :
-                    <Actions.AddButton/>
-                }
+                    <Actions.AddButton/>}
 
                 <Actions.LayoutButton/>
 
@@ -146,8 +145,7 @@ export default function Deck({ id }: { id: number }): JSX.Element {
 
             {state == State.EXERCISES ? 
                 <Actions.EditButton/> : 
-                <Actions.ExerciseButton/>
-            }
+                <Actions.ExerciseButton/>}
 
         </Quickaccess>
 

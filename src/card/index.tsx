@@ -110,9 +110,9 @@ export function Hearing({ setResult }: {
 
 	const [listening, setListening] = useState(false)
 
-    if (!tag || !tag.code) return <Widget symbol='🔇'/>
+    if (!tag || !tag.code) return <Widget symbol='SpeakerOff'/>
 
-    return <Widget symbol='🎤' onClick={!listening ? () => {
+    return <Widget symbol='Microphone' onClick={!listening ? () => {
         
         setListening(true)
         listen(alts => setResult(alts[0].trim()), { langCode: tag.code! })
@@ -125,7 +125,7 @@ export function Speech() {
 
     const { voice = undefined } = useContext(DeckContext).tag || {}
 
-	return <Widget symbol='🔈' onClick={() => speak(term, { voice })}/>
+	return <Widget symbol='Speaker' onClick={() => speak(term, { voice })}/>
 }
 
 export function color(value = 0) {

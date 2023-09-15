@@ -49,10 +49,9 @@ export function InputOptions() {
 
         {!value ? <div className={style.buttons}>
 
-            <Button contents={scanning ? t`close scanner` : t`scan QR`} 
-                onClick={() => setScanning(prev => !prev)}/>
+            <Widget symbol='QR' onClick={() => setScanning(prev => !prev)}/>
 
-            <Button contents={t`load file`} labeled={<input onChange={async (e) => {
+            <Widget symbol='FileFrom' labeled={<input onChange={async (e) => {
 
                 const input = e.target as HTMLInputElement
 

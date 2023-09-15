@@ -79,7 +79,7 @@ function RestartButton() {
 
     const { respond } = useContext(ExerciseContext)
 
-    return <Widget symbol='⌨' onClick={e => {
+    return <Widget symbol='Keyboard' onClick={e => {
 
         respond('')
 
@@ -99,7 +99,7 @@ function HintButton() {
 
     const { answer, respond } = useContext(ExerciseContext)
 
-    return <Widget symbol='❔' attention='weak' onClick={() => {
+    return <Widget symbol='Bulb' attention='weak' onClick={() => {
 
         if (!defined)
             return void setDefined(true)

@@ -56,21 +56,26 @@ export default function Languages() {
 
     }, [])
 
+    const { t } = useTranslation()
+
     return <Context.Provider value={{ status, voices, 
         tags, setTags
     }}>
 
-        <ul className={style.entries}>
+        <ul className='row'>
+            <li>
+                <h2 className={style.heading}>{t`tags`}</h2>
+            </li>
             <li>
                 <ShowAllButton/>
-            </li>
-            <li>
-                <AddButton/>
-            </li>{[...tags].reverse().map((language) =>
+            </li>{tags.map((language) =>
             <li data-testid={`language-${language.id}`} key={language.id}>
                 <Inputs {...language}/>
+            </li>)}
+            <li>
+                <AddButton/>
             </li>
-        )}</ul>
+        </ul>
 
     </Context.Provider>
 }
@@ -81,7 +86,8 @@ function ShowAllButton() {
 
     const { t } = useTranslation()
 
-    return <Button contents={t`show all`} active={activeTagId == -1} 
+    return <Button contents={t`show all`} 
+        active={activeTagId == -1} attention='weak'
         onClick={() => setActiveTagId(-1)}/>
 }
 
@@ -93,7 +99,7 @@ function AddButton() {
 
     const { t } = useTranslation()
 
-    return <Widget symbol='➕' onClick={async () => {
+    return <Widget symbol='Plus' onClick={async () => {
 
         const added = {
             name: t`new language`,

@@ -21,12 +21,8 @@ export default function Quickaccess({ home, popup, children }: {
 
             {popup ? <div className={style.popup}>{popup}</div> : null}
 
-            <nav className={style.nav}>{home ? <>  
-                <a className={style.brandname} target='_blank' href="https://github.com/adamAfro/flisqs">
-                    {t`flisqs`}
-                </a>
-                <Button contents={t`options`} to={links.options}/>
-            </> :
+            <nav className={style.nav}>{home ?
+                <Button contents={t`options`} to={links.options}/> :
                 <Button contents={t`go back`} to={links.pocket}/>
             }</nav>
             

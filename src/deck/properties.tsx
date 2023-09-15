@@ -9,7 +9,9 @@ import { Data } from './'
 
 import { Context } from './'
 
-import { Widget } from '../interactions'
+import { Dangerzone } from './actions'
+
+import { Widget, Input } from '../interactions'
 
 import style from "./style.module.css"
 
@@ -19,7 +21,7 @@ export default function Properties() {
 
     return <header className={style.properites} data-testid={`deck-${id}`}>
         
-        <Name/>
+        <h1 className='title'><Name/></h1>
 
         <div className={style.sounds}>
 
@@ -32,6 +34,8 @@ export default function Properties() {
         </div>
 
         <Reference/>
+
+        <Dangerzone/>
 
     </header>
 }
@@ -46,7 +50,7 @@ function Name() {
 
     const [name, setName] = useState(context.name)
 
-    return <input className='title' data-attention={name ? 'none' : 'primary'} onChange={async (e) => {
+    return <Input attention={name ? 'none' : 'primary'} onChange={async (e) => {
         
         setName(e.target.value)
         
@@ -110,7 +114,7 @@ function MuteButton() {
 
     const { id, muted, setMuted, tag } = useContext(Context)
 
-    return <Widget symbol='🔇' labeled={<input onChange={async () => {
+    return <Widget symbol='SpeakerOff' attention='none' labeled={<input onChange={async () => {
 
         const { done, store } = readwrite(database)
         const deck = await store.get(id) as Data
@@ -129,7 +133,7 @@ function SilenceButton() {
 
     const { id, silent, setSilent, tag } = useContext(Context)
 
-    return <Widget symbol='🤫' labeled={<input onChange={async () => {
+    return <Widget symbol='MicrophoneOff' attention='none' labeled={<input onChange={async () => {
 
         const { done, store } = readwrite(database)
         const deck = await store.get(id) as Data
@@ -167,11 +171,11 @@ function Reference() {
             await store.put({ ...deck, reference })
             await done
 
-        }}/> : (reference ? <Widget big symbol='🔗' target='_blank' href={reference}/> :
-            <Widget big symbol='🔗' disabled/>)}
+        }}/> : (reference ? <Widget big symbol='Link' target='_blank' href={reference}/> :
+            <Widget big symbol='Link' disabled/>)}
 
         <div className={style.edit}>
-            <Widget symbol='📝' attention={!reference ? undefined : 'weak'} active={edition}
+            <Widget symbol='Pencil' attention={!reference ? undefined : 'weak'} active={edition}
                 onClick={() => setEdition(p => !p)}/>
         </div>
 

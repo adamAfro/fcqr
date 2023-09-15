@@ -2,8 +2,11 @@ import {
     ButtonHTMLAttributes,
     AnchorHTMLAttributes,
     LabelHTMLAttributes,
-    ReactNode, JSX 
+    InputHTMLAttributes,
+    ReactNode, JSX, createElement, 
 } from "react";
+
+import * as Icons from './icons'
 
 import { Link } from 'react-router-dom'
 
@@ -11,6 +14,7 @@ type ButtonAttrs = ButtonHTMLAttributes <HTMLButtonElement>
 type AnchorAttrs = AnchorHTMLAttributes <HTMLAnchorElement>
 type LinkAttrs = AnchorAttrs & {to: string}
 type LabelAttrs = LabelHTMLAttributes <HTMLLabelElement>
+type InputAttrs = InputHTMLAttributes <HTMLInputElement>
 type Attrs = ButtonAttrs | AnchorAttrs | LinkAttrs | LabelAttrs
 
 interface Props {
@@ -37,7 +41,7 @@ export function Button({ active, attention, contents, href, to, labeled, ...prop
         data-active={active} >{contents}</Link>
 
     if (href) return <a {...props as AnchorAttrs}    
-        role='button' href={href} 
+        role='button' href={href}
         data-attention={attention}
         data-active={active} >{contents}</a>
 
@@ -45,14 +49,15 @@ export function Button({ active, attention, contents, href, to, labeled, ...prop
         data-attention={attention} 
         data-active={active}>{contents}{labeled}</label>
 
-    return <button {...props as ButtonHTMLAttributes <HTMLButtonElement>}
+    return <button {...props as ButtonAttrs}
         data-attention={attention} 
         data-active={active} >{contents}</button>
 }
 
+type IconName = keyof typeof Icons
 interface WidgetProps extends Props {
     big?: boolean,
-    symbol: string
+    symbol: IconName
 }
 
 export function Widget(props: WidgetProps & ButtonAttrs): JSX.Element
@@ -61,5 +66,18 @@ export function Widget(props: WidgetProps & LinkAttrs): JSX.Element
 export function Widget(props: WidgetProps & LabelAttrs): JSX.Element
 export function Widget({ big, symbol, ...props }: WidgetProps & Attrs) {
 
-    return <Button className={big ? 'widget' : 'box'} contents={symbol} {...props as Props & ButtonAttrs}/>
+    return <Button {...props as Props & ButtonAttrs}
+        className={big ? 'widget' : 'box'}
+        contents={symbol in Icons ?
+            createElement(Icons[symbol as IconName]) : 
+            symbol
+        }
+    />
+}
+
+export function Input({ active, attention, contents, ...props }: Props & InputAttrs) {
+
+    return <input {...props as InputAttrs}
+        data-attention={attention} 
+        data-active={active}/>
 }

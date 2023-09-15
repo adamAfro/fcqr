@@ -1,25 +1,5 @@
-.entries {
-
-    list-style: none;
-    margin: 0; padding: 0;
-    display: flex; gap: 1em;
-    flex-flow: row wrap;
-    margin-left: min(25vw, 8em);
-    margin-bottom: min(25vw, 8em);
-
-} .entries li:empty { display: none; }
-
-.entries > li > * {
-    font-size: 1em;
-}
-
-.entry > * {
-    font-size: 1em;
-}
-
 .entry {
     display: flex;
-    font-size: 1em;
     width: 10em;
     align-items: flex-end;
     position: relative; --gap: 1em;
@@ -27,11 +7,28 @@
 
 .entry > input {
     width: 100%;
+
+    border-radius: 0;
+    border-top-left-radius: var(--padding);
+}
+
+.entry > button {
+    border-radius: 0;
+    border-top-right-radius: var(--padding);
 }
 
 .entry > select {
+    font-size: .8em;
     position: absolute; z-index: 3;
-    top: 100%; margin-top: var(--gap);
-    
+    top: 100%;
     width: 100%;
+
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.heading {
+    font-size: var(--button-height-font-size);
+    font-weight: normal;
+    margin: 0;
 }

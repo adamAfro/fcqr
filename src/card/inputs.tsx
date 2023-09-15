@@ -63,7 +63,7 @@ export function Options() {
 
     return <span className={style.options}>
         
-        <Widget symbol='🗑' attention="removal" onClick={async () => {
+        <Widget symbol='Bin' attention="removal" onClick={async () => {
 
             setRemoved(true)
             if (!id) return

@@ -40,7 +40,7 @@ export function OutputOptions() {
 
         <div className={style.buttons}>
             
-            <Button contents={t`save`} href={href} download={t`decks` + '.json'}/>
+            <Widget symbol='FileAdd' href={href} download={t`decks` + '.json'}/>
             
             <Button contents={t`copy`} onClick={async () => {
 

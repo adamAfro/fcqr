@@ -33,3 +33,9 @@
     display: flex;
     align-items: center;
 }
+
+.tags {
+
+    font-size: .8em;
+    margin-bottom: 8em;
+}

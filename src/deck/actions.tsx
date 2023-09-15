@@ -23,10 +23,10 @@ export function Dangerzone() {
 
     return <p className={style.dangerzone}>
 
-        <Widget symbol={show ? '🔙' : '💀'} attention='weak' active={show}
+        <Widget symbol={show ? 'ArrowBack' : 'Danger'} attention='removal' active={show}
             onClick={() => setShow(p => !p)}/>
 
-        {show ? <Widget symbol='🗑' attention='removal' onClick={async () => {
+        {show ? <Widget symbol='Bin' attention='removal' onClick={async () => {
 
             setState(State.REMOVED)
 
@@ -53,7 +53,7 @@ export function ExerciseButton() {
 
     const { setState } = useContext(Context)
 
-    return <Widget big symbol='💪' attention='primary' 
+    return <Widget big symbol='ABC' attention='primary' 
         onClick={() => setState(State.EXERCISES)}/>
 }
 
@@ -61,7 +61,7 @@ export function EditButton() {
 
     const { setState } = useContext(Context)
 
-    return <Widget big symbol='📝' 
+    return <Widget big symbol='Pencil' 
         onClick={() => setState(State.LOADED)}/>
 }
 
@@ -71,7 +71,7 @@ export function ShuffleButton() {
 
     const { database } = useMemory()!
 
-    return <Widget big symbol='🔀' onClick={async () => {
+    return <Widget big symbol='Shuffle' onClick={async () => {
 
         const shuffled = cards?.map(card => ({ ...card, order: Math.random() }))
             .sort((a, b) => a.order! - b.order!).reverse()
@@ -94,7 +94,7 @@ export function LayoutButton() {
 
     const { layout, setLayout } = useContext(Context)
 
-    return <Widget big symbol='🔍' onClick={() => {
+    return <Widget big symbol='Magnifier' onClick={() => {
 
         const values = Object.values(layouts)
         const index = values.findIndex(v => v == layout)
@@ -109,7 +109,7 @@ export function AddButton() {
 
     const { database } = useMemory()!
 
-    return <Widget big symbol='➕' onClick={async () => {
+    return <Widget big symbol='Plus' onClick={async () => {
 
         if (!id) 
             return void setCards(prev => [{ ...card, id: -1 }, ...prev])

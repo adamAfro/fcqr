@@ -88,9 +88,11 @@ export default function(props: {
 
         </Quickaccess>
 
-        <h1 className='title'>{t`your decks`}</h1>
+        <h1 className='title'>{t`flisqs`}</h1>
 
-        <Tags/>
+        <section className={style.tags}>
+            <Tags/>
+        </section>
 
         <ul className={style.decks} data-testid="decks">
             
@@ -108,7 +110,7 @@ function AddButton() {
 
     const { database } = useMemory()!
 
-    return <Widget big symbol='➕' attention='primary' onClick={async () => {
+    return <Widget big symbol='Plus' attention='primary' onClick={async () => {
 
         const { done, store } = readwrite(database)
         
@@ -124,7 +126,7 @@ function ExportButton() {
 
     const { showOptions, setShowOptions } = useContext(Context)
 
-    return <Widget big symbol='⏏️' active={showOptions == Options.OUTPUT} onClick={() => {
+    return <Widget big symbol='Save' active={showOptions == Options.OUTPUT} onClick={() => {
 
         if (showOptions != Options.OUTPUT)
             return void setShowOptions(Options.OUTPUT)
@@ -138,7 +140,7 @@ function ImportButton() {
 
     const { showOptions, setShowOptions, setInput } = useContext(Context)
 
-    return <Widget big symbol='📝' active={showOptions == Options.INPUT} onClick={() => {
+    return <Widget big symbol='Pencil' active={showOptions == Options.INPUT} onClick={() => {
 
         if (showOptions != Options.INPUT)
             return void setShowOptions(Options.INPUT)

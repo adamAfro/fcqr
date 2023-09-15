@@ -7,6 +7,8 @@ import { useTranslation } from 'react-i18next'
 
 import { Context } from './'
 
+import { Button, Widget } from '../interactions'
+
 import style from "./style.module.css"
 
 export function Term() {
@@ -61,7 +63,7 @@ export function Options() {
 
     return <span className={style.options}>
         
-        <button className='icon' data-attention="removal" onClick={async () => {
+        <Widget symbol='🗑' attention="removal" onClick={async () => {
 
             setRemoved(true)
             if (!id) return
@@ -72,7 +74,7 @@ export function Options() {
         
             return await done
 
-        }}>🗑</button>
+        }}/>
     
     </span>
 }

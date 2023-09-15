@@ -9,6 +9,8 @@ import { Data } from './'
 
 import { Context } from './'
 
+import { Widget } from '../interactions'
+
 import style from "./style.module.css"
 
 export default function Properties() {
@@ -108,24 +110,17 @@ function MuteButton() {
 
     const { id, muted, setMuted, tag } = useContext(Context)
 
-    return <label className='icon' role='button' data-attention='none'>
+    return <Widget symbol='🔇' labeled={<input onChange={async () => {
+
+        const { done, store } = readwrite(database)
+        const deck = await store.get(id) as Data
         
-        🔇
-        <input type="checkbox" checked={muted} 
-            disabled={!tag || !tag.voice}
-            onChange={async () => {
-
-                const { done, store } = readwrite(database)
-                const deck = await store.get(id) as Data
-                
-                await store.put({ ...deck, muted: !muted })
-                await done
-                
-                setMuted(p => !p)
-            
-            }}/>
-
-    </label>
+        await store.put({ ...deck, muted: !muted })
+        await done
+        
+        setMuted(p => !p)
+    
+    }} type="checkbox" checked={muted} disabled={!tag || !tag.code}/>}/>
 }
 
 function SilenceButton() {
@@ -134,24 +129,17 @@ function SilenceButton() {
 
     const { id, silent, setSilent, tag } = useContext(Context)
 
-    return <label className='icon' role='button' data-attention='none'>
+    return <Widget symbol='🤫' labeled={<input onChange={async () => {
+
+        const { done, store } = readwrite(database)
+        const deck = await store.get(id) as Data
         
-        🤫
-        <input type="checkbox" checked={silent} 
-            disabled={!tag || !tag.code}
-            onChange={async () => {
-
-                const { done, store } = readwrite(database)
-                const deck = await store.get(id) as Data
-                
-                await store.put({ ...deck, silent: !silent })
-                await done
-                
-                setSilent(p => !p)
-            
-            }}/>
-
-    </label>
+        await store.put({ ...deck, silent: !silent })
+        await done
+        
+        setSilent(p => !p)
+    
+    }} type="checkbox" checked={silent} disabled={!tag || !tag.code}/>}/>
 }
 
 function Reference() {
@@ -179,12 +167,12 @@ function Reference() {
             await store.put({ ...deck, reference })
             await done
 
-        }}/> : (reference ? <a target='_blank' href={reference} role='button' className='widget'>🔗</a> :
-            <button disabled className='widget'>🔗</button>)}
+        }}/> : (reference ? <Widget big symbol='🔗' target='_blank' href={reference}/> :
+            <Widget big symbol='🔗' disabled/>)}
 
         <div className={style.edit}>
-            <button className='icon' data-attention={!reference ? '' : 'weak'} data-active={edition}
-                onClick={() => setEdition(p => !p)}>📝</button>
+            <Widget symbol='📝' attention={!reference ? undefined : 'weak'} active={edition}
+                onClick={() => setEdition(p => !p)}/>
         </div>
 
     </p>

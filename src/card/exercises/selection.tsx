@@ -8,6 +8,8 @@ import { randomInt, randomFrom, randomWeighted }
 import { stringSimilarity as calcSimilarity }
     from 'string-similarity-js'
 
+import { Widget, Button } from '../../interactions'
+
 import style from "../style.module.css"
 
 const ExerciseContext = createContext({
@@ -73,7 +75,7 @@ function Option({ text, sim }: { text: string, sim: number }) {
 
     const [showSim, setShowSim] = useState(false)
 
-    return <button className='icon' disabled={isCorrect && sim != 1}
+    return <button disabled={isCorrect && sim != 1}
         style={showSim ? {color: color(sim)} : {}} 
         onClick={() => {
             setShowSim(true)
@@ -109,7 +111,7 @@ function HintButton() {
 
     const { audible, setAudible, defined, setDefined } = useContext(ExerciseContext)
 
-    return <button className='icon' onClick={() => {
+    return <Widget symbol='❔' onClick={() => {
 
         if (!defined)
             return void setDefined(true)
@@ -117,7 +119,5 @@ function HintButton() {
         if (!audible)
             return void setAudible(true)
 
-        
-
-    }}>❔</button>
+    }}/>
 }

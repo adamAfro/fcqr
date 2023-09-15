@@ -8,6 +8,8 @@ import { useMemory } from '../memory'
 import { readwrite, default as Inputs } from './entry'
 import { Context as PocketContext } from '../pocket'
 
+import { Button, Widget } from '../interactions'
+
 import style from './style.module.css'
 
 export interface Data {
@@ -79,9 +81,8 @@ function ShowAllButton() {
 
     const { t } = useTranslation()
 
-    return <button data-active={activeTagId == -1} onClick={() => setActiveTagId(-1)}>
-        {t`show all`}
-    </button>
+    return <Button contents={t`show all`} active={activeTagId == -1} 
+        onClick={() => setActiveTagId(-1)}/>
 }
 
 function AddButton() {
@@ -92,7 +93,7 @@ function AddButton() {
 
     const { t } = useTranslation()
 
-    return <button className='icon' onClick={async () => {
+    return <Widget symbol='➕' onClick={async () => {
 
         const added = {
             name: t`new language`,
@@ -108,7 +109,7 @@ function AddButton() {
         
         await done
         
-    }} data-testid="add-voice-btn">➕</button>
+    }}/>
 }
 
 export function read(db: Database) {

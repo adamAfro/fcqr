@@ -7,6 +7,7 @@ import { randomFrom, indexToSubindex, randomSubstring } from '../../misc'
 import { stringSimilarity as calcSimilarity }
     from 'string-similarity-js'
 
+import { Widget, Button } from '../../interactions'
 
 import style from "../style.module.css"
 
@@ -78,7 +79,7 @@ function RestartButton() {
 
     const { respond } = useContext(ExerciseContext)
 
-    return <button className='icon' onClick={e => {
+    return <Widget symbol='⌨' onClick={e => {
 
         respond('')
 
@@ -87,7 +88,7 @@ function RestartButton() {
 
         input.focus()
 
-    }}>⌨</button>
+    }}/>
 }
 
 function HintButton() {
@@ -98,7 +99,7 @@ function HintButton() {
 
     const { answer, respond } = useContext(ExerciseContext)
 
-    return <button className='icon' data-attention='weak' onClick={() => {
+    return <Widget symbol='❔' attention='weak' onClick={() => {
 
         if (!defined)
             return void setDefined(true)
@@ -108,7 +109,7 @@ function HintButton() {
 
         return void respond(hint(answer, term, { substring: true }))
 
-    }}>❔</button>
+    }}/>
 }
 
 function Definition() {

@@ -16,6 +16,7 @@ import { readwrite } from '../deck/properties'
 import { InputButton, InputOptions } from './input'
 import { OutputSelectionButton, OutputOptions } from './output'
 
+import { Button, Widget } from '../interactions'
 
 import style from './style.module.css'
 
@@ -107,7 +108,7 @@ function AddButton() {
 
     const { database } = useMemory()!
 
-    return <button className='widget' data-attention='primary' onClick={async () => {
+    return <Widget big symbol='➕' attention='primary' onClick={async () => {
 
         const { done, store } = readwrite(database)
         
@@ -116,28 +117,28 @@ function AddButton() {
         await done
         return void navigate(links.decks + deckId.toString())
             
-    }} data-testid='add-btn'>➕</button>
+    }}/>
 }
 
 function ExportButton() {
 
     const { showOptions, setShowOptions } = useContext(Context)
 
-    return <button className='widget' data-active={showOptions == Options.OUTPUT} onClick={() => {
+    return <Widget big symbol='⏏️' active={showOptions == Options.OUTPUT} onClick={() => {
 
         if (showOptions != Options.OUTPUT)
             return void setShowOptions(Options.OUTPUT)
 
         setShowOptions(Options.NONE)
 
-    }}>⏏️</button>
+    }}/>
 }
 
 function ImportButton() {
 
     const { showOptions, setShowOptions, setInput } = useContext(Context)
 
-    return <button className='widget' data-active={showOptions == Options.INPUT} onClick={() => {
+    return <Widget big symbol='📝' active={showOptions == Options.INPUT} onClick={() => {
 
         if (showOptions != Options.INPUT)
             return void setShowOptions(Options.INPUT)
@@ -145,7 +146,7 @@ function ImportButton() {
         setShowOptions(Options.NONE)
         setInput('')
 
-    }}>📝</button>
+    }}/>
 }
 
 function DeckButton(deck: Deck.Data) {
@@ -160,10 +161,8 @@ function DeckButton(deck: Deck.Data) {
     if (showOptions == Options.OUTPUT)
         return <OutputSelectionButton {...deck}/>
 
-    return <Link key={deck.id} role="button" 
-        to={links.decks + '/' + deck.id!.toString()}>
-        {deck.name || t`unnamed deck`}
-    </Link>
+    return <Button contents={deck.name || t`unnamed deck`} key={deck.id}
+        to={links.decks + '/' + deck.id!.toString()}/>
 }
 
 function read(db: Database) {

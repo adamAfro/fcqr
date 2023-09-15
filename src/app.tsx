@@ -9,7 +9,7 @@ import Pocket from './pocket'
 import Deck from './deck'
 import Settings from './options'
 
-import './theme/default.css'
+import './default.css'
 
 localise()
 

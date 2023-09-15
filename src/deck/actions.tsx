@@ -1,6 +1,5 @@
 import { useContext, useState } from 'react'
 
-import { useTranslation } from '../localisation'
 import { useMemory } from "../memory"
 import { readwrite } from '.'
 
@@ -9,6 +8,8 @@ import { Data as CardData } from '../card'
 import { Link, links } from '../app'
 
 import { Context, State, layouts } from '.'
+
+import { Widget, Button } from '../interactions'
 
 import style from './style.module.css'
 
@@ -20,14 +21,12 @@ export function Dangerzone() {
 
     const [show, setShow] = useState(false)
 
-    const { t } = useTranslation()
-
     return <p className={style.dangerzone}>
 
-        <button className='icon' data-attention='weak' data-active={show}
-            onClick={() => setShow(p => !p)}>{show ? '🔙' : '💀'}</button>
+        <Widget symbol={show ? '🔙' : '💀'} attention='weak' active={show}
+            onClick={() => setShow(p => !p)}/>
 
-        {show ? <Link role='button' className='icon' data-attention='removal' onClick={async () => {
+        {show ? <Widget symbol='🗑' attention='removal' onClick={async () => {
 
             setState(State.REMOVED)
 
@@ -45,7 +44,7 @@ export function Dangerzone() {
 
             return await done
 
-        }} to={links.pocket}>🗑</Link> : null}
+        }} to={links.pocket}/> : null}
 
     </p>
 }
@@ -54,16 +53,16 @@ export function ExerciseButton() {
 
     const { setState } = useContext(Context)
 
-    return <button className='widget' data-attention='primary' 
-        onClick={() => setState(State.EXERCISES)}>💪</button>
+    return <Widget big symbol='💪' attention='primary' 
+        onClick={() => setState(State.EXERCISES)}/>
 }
 
 export function EditButton() {
 
     const { setState } = useContext(Context)
 
-    return <button className='widget' 
-        onClick={() => setState(State.LOADED)}>📝</button>
+    return <Widget big symbol='📝' 
+        onClick={() => setState(State.LOADED)}/>
 }
 
 export function ShuffleButton() {
@@ -72,7 +71,7 @@ export function ShuffleButton() {
 
     const { database } = useMemory()!
 
-    return <button className='widget' onClick={async () => {
+    return <Widget big symbol='🔀' onClick={async () => {
 
         const shuffled = cards?.map(card => ({ ...card, order: Math.random() }))
             .sort((a, b) => a.order! - b.order!).reverse()
@@ -88,20 +87,20 @@ export function ShuffleButton() {
         await Promise.all(modifications)
         return await done
 
-    }} data-testid="shuffle-cards-btn">🔀</button>
+    }}/>
 }
 
 export function LayoutButton() {
 
     const { layout, setLayout } = useContext(Context)
 
-    return <button className='widget' data-testid="layout-cards-btn" onClick={() => {
+    return <Widget big symbol='🔍' onClick={() => {
 
         const values = Object.values(layouts)
         const index = values.findIndex(v => v == layout)
         setLayout(values[index + 1 < values.length ? index + 1 : 0])
         
-    }}>🔍</button>
+    }}/>
 }
 
 export function AddButton() {
@@ -110,7 +109,7 @@ export function AddButton() {
 
     const { database } = useMemory()!
 
-    return <button className='widget' onClick={async () => {
+    return <Widget big symbol='➕' onClick={async () => {
 
         if (!id) 
             return void setCards(prev => [{ ...card, id: -1 }, ...prev])
@@ -124,5 +123,5 @@ export function AddButton() {
         await done
         setCards(prev => [{ ...card, id: Number(cardId) }, ...prev])
 
-    }}>➕</button>
+    }}/>
 }

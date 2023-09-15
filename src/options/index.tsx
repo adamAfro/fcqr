@@ -4,6 +4,8 @@ import { unregister } from '../registrar'
 
 import Quickaccess from '../quickaccess'
 
+import { Button, Widget } from '../interactions'
+
 import { version } from '../meta'
 
 export default function Options() {
@@ -24,9 +26,8 @@ export default function Options() {
             
             <div>
 
-                <button style={{display:'inline-block',margin: '0 1em'}} onClick={() => 
-                    unregister().then(() => window.location.reload())
-                }>{t`update`}</button>
+                <Button contents={t`update`} style={{display:'inline-block',margin: '0 1em'}} onClick={() => 
+                    unregister().then(() => window.location.reload())}/>
             </div>
 
             <div>

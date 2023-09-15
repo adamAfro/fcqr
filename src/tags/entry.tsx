@@ -6,6 +6,8 @@ import { useTranslation } from '../localisation'
 import { Data, Status, Context } from '.'
 import { Context as PocketContext } from '../pocket'
 
+import { Button, Widget } from '../interactions'
+
 import style from './style.module.css'
 
 const EntryContext = createContext({
@@ -37,7 +39,8 @@ export default function Entry({ id, ...props }: Data) {
     
             <VoiceSelect initValue={props.voice}/>
 
-        </div> : <button className={style.entry} onClick={() => setActiveTagId(id!)}>{name}</button>}
+        </div> : <Button contents={name} className={style.entry} 
+            onClick={() => setActiveTagId(id!)}/>}
 
     </EntryContext.Provider>
 }
@@ -106,7 +109,7 @@ function RemoveButton() {
 
     const { id, setRemoved } = useContext(EntryContext)
 
-    return <button className='icon' onClick={async () => {
+    return <Widget symbol='❌' onClick={async () => {
 
         setRemoved(true)
         if (!id) return
@@ -117,7 +120,7 @@ function RemoveButton() {
 
         return await done
 
-    }}>❌</button>
+    }}/>
 }
 
 export function readwrite(db: Database) {

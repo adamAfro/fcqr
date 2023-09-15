@@ -3,6 +3,8 @@ import { ReactNode } from "react"
 import { useTranslation } from "../localisation"
 import { Link, links } from '../app'
 
+import { Button } from '../interactions'
+
 import style from './style.module.css'
 
 export default function Quickaccess({ home, popup, children }: { 
@@ -23,9 +25,9 @@ export default function Quickaccess({ home, popup, children }: {
                 <a className={style.brandname} target='_blank' href="https://github.com/adamAfro/flisqs">
                     {t`flisqs`}
                 </a>
-                <Link role="button" to={links.options}>{t`options`}</Link>
-            </> : 
-                <Link role="button" to={links.pocket}>{t`go back`}</Link>
+                <Button contents={t`options`} to={links.options}/>
+            </> :
+                <Button contents={t`go back`} to={links.pocket}/>
             }</nav>
             
         </div>

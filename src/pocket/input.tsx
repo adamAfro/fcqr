@@ -15,9 +15,9 @@ import { Context } from '.'
 
 import Scanner from '../scanner'
 
+import { Button, Widget } from '../interactions'
 
 import style from './style.module.css'
-import ui from '../style.module.css'
 
 
 /** @TODO make it reload all decks instead of window */
@@ -49,35 +49,31 @@ export function InputOptions() {
 
         {!value ? <div className={style.buttons}>
 
-            <button data-testid="scan-btn" onClick={() => setScanning(prev => !prev)}>
-                {scanning ? t`close scanner` : t`scan QR`}
-            </button>
+            <Button contents={scanning ? t`close scanner` : t`scan QR`} 
+                onClick={() => setScanning(prev => !prev)}/>
 
-            <label role="button">
-                {t`load file`}<input type="file" onChange={async (e) => {
+            <Button contents={t`load file`} labeled={<input onChange={async (e) => {
 
-                    const input = e.target as HTMLInputElement
+                const input = e.target as HTMLInputElement
 
-                    const files = Array.from(input.files!)
-                    const content = await readFile(files[0])
+                const files = Array.from(input.files!)
+                const content = await readFile(files[0])
 
-                    let packed = null as any
-                    try { packed = JSON.parse(content) } catch(er) {}
-                    if (packed) {
+                let packed = null as any
+                try { packed = JSON.parse(content) } catch(er) {}
+                if (packed) {
 
-                        await fromPackage(packed, database)
+                    await fromPackage(packed, database)
 
-                        return void window.location.reload()
-                    }
+                    return void window.location.reload()
+                }
 
-                    setValue(content)
+                setValue(content)
 
-                }}/>
-            </label>
+            }} type="file"/>}/>
 
-        </div> : <button data-testid="cards-input-btn" className={style.secondary} 
-            onClick={() => setInput(value)}>{t`add to selected deck`}
-        </button>}
+        </div> : <Button contents={t`add to selected deck`} 
+            onClick={() => setInput(value)}/>}
 
     </div>
 }
@@ -92,7 +88,7 @@ export function InputButton(deck: Data) {
 
     const { t } = useTranslation()
 
-    return <Link key={deck.id} role="button" onClick={async () => {
+    return <Button contents={deck.name || t`unnamed deck`} onClick={async () => {
 
         const { done, cardStore } = readwrite(database)
     
@@ -104,9 +100,7 @@ export function InputButton(deck: Data) {
         await done
         return void navigate(links.decks + deck.id!.toString())
 
-    }} to={links.decks + '/' + deck.id!.toString()}>
-        {deck.name || t`unnamed deck`}
-    </Link>
+    }} to={links.decks + '/' + deck.id!.toString()}/>
 }
 
 async function readFile(file: Blob): Promise <string> {

@@ -10,10 +10,9 @@ import { Context } from '.'
 import { Data } from '../deck'
 import { Data as Card } from '../card'
 
+import { Button, Widget } from '../interactions'
 
 import style from './style.module.css'
-import ui from '../style.module.css'
-
 
 export function OutputOptions() {
 
@@ -41,11 +40,9 @@ export function OutputOptions() {
 
         <div className={style.buttons}>
             
-            <a role='button' href={href} download={t`decks` + '.json'}>
-                {t`save`}
-            </a>
+            <Button contents={t`save`} href={href} download={t`decks` + '.json'}/>
             
-            <button onClick={async () => {
+            <Button contents={t`copy`} onClick={async () => {
 
                 const packed = await createPackage([...selection], database)
                 
@@ -53,7 +50,7 @@ export function OutputOptions() {
 
                 setSelection(_ => [])
 
-            }}>{t`copy`}</button>
+            }}/>
         </div>
 
     </div>
@@ -70,17 +67,11 @@ export function OutputSelectionButton(deck: Data) {
 
     return <>{selected ? 
     
-        <button key={deck.id} data-attention='correct'
-            onClick={() => setSelection(selection => selection.filter(id => id != deck.id!))}>    
-            {deck.name || t`unnamed deck`}
-        </button> 
-        
+        <Button contents={deck.name || t`unnamed deck`} attention='correct'
+            key={deck.id} onClick={() => setSelection(selection => selection.filter(id => id != deck.id!))}/>        
         :
-
-        <button key={deck.id} 
-            onClick={() => setSelection(prev => [...prev, deck.id!])}>
-            {deck.name || t`unnamed deck`}
-        </button>
+        <Button contents={deck.name || t`unnamed deck`} 
+            key={deck.id} onClick={() => setSelection(prev => [...prev, deck.id!])}/>
     }</>
 }
 

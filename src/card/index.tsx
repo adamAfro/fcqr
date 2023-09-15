@@ -2,6 +2,8 @@ import { useState, useContext, createContext, useEffect } from 'react'
 
 import { Context as DeckContext, State } from '../deck'
 
+import { Button, Widget } from '../interactions'
+
 import { listen } from '../recognition'
 import { speak } from '../speech'
 import Color from "color"
@@ -108,17 +110,14 @@ export function Hearing({ setResult }: {
 
 	const [listening, setListening] = useState(false)
 
-    if (!tag || !tag.code) return <button>
-        🔇
-    </button>
+    if (!tag || !tag.code) return <Widget symbol='🔇'/>
 
-	return <button className='icon' onClick={!listening ? () => {
+    return <Widget symbol='🎤' onClick={!listening ? () => {
         
         setListening(true)
         listen(alts => setResult(alts[0].trim()), { langCode: tag.code! })
 
-    } : () => setListening(false)}>🎤</button>
-}
+    } : () => setListening(false)}/>}
 
 export function Speech() {
 
@@ -126,9 +125,7 @@ export function Speech() {
 
     const { voice = undefined } = useContext(DeckContext).tag || {}
 
-	return <button className='icon' onClick={() => speak(term, { voice })}>
-		🔈
-	</button>
+	return <Widget symbol='🔈' onClick={() => speak(term, { voice })}/>
 }
 
 export function color(value = 0) {

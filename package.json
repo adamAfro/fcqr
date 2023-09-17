@@ -1,6 +1,6 @@
 {
   "name": "flisqs",
-  "version": "0.16",
+  "version": "0.16.1",
   "private": true,
   "homepage": "/beta",
   "dependencies": {

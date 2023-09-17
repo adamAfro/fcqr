@@ -111,7 +111,7 @@ export default function(props: {
             <Tags/>
         </section>
 
-        {options == Options.NONE || Options.QR ? <Entries/> : null}
+        {options == Options.NONE || options == Options.QR ? <Entries/> : null}
         {options == Options.PACKAGE ? <PackageEntries/> : null}
         {options == Options.TEXT ? <TextEntries/> : null}
 

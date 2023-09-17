@@ -177,7 +177,7 @@ function SaveButton() {
     if (selection.length == 0)
         return <Button contents={t`save`} disabled/>
 
-    return <Button contents={t`save`} href={href} download={t`decks` + '.json'}/>
+    return <Button contents={t`save`} href={href} download={t`decks-` + new Date().toString().replaceAll(' ', '-') + '.json'}/>
 }
 
 async function createPackage(ids: number[], db: Database) {

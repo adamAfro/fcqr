@@ -122,6 +122,8 @@ export default function Deck({ id }: { id: number }): JSX.Element {
                     (cards.length > 1 ? <Actions.ShuffleButton/> : null) :
                     <Actions.AddButton/>}
 
+                {reference ? <Actions.ReferenceButton/> : null}
+
             </div>
 
             <Actions.EditButton/>

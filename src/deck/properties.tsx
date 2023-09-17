@@ -146,34 +146,22 @@ function Reference() {
 
     const { id, reference, setReference } = useContext(Context)
 
-    const [edition, setEdition] = useState(false)
-
     const { t } = useTranslation()
 
-    return <p className='row'>
+    return <input placeholder={t`reference link`} data-attention='weak' className='widget'
+        spellCheck={false} type="text" value={reference} onChange={async (e) => {
 
-        {edition ? <input placeholder={t`reference link`} className='widget'
-            spellCheck={false} type="text" value={reference} onChange={async (e) => {
+        const reference = e.target.value
+        
+        setReference(reference)
+        
+        const { done, store } = readwrite(database)
+        const deck = await store.get(id) as Data
+        
+        await store.put({ ...deck, reference })
+        await done
 
-            const reference = e.target.value
-            
-            setReference(reference)
-            
-            const { done, store } = readwrite(database)
-            const deck = await store.get(id) as Data
-            
-            await store.put({ ...deck, reference })
-            await done
-
-        }}/> : (reference ? <Widget big symbol='Link' target='_blank' href={reference}/> :
-            <Widget big symbol='Link' disabled/>)}
-
-        <div>
-            <Widget symbol='Pencil' attention={!reference ? undefined : 'weak'} active={edition}
-                onClick={() => setEdition(p => !p)}/>
-        </div>
-
-    </p>
+    }}/>
 }
 
 export function readwrite(db: Database) {

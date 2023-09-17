@@ -21,7 +21,7 @@ export function Dangerzone() {
 
     const [show, setShow] = useState(false)
 
-    return <p className={style.dangerzone}>
+    return <p className='row'>
 
         <Widget symbol={show ? 'ArrowBack' : 'Danger'} attention='removal' active={show}
             onClick={() => setShow(p => !p)}/>
@@ -80,6 +80,20 @@ export function ShuffleButton() {
         return await done
 
     }}/>
+}
+
+export function ReferenceButton() {
+
+    const { reference } = useContext(Context)
+
+    try {
+
+        return <Widget big symbol='Link' to={new URL(reference).toString()} target="_blank"/>
+
+    } catch(e) {
+
+        return <Widget big symbol='Link' attention="error" disabled/>
+    }
 }
 
 export function AddButton() {

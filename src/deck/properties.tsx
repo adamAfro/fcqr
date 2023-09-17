@@ -187,3 +187,9 @@ export function readwrite(db: Database) {
     const t = db.transaction(Stores.DECKS, 'readwrite')
     return { done: t.done, store: t.objectStore(Stores.DECKS) }
 }
+
+export function read(db: Database) {
+
+    const t = db.transaction(Stores.DECKS, 'readonly')
+    return { done: t.done, store: t.objectStore(Stores.DECKS) }
+}

@@ -40,7 +40,7 @@ export function Button({ active, attention, contents, href, to, labeled, ...prop
         data-attention={attention}
         data-active={active} >{contents}</Link>
 
-    if (href) return <a {...props as AnchorAttrs}    
+    if (href) return <a {...props as AnchorAttrs}
         role='button' href={href}
         data-attention={attention}
         data-active={active} >{contents}</a>

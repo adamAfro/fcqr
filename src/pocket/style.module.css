@@ -10,28 +10,34 @@
     list-style: none;
 }
 
-.options {
-    background-color: var(--background-color);
-}
+.input {
 
-.options button {
-    margin: .5em;
-}
-
-.options textarea {
-    min-height: 12em;
+    border-radius: 0;
+    
+    height: 12em;
     white-space: pre;
     overflow-x: scroll;
     text-align: left;
     resize: none;
-    padding: 0;
-    margin: 0;
     width: 100%;
 }
 
 .buttons {
-    display: flex;
-    align-items: center;
+    display: flex; gap: 2pt;
+}
+
+.buttons :is(button, [role=button]) {
+    border-radius: 0;
+}
+
+.buttons :is(button, [role=button]):first-child {
+    flex-basis: calc(50% - 1pt);
+    border-top-left-radius: var(--padding);
+}
+
+.buttons :is(button, [role=button]):last-child {
+    flex-basis: calc(50% - 1pt);
+    border-top-right-radius: var(--padding);
 }
 
 .tags {

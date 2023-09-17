@@ -83,36 +83,36 @@ input[type=radio] {
     width: min-content; 
 }
 
-:is(button, a[role=button], [role=button], select, input) {
+:is(button, a[role=button], [role=button], select, input, textarea) {
     background-color: var(--secondary);
 } :is(button, a[role=button], [role=button]):is(:active, [data-active=true]) {
     background-color: var(--secondary-active);
 }
 
-[data-attention=primary]:is(button, a[role=button], [role=button], select, input) {
+[data-attention=primary]:is(button, a[role=button], [role=button], select, input, textarea) {
     background-color: var(--primary);
-} [data-attention=primary]:is(button, a[role=button], [role=button], select, input):is(:active, [data-active=true]) {
+} [data-attention=primary]:is(button, a[role=button], [role=button], select, input, textarea):is(:active, [data-active=true]) {
     background-color: var(--primary-active);
 }
 
-[data-attention=removal]:is(button, a[role=button], [role=button], select, input) {
+[data-attention=removal]:is(button, a[role=button], [role=button], select, input, textarea) {
     background-color: var(--dangerous);
-} [data-attention=error]:is(button, a[role=button], [role=button], select, input),
-[data-attention=removal]:is(button, a[role=button], [role=button], select, input):is(:active, [data-active=true]) {
+} [data-attention=error]:is(button, a[role=button], [role=button], select, input, textarea),
+[data-attention=removal]:is(button, a[role=button], [role=button], select, input, textarea):is(:active, [data-active=true]) {
     background-color: var(--dangerous-active);
 }
 
-[data-attention=correct]:is(button, a[role=button], [role=button], select, input) {
+[data-attention=correct]:is(button, a[role=button], [role=button], select, input, textarea) {
     background-color: var(--positive);
-} [data-attention=correct]:is(button, a[role=button], [role=button], select, input):is(:active, [data-active=true]) {
+} [data-attention=correct]:is(button, a[role=button], [role=button], select, input, textarea):is(:active, [data-active=true]) {
     background-color: var(--positive-active);
 }
 
-[data-attention=weak]:is(button, a[role=button], [role=button], select, input):not(:is(:active, [data-active=true])) {
+[data-attention=weak]:is(button, a[role=button], [role=button], select, input, textarea):not(:is(:active, [data-active=true])) {
     opacity:.5;
 }
 
-[data-attention=none]:is(button, a[role=button], [role=button], select, input):not(:is(:active, [data-active=true])) {
+[data-attention=none]:is(button, a[role=button], [role=button], select, input, textarea):not(:is(:active, [data-active=true])) {
     background: none;
 }
 
@@ -126,8 +126,9 @@ input[type=radio] {
         box-shadow: var(--clicked);
     }
 
-.box:is(button, a[role=button], [role=button], select, input) {
+.box:is(button, a[role=button], [role=button], select, input, textarea) {
 
+    line-height: 0;
     width: min-content;
     padding: var(--padding);
 }
@@ -137,7 +138,7 @@ input[type=radio] {
     height: calc(2*var(--padding));
 }
 
-.widget:is(button, a[role=button], [role=button], select, input) {
+.widget:is(button, a[role=button], [role=button], select, input, textarea) {
 
     min-width: 3.2em;
     line-height: 0;

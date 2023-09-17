@@ -17,16 +17,14 @@ export default function Quickaccess({ home, popup, children }: {
 
     return <div className={style.root}>
 
-        <div className={style.left}>
-
-            {popup ? <div className={style.popup}>{popup}</div> : null}
+        {popup ? <div className={style.popup}>{popup}</div> : <div className={style.left}>
 
             <nav className={style.nav}>{home ?
                 <Button contents={t`options`} to={links.options}/> :
                 <Button contents={t`go back`} to={links.pocket}/>
             }</nav>
-            
-        </div>
+
+        </div>}
 
         <div className={style.right}>{children}</div>
 

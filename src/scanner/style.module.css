@@ -3,7 +3,7 @@
     padding: 1em;
     position: relative;
 
-    width: 100%;
+    max-width: 100%;
 }
 
 .camera :is(button) {

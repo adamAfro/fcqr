@@ -1,8 +1,6 @@
 import { useState, useEffect, createContext, useContext } from 'react'
 
 import { Database, Stores } from '../memory'
-import { links, Link } from '../app'
-import { useNavigate } from "react-router-dom"   
 
 import { useTranslation } from '../localisation'
 import { useMemory } from '../memory'
@@ -11,29 +9,43 @@ import Quickaccess from '../quickaccess'
 import Tags from '../tags'
 
 import * as Deck from '../deck'
-import { readwrite } from '../deck/properties'
 
-import { InputButton, InputOptions } from './input'
-import { OutputSelectionButton, OutputOptions } from './output'
+import { Options as TextOptions, Entries as TextEntries } from './text'
+import { Options as PackageOptions, Entries as PackageEntries, Packed } from './package'
+import Entries from './entries'
 
 import { Button, Widget } from '../interactions'
 
 import style from './style.module.css'
 
+import Scanner from '../scanner'
 
-enum Options {
-    NONE, INPUT, OUTPUT
-}
+
+export enum Options { NONE, TEXT, PACKAGE, QR }
+
+export enum Selecting { NONE = 0, ADD, COPY, PASTE }
 
 export const Context = createContext({
-    input: '', setInput: (_:string) => {},
+
+    decks: [] as Deck.Data[],
+        setDecks(_:(p:Deck.Data[]) => Deck.Data[]) {},
+    
+    textInput: '', 
+        setTextInput: (_:string) => {},
+
+    fileInput: null as null | Packed,
+        setFileInput: (_:null | Packed) => {},
+    
     selection: [] as number[], 
         setSelection(_:(p: number[]) => number[]) {},
-    showOptions: Options.NONE as Options, 
-        setShowOptions(_: Options) {},
+    
+    options: Options.NONE as Options, 
+        setOptions(_: Options) {},
 
     activeTagId: -1,
-        setActiveTagId(_:number) {}
+        setActiveTagId(_:number) {},
+
+    selecting: Selecting.NONE, setSelecting: (_:Selecting) => {},
 })
 
 export default function(props: {
@@ -57,34 +69,39 @@ export default function(props: {
 
     }, [database])
 
-    const [input, setInput] = useState('')
+    const [textInput, setTextInput] = useState('')
+    const [fileInput, setFileInput] = useState(null as null | Packed)
+
     const [selection, setSelection] = useState([] as number[])
-    const [showOptions, setShowOptions] = useState(Options.NONE)
+    const [options, setOptions] = useState(Options.NONE)
     const [activeTagId, setActiveTagId] = useState(-1)
+    const [selecting, setSelecting] = useState(Selecting.NONE)
 
     const { t } = useTranslation()
 
     return <Context.Provider value={{ 
-        input, setInput, 
+        decks, setDecks,
+
+        textInput, setTextInput,
+        fileInput, setFileInput, 
+        
         selection, setSelection,
-        showOptions, setShowOptions,
-        activeTagId, setActiveTagId
+        options, setOptions,
+        activeTagId, setActiveTagId,
+        selecting, setSelecting
     }}>
 
-        <Quickaccess home={true} popup={showOptions == Options.INPUT && !input ? 
-            <InputOptions/> : (showOptions == Options.OUTPUT && !input ? 
-            <OutputOptions/> : null)
-        }>
+        <Quickaccess home={true} popup={options != Options.NONE ? <Popup/> : null}>
 
             <p className='stack'>
 
-                <ImportButton/>
+                <TextButton/>
 
                 <ExportButton/>
 
             </p>
 
-            <AddButton/>
+            <QRButton/>
 
         </Quickaccess>
 
@@ -94,77 +111,83 @@ export default function(props: {
             <Tags/>
         </section>
 
-        <ul className={style.decks} data-testid="decks">
-            
-            {(activeTagId >= 0 ? decks.filter(deck => deck.tagId == activeTagId) : decks)
-                .map(deck => <li key={deck.id}><DeckButton {...deck}/></li>)}
-
-        </ul>
+        {options == Options.NONE || Options.QR ? <Entries/> : null}
+        {options == Options.PACKAGE ? <PackageEntries/> : null}
+        {options == Options.TEXT ? <TextEntries/> : null}
 
     </Context.Provider>
 }
 
-function AddButton() {
+function Popup() {
 
-    const navigate = useNavigate()
+    const { options, setTextInput, setFileInput, setOptions } = useContext(Context)
 
-    const { database } = useMemory()!
+    if (options == Options.TEXT)
+        return <TextOptions/>
 
-    return <Widget big symbol='Plus' attention='primary' onClick={async () => {
+    if (options == Options.PACKAGE)
+        return <PackageOptions/>
 
-        const { done, store } = readwrite(database)
-        
-        const deckId = Number(await store.add({ name: '' }))
-    
-        await done
-        return void navigate(links.decks + deckId.toString())
-            
+    if (options == Options.QR)
+        return <Scanner handleData={(txt: string) => {
+
+            try {
+
+                setFileInput(JSON.parse(txt))
+                setOptions(Options.PACKAGE)
+
+            } catch(er) {
+
+                setTextInput(txt)
+                setOptions(Options.TEXT)
+            }
+
+        }}/>
+
+    return null
+}
+
+function QRButton() {
+
+    const { options, setOptions } = useContext(Context)
+
+    return <Widget big symbol='QR' active={options == Options.QR} onClick={() => {
+
+        if (options != Options.QR)
+            return void setOptions(Options.QR)
+
+        setOptions(Options.NONE)
+
     }}/>
 }
 
 function ExportButton() {
 
-    const { showOptions, setShowOptions } = useContext(Context)
+    const { options, setOptions } = useContext(Context)
 
-    return <Widget big symbol='Save' active={showOptions == Options.OUTPUT} onClick={() => {
+    return <Widget big symbol='Save' active={options == Options.PACKAGE} onClick={() => {
 
-        if (showOptions != Options.OUTPUT)
-            return void setShowOptions(Options.OUTPUT)
+        if (options != Options.PACKAGE)
+            return void setOptions(Options.PACKAGE)
 
-        setShowOptions(Options.NONE)
-
-    }}/>
-}
-
-function ImportButton() {
-
-    const { showOptions, setShowOptions, setInput } = useContext(Context)
-
-    return <Widget big symbol='Pencil' active={showOptions == Options.INPUT} onClick={() => {
-
-        if (showOptions != Options.INPUT)
-            return void setShowOptions(Options.INPUT)
-
-        setShowOptions(Options.NONE)
-        setInput('')
+        setOptions(Options.NONE)
 
     }}/>
 }
 
-function DeckButton(deck: Deck.Data) {
+function TextButton() {
 
-    const { showOptions } = useContext(Context)
+    const { options, setOptions, setTextInput } = useContext(Context)
 
-    const { t } = useTranslation()
+    return <Widget big symbol='Pencil' active={options == Options.TEXT} onClick={() => {
 
-    if (showOptions == Options.INPUT)
-        return <InputButton {...deck}/>
+        if (options != Options.TEXT)
+            return void setOptions(Options.TEXT)
 
-    if (showOptions == Options.OUTPUT)
-        return <OutputSelectionButton {...deck}/>
+        setOptions(Options.NONE)
+        setTextInput('')
 
-    return <Button contents={deck.name || t`unnamed deck`} key={deck.id}
-        to={links.decks + '/' + deck.id!.toString()}/>
+    }}/>
 }
 
 function read(db: Database) {

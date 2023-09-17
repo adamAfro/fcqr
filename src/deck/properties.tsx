@@ -3,27 +3,21 @@ import { useContext, useEffect, useState } from 'react'
 import { Database, Stores } from "../memory"
 
 import { useTranslation } from '../localisation'
-import { Data as Language, read as readLanguages } from '../tags'
+import { Data as Language, read as readLanguages } from '../pocket/tags'
 import { useMemory } from "../memory"
-import { Data } from './'
-
-import { Context } from './'
+import { Context, Data } from '.'
 
 import { Dangerzone } from './actions'
 
 import { Widget, Input } from '../interactions'
 
-import style from "./style.module.css"
-
 export default function Properties() {
 
-    const { id } = useContext(Context)
+    return <header className='column'>
 
-    return <header className={style.properites} data-testid={`deck-${id}`}>
-        
         <h1 className='title'><Name/></h1>
 
-        <div className={style.sounds}>
+        <div className='row'>
 
             <TagSelect/>
 
@@ -34,7 +28,7 @@ export default function Properties() {
         </div>
 
         <Reference/>
-
+        
         <Dangerzone/>
 
     </header>
@@ -50,7 +44,7 @@ function Name() {
 
     const [name, setName] = useState(context.name)
 
-    return <Input attention={name ? 'none' : 'primary'} onChange={async (e) => {
+    return <Input attention='none' onChange={async (e) => {
         
         setName(e.target.value)
         
@@ -86,7 +80,7 @@ function TagSelect() {
 
     const { t } = useTranslation()
 
-    return <select className={style.tag} data-attention={tag ? 'none' : 'primary'} onChange={async (e) => {
+    return <select onChange={async (e) => {
 
         const tagId = Number(e.target.value)
         const tag = tags
@@ -156,7 +150,7 @@ function Reference() {
 
     const { t } = useTranslation()
 
-    return <p className={style.reference}>
+    return <p className='row'>
 
         {edition ? <input placeholder={t`reference link`} className='widget'
             spellCheck={false} type="text" value={reference} onChange={async (e) => {
@@ -174,7 +168,7 @@ function Reference() {
         }}/> : (reference ? <Widget big symbol='Link' target='_blank' href={reference}/> :
             <Widget big symbol='Link' disabled/>)}
 
-        <div className={style.edit}>
+        <div>
             <Widget symbol='Pencil' attention={!reference ? undefined : 'weak'} active={edition}
                 onClick={() => setEdition(p => !p)}/>
         </div>

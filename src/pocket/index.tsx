@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext } from 'react'
+import { useState, useEffect, createContext, useContext, useTransition } from 'react'
 
 import { Database, Stores } from '../memory'
 
@@ -6,7 +6,7 @@ import { useTranslation } from '../localisation'
 import { useMemory } from '../memory'
 
 import Quickaccess from '../quickaccess'
-import Tags from '../tags'
+import Tags from './tags'
 
 import * as Deck from '../deck'
 
@@ -91,17 +91,9 @@ export default function(props: {
         selecting, setSelecting
     }}>
 
-        <Quickaccess home={true} popup={options != Options.NONE ? <Popup/> : null}>
+        <Quickaccess home={true} popup={options != Options.NONE ? <OptionsPopup/> : null}>
 
-            <p className='stack'>
-
-                <TextButton/>
-
-                <ExportButton/>
-
-            </p>
-
-            <QRButton/>
+            <OptionsButton/>
 
         </Quickaccess>
 
@@ -118,40 +110,13 @@ export default function(props: {
     </Context.Provider>
 }
 
-function Popup() {
-
-    const { options, setTextInput, setFileInput, setOptions } = useContext(Context)
-
-    if (options == Options.TEXT)
-        return <TextOptions/>
-
-    if (options == Options.PACKAGE)
-        return <PackageOptions/>
-
-    if (options == Options.QR)
-        return <Scanner handleData={(txt: string) => {
-
-            try {
-
-                setFileInput(JSON.parse(txt))
-                setOptions(Options.PACKAGE)
-
-            } catch(er) {
-
-                setTextInput(txt)
-                setOptions(Options.TEXT)
-            }
-
-        }}/>
-
-    return null
-}
-
-function QRButton() {
+function OptionsButton() {
 
     const { options, setOptions } = useContext(Context)
 
-    return <Widget big symbol='QR' active={options == Options.QR} onClick={() => {
+    const { t } = useTranslation()
+
+    return <Widget big symbol='FileWrite' contents={t`scanner`} active={options == Options.QR} onClick={() => {
 
         if (options != Options.QR)
             return void setOptions(Options.QR)
@@ -161,11 +126,75 @@ function QRButton() {
     }}/>
 }
 
-function ExportButton() {
+function OptionsPopup() {
+
+    const { options, setTextInput, setFileInput, setOptions } = useContext(Context)
+
+    const { t } = useTranslation()
+
+    return <>
+
+        <div className={style.buttons}>
+
+            <QRButton/>
+            <TextButton/>
+            <PackageButton/>
+    
+        </div>
+
+        {options == Options.TEXT ? <TextOptions/> : null}
+
+        {options == Options.PACKAGE ? <PackageOptions/> : null}
+
+        {options == Options.QR ? <>
+            
+            <div className={style.buttons}>
+                <Button contents={t`scan QR`} active/>
+                <Button contents={t`create QR`} disabled/>
+            </div>
+            <Scanner className={style.input} handleData={(txt: string) => {
+
+                try {
+
+                    setFileInput(JSON.parse(txt))
+                    setOptions(Options.PACKAGE)
+
+                } catch(er) {
+
+                    setTextInput(txt)
+                    setOptions(Options.TEXT)
+                }
+
+            }}/>
+        
+        </> : null}
+
+    </>
+}
+
+function QRButton() {
 
     const { options, setOptions } = useContext(Context)
 
-    return <Widget big symbol='Save' active={options == Options.PACKAGE} onClick={() => {
+    const { t } = useTranslation()
+
+    return <Button contents={t`scanner`} active={options == Options.QR} onClick={() => {
+
+        if (options != Options.QR)
+            return void setOptions(Options.QR)
+
+        setOptions(Options.NONE)
+
+    }}/>
+}
+
+function PackageButton() {
+
+    const { options, setOptions } = useContext(Context)
+
+    const { t } = useTranslation()
+
+    return <Button contents={t`packages`} active={options == Options.PACKAGE} onClick={() => {
 
         if (options != Options.PACKAGE)
             return void setOptions(Options.PACKAGE)
@@ -179,7 +208,9 @@ function TextButton() {
 
     const { options, setOptions, setTextInput } = useContext(Context)
 
-    return <Widget big symbol='Pencil' active={options == Options.TEXT} onClick={() => {
+    const { t } = useTranslation()
+
+    return <Button contents={t`text`} active={options == Options.TEXT} onClick={() => {
 
         if (options != Options.TEXT)
             return void setOptions(Options.TEXT)

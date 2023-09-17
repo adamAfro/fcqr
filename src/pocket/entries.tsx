@@ -17,11 +17,11 @@ import style from './style.module.css'
 
 export default function Entries() {
 
-    const { activeTagId, decks } = useContext(Context)
+    const { options, activeTagId, decks } = useContext(Context)
 
     return <ul className={style.decks}>
 
-        <li><AddButton/></li>
+        <li>{options == Options.NONE ? <AddButton/> : null}</li>
         
         {(activeTagId >= 0 ? decks.filter(deck => deck.tagId == activeTagId) : decks)
             .map(deck => <li key={deck.id}><Entry {...deck}/></li>)}

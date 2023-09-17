@@ -4,7 +4,7 @@ import { read } from '../deck/properties'
 import { Database, read as readAll, readwrite as readwriteAll } 
     from '../memory'
 
-import { Data as Tag } from '../tags'
+import { Data as Tag } from './tags'
 import { useTranslation } from '../localisation'
 import { useMemory } from '../memory'
 

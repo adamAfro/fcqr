@@ -2,10 +2,8 @@ import { useContext, useEffect, useState, createContext } from 'react'
 
 import { Database, Stores, read as readAll } from "../memory"
 
-import { Data as Language } from '../tags'
+import { Data as Language } from '../pocket/tags'
 import { useMemory } from "../memory"
-
-
 
 import Quickaccess from '../quickaccess'
 import * as Actions from './actions'
@@ -14,6 +12,7 @@ import Properties from './properties'
 import { default as Card, Data as CardData } from '../card'
 
 import style from "./style.module.css"
+import { useTranslation } from 'react-i18next'
 
 export interface Data {
     id?: number
@@ -28,20 +27,9 @@ export enum State {
     NOT_FOUND,
     REMOVED,
     LOADING,
-    LOADED,
+    EDITION,
     EXERCISES
 }
-
-export const layouts = {
-    
-    compact: 'compact',
-    extended: 'extended',
-    quarter: 'quarter',
-    grid: 'grid'
-
-} as const
-
-export type Layout = keyof typeof layouts
 
 export const Context = createContext({ 
 
@@ -58,9 +46,6 @@ export const Context = createContext({
 
     cards: [] as CardData[], 
     setCards(c:CardData[]|((p:CardData[]) => CardData[])) {},
-    
-    layout: layouts.compact as Layout,
-    setLayout(c:Layout|((p:Layout) => Layout)) {},
 
     muted: false,
     setMuted(c:boolean|((p:boolean) => boolean)) {},
@@ -114,10 +99,9 @@ export default function Deck({ id }: { id: number }): JSX.Element {
         if (data.silent || !(tag && tag.code))
             setSilent(true)
 
-        setState(State.LOADED)
+        setState(State.EXERCISES)
 
     }), [])
-    const [layout, setLayout] = useState <Layout> (layouts.compact)
 
     return <Context.Provider value={{ 
         id, 
@@ -125,44 +109,40 @@ export default function Deck({ id }: { id: number }): JSX.Element {
         name, setName,
         tag, setTag,
         cards, setCards,
-        layout, setLayout,
         muted, setMuted,
         silent, setSilent,
         reference, setReference
     }}>
 
-        <Quickaccess>
+        <Quickaccess popup={state == State.EDITION ? <Properties/> : null}>
 
             <div className='stack'>
 
                 {state == State.EXERCISES ? 
-                    <Actions.ShuffleButton/> :
+                    (cards.length > 1 ? <Actions.ShuffleButton/> : null) :
                     <Actions.AddButton/>}
-
-                <Actions.LayoutButton/>
 
             </div>
 
-            {state == State.EXERCISES ? 
-                <Actions.EditButton/> : 
-                <Actions.ExerciseButton/>}
+            <Actions.EditButton/>
 
         </Quickaccess>
 
-        {state > State.LOADING ? <Properties/> : null}
-
-        {state >= State.LOADED ? <Cards/> : null}
+        {state >= State.EDITION ? <Cards/> : null}
 
     </Context.Provider>
 }
 
 function Cards() {
 
-    const { cards, state, layout } = useContext(Context)
+    const { cards, state } = useContext(Context)
 
-    return <ul className={style.cards}
-        data-testid='cards'
-        data-layout={layout}>
+    const { t } = useTranslation()
+
+    if (cards.length == 0)
+        return <p>{t`empty deck`}</p>
+
+    return <ul className={style.cards}>
 
         {[...cards].sort((a, b) => {
 

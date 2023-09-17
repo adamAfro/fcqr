@@ -23,25 +23,62 @@
 }
 
 .buttons {
-    display: flex; gap: 2pt;
+    display: flex; gap: 2pt; width: 100%;
+}
+
+.buttons + .buttons {
+    margin-top: 1pt;
 }
 
 .buttons :is(button, [role=button]) {
     border-radius: 0;
+    flex-basis: calc(50% - 1pt);
 }
 
-.buttons :is(button, [role=button]):first-child {
-    flex-basis: calc(50% - 1pt);
+.buttons:first-child :is(button, [role=button]):first-child {
     border-top-left-radius: var(--padding);
 }
 
-.buttons :is(button, [role=button]):last-child {
-    flex-basis: calc(50% - 1pt);
+.buttons:first-child :is(button, [role=button]):last-child {
     border-top-right-radius: var(--padding);
 }
 
 .tags {
-
     font-size: .8em;
     margin-bottom: 8em;
+}
+
+.tag {
+    display: flex;
+    width: 10em;
+    align-items: flex-end;
+    position: relative; --gap: 1em;
+}
+
+.tag > input {
+    width: 100%;
+
+    border-radius: 0;
+    border-top-left-radius: var(--padding);
+}
+
+.tag > button {
+    border-radius: 0;
+    border-top-right-radius: var(--padding);
+}
+
+.tag > select {
+    font-size: .8em;
+    position: absolute; z-index: 3;
+    top: 100%;
+    width: 100%;
+
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.heading {
+    font-size: var(--button-height-font-size);
+    font-weight: normal;
+    margin: 0;
 }

@@ -46,10 +46,17 @@
 }
 
 .popup {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+
     width: 100%;
     max-width: 48em;
     margin: auto;
     box-shadow: var(--illuminated);
+
+    border-top-right-radius: 1em;
+    border-top-left-radius: 1em;
 
     background-color: var(--background-color);
 }

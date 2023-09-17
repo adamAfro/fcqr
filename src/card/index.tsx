@@ -69,7 +69,7 @@ function Content() {
 
     const { mode, term } = useContext(Context)
 
-    if (state == State.LOADED) {
+    if (state == State.EDITION) {
 
         return <>
 

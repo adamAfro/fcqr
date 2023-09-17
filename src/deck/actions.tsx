@@ -5,9 +5,9 @@ import { readwrite } from '.'
 
 import { Data as CardData } from '../card'
 
-import { Link, links } from '../app'
+import { links } from '../app'
 
-import { Context, State, layouts } from '.'
+import { Context, State } from '.'
 
 import { Widget, Button } from '../interactions'
 
@@ -49,20 +49,12 @@ export function Dangerzone() {
     </p>
 }
 
-export function ExerciseButton() {
-
-    const { setState } = useContext(Context)
-
-    return <Widget big symbol='ABC' attention='primary' 
-        onClick={() => setState(State.EXERCISES)}/>
-}
-
 export function EditButton() {
 
-    const { setState } = useContext(Context)
+    const { state, setState } = useContext(Context)
 
-    return <Widget big symbol='Pencil' 
-        onClick={() => setState(State.LOADED)}/>
+    return <Widget big symbol='Pencil' active={state == State.EDITION}
+        onClick={() => setState(state == State.EDITION ? State.EXERCISES : State.EDITION)}/>
 }
 
 export function ShuffleButton() {
@@ -87,19 +79,6 @@ export function ShuffleButton() {
         await Promise.all(modifications)
         return await done
 
-    }}/>
-}
-
-export function LayoutButton() {
-
-    const { layout, setLayout } = useContext(Context)
-
-    return <Widget big symbol='Magnifier' onClick={() => {
-
-        const values = Object.values(layouts)
-        const index = values.findIndex(v => v == layout)
-        setLayout(values[index + 1 < values.length ? index + 1 : 0])
-        
     }}/>
 }
 

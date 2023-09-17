@@ -171,6 +171,13 @@ input[type=radio] {
     justify-content: flex-start;
 }
 
+.column {
+    display: flex; gap: 1em;
+    flex-flow: column nowrap;
+    align-items: center;
+    justify-content: flex-start;
+}
+
 ul {
     list-style: none;
     margin: 0; padding: 0;

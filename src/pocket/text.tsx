@@ -22,7 +22,7 @@ export function Options() {
 
     const { t } = useTranslation()
 
-    return <div>
+    return <>
 
         <div className={style.buttons}>
             <Button contents={t`select deck to copy`} 
@@ -40,7 +40,7 @@ export function Options() {
             placeholder={`${t`term`} - ${t`definition`}`}
             data-attention='none'/>
 
-    </div>
+    </>
 }
 
 export function Entries() {

@@ -7,20 +7,18 @@ import { unregister } from '../registrar'
 import { Select as LanguageSelect } from '../localisation'
 
 import * as Deck from '../deck'
-import Scanner from '../scanner'
+import Scanner from './scanner'
 
-import { default as TextPopup, Entries as TextEntries } from './text'
-import { default as PackagePopup, Entries as PackageEntries, Packed } from './package'
-import Entries from './entries'
+import * as Text from './text'
+import * as Package from './package'
+import Entries from './decks'
 import Tags from './tags'
 
 import { Button, Widget } from '../interactions'
 
 import style from './style.module.css'
 
-export enum Popup { NONE, TEXT, PACKAGE, QR }
-
-export enum Selecting { NONE = 0, ADD, COPY, PASTE }
+export enum OptionName { NONE, COPY, WRITE, SAVE, LOAD, PASTE, QR }
 
 export const Context = createContext({
 
@@ -30,19 +28,17 @@ export const Context = createContext({
     textInput: '', 
         setTextInput: (_:string) => {},
 
-    fileInput: null as null | Packed,
-        setFileInput: (_:null | Packed) => {},
+    fileInput: null as null | Package.Data,
+        setFileInput: (_:null | Package.Data) => {},
     
     selection: [] as number[], 
         setSelection(_:(p: number[]) => number[]) {},
     
-    popup: Popup.NONE as Popup, 
-        setPopup(_: Popup) {},
+    activeOption: OptionName.NONE as OptionName, 
+        setActiveOption(_: OptionName) {},
 
     activeTagId: -1,
-        setActiveTagId(_:number) {},
-
-    selecting: Selecting.NONE, setSelecting: (_:Selecting) => {},
+        setActiveTagId(_:number) {}
 })
 
 export default function(props: {
@@ -67,12 +63,11 @@ export default function(props: {
     }, [database])
 
     const [textInput, setTextInput] = useState('')
-    const [fileInput, setFileInput] = useState(null as null | Packed)
+    const [fileInput, setFileInput] = useState(null as null | Package.Data)
 
     const [selection, setSelection] = useState([] as number[])
-    const [popup, setPopup] = useState(Popup.NONE)
+    const [activeOption, setActiveOption] = useState(OptionName.NONE)
     const [activeTagId, setActiveTagId] = useState(-1)
-    const [selecting, setSelecting] = useState(Selecting.NONE)
 
     const { t } = useTranslation()
 
@@ -83,9 +78,8 @@ export default function(props: {
         fileInput, setFileInput, 
         
         selection, setSelection,
-        popup, setPopup,
-        activeTagId, setActiveTagId,
-        selecting, setSelecting
+        activeOption, setActiveOption,
+        activeTagId, setActiveTagId
     }}>
 
         <header className={style.title}>
@@ -98,74 +92,51 @@ export default function(props: {
 
         </header>
 
-        <section className={style.tags}>
-            <Tags/>
-        </section>
+        <OptionsButtons/>
 
-        {popup == Popup.NONE || popup == Popup.QR ? <Entries/> : null}
-        {popup == Popup.PACKAGE ? <PackageEntries/> : null}
-        {popup == Popup.TEXT ? <TextEntries/> : null}
+        {{
+            [OptionName.NONE]: <><Tags/><Entries/></>,
+            [OptionName.COPY]: <><Tags/><Text.Entries/></>,
+            [OptionName.PASTE]: <><Tags/><Text.Entries/></>,
+            [OptionName.WRITE]: <Text.Input/>,
+            [OptionName.SAVE]: <><Tags/><Package.Entries button={<Package.ConfirmSaveButton/>}/></>,
+            [OptionName.LOAD]: <><Tags/><Package.Entries button={<Package.ConfirmLoadButton/>}/></>,
+            [OptionName.QR]: <Scanner className={style.input} handleData={(txt: string) => {
 
-        {popup != Popup.NONE ?<div className='popup'>
- 
-            <Button symbol='Up' attention='none' onClick={() => setPopup(Popup.NONE)} style={{
-                width: '100%'
+                try {
+    
+                    setFileInput(JSON.parse(txt))
+                    setActiveOption(OptionName.LOAD)
+    
+                } catch(er) {
+    
+                    setTextInput(txt)
+                    setActiveOption(OptionName.WRITE)
+                }
             }}/>
 
-            <PopupPopup/>
-
-        </div> : <Button symbol='Down' className='popup' attention='none' onClick={() => setPopup(Popup.TEXT)}/>}
+        }[activeOption]}
 
     </Context.Provider>
 }
 
-function PopupPopup() {
+function OptionsButtons() {
 
-    const { popup, setTextInput, setFileInput, setPopup } = useContext(Context)
+    const { activeOption, setActiveOption } = useContext(Context)
 
-    const { t } = useTranslation()
+    return <div className={style.buttons}>
 
-    return <>
+        <Widget symbol='QR' active={activeOption == OptionName.QR} 
+            onClick={() => setActiveOption(activeOption == OptionName.QR ? 
+                OptionName.NONE : 
+                OptionName.QR)}/>
 
-        <div className={style.buttons}>
+        <Text.CopyButton/> 
+        <Text.InputButton/>
+        <Package.SaveButton/>
+        <Package.LoadButton/>
 
-            <Button contents={t`scanner`} active={popup == Popup.QR} 
-                onClick={() => setPopup(Popup.QR)}/>
-            <Button contents={t`text`} active={popup == Popup.TEXT} 
-                onClick={() => setPopup(Popup.TEXT)}/>
-            <Button contents={t`packages`} active={popup == Popup.PACKAGE} 
-                onClick={() => setPopup(Popup.PACKAGE)}/>
-    
-        </div>
-
-        {popup == Popup.TEXT ? <TextPopup/> : null}
-
-        {popup == Popup.PACKAGE ? <PackagePopup/> : null}
-
-        {popup == Popup.QR ? <>
-            
-            <div className={style.buttons}>
-                <Button contents={t`scan QR`} active/>
-                <Button contents={t`create QR`} disabled/>
-            </div>
-            <Scanner className={style.input} handleData={(txt: string) => {
-
-                try {
-
-                    setFileInput(JSON.parse(txt))
-                    setPopup(Popup.PACKAGE)
-
-                } catch(er) {
-
-                    setTextInput(txt)
-                    setPopup(Popup.TEXT)
-                }
-
-            }}/>
-        
-        </> : null}
-
-    </>
+    </div>
 }
 
 function read(db: Database) {

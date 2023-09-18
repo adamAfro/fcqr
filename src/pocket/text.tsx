@@ -3,43 +3,55 @@ import { useContext } from 'react'
 import { Data, read, readwrite } from '../deck'
 import { Data as Card } from '../card'
 
-import { links, Link } from '../app'
+import { links } from '../app'
 import { useNavigate } from "react-router-dom"   
 
 import { useTranslation } from '../localisation'
 import { useMemory } from '../memory'
 
-import { Context, Selecting } from '.'
+import { Context, OptionName } from '.'
 
 import { Button, Widget } from '../interactions'
 
 import style from './style.module.css'
 
-export default function() {
+export function Input() {
 
-    const { textInput, setTextInput, selecting, setSelecting } = useContext(Context)
+    const { textInput, setTextInput, setActiveOption } = useContext(Context)
 
     const { t } = useTranslation()
 
     return <>
-
-        <div className={style.buttons}>
-            <Button contents={t`select deck to copy`} 
-                active={selecting == Selecting.COPY}
-                onClick={() => setSelecting(selecting == Selecting.COPY ? Selecting.NONE : Selecting.COPY)}/>
-
-            <Button contents={t`add to selected deck`} 
-                active={selecting == Selecting.PASTE} disabled={!textInput}
-                onClick={() => { setSelecting(Selecting.PASTE); setTextInput(textInput)}}/>
-        </div>
-
+        
         <textarea className={style.input} value={textInput}
-            onClick={() => setSelecting(Selecting.NONE)}
             onChange={e => setTextInput(e.target.value)}
             placeholder={`${t`term`} - ${t`definition`}`}
             data-attention='none'/>
 
+        <p>
+            <Button contents={t`paste to selected deck`}
+                onClick={() => setActiveOption(OptionName.PASTE)}/>
+        </p>
+    
     </>
+}
+
+export function InputButton() {
+
+    const { activeOption, setActiveOption } = useContext(Context)
+
+    return <Widget symbol='Pencil'
+        active={activeOption == OptionName.WRITE}
+        onClick={() => setActiveOption(activeOption == OptionName.WRITE ? OptionName.NONE : OptionName.WRITE)}/>
+}
+
+export function CopyButton() {
+
+    const { activeOption, setActiveOption } = useContext(Context)
+
+    return <Widget symbol='Copy'
+        active={activeOption == OptionName.COPY}
+        onClick={() => setActiveOption(activeOption == OptionName.COPY ? OptionName.NONE : OptionName.COPY)}/>
 }
 
 export function Entries() {
@@ -62,15 +74,15 @@ function Entry(deck: Data) {
 
     const { database } = useMemory()!
 
-    const { textInput, setTextInput, selecting, setSelecting } = useContext(Context)
+    const { textInput, setTextInput, activeOption, setActiveOption } = useContext(Context)
 
     const { t } = useTranslation()
 
     return <Button contents={deck.name || t`unnamed deck`} onClick={async () => {
 
-        if (selecting == Selecting.COPY) {
+        if (activeOption == OptionName.COPY) {
 
-            setSelecting(Selecting.NONE)
+            setActiveOption(OptionName.WRITE)
 
             const { done, cardStore } = read(database)
 
@@ -83,9 +95,9 @@ function Entry(deck: Data) {
             return
         }
 
-        if (selecting == Selecting.PASTE) {
+        if (activeOption == OptionName.PASTE) {
 
-            setSelecting(Selecting.NONE)
+            setActiveOption(OptionName.NONE)
 
             const { done, cardStore } = readwrite(database)
     

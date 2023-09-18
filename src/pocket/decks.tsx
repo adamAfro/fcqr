@@ -11,7 +11,7 @@ import { readwrite } from '../deck/properties'
 
 import { Button, Widget } from '../interactions'
 
-import { Context, Popup } from '.'
+import { Context, OptionName } from '.'
 
 import style from './style.module.css'
 
@@ -39,7 +39,7 @@ function Entry(deck: Deck.Data) {
 
 function AddButton() {
 
-    const { popup } = useContext(Context)
+    const { activeOption } = useContext(Context)
 
     const navigate = useNavigate()
 
@@ -54,5 +54,5 @@ function AddButton() {
         await done
         return void navigate(links.decks + deckId.toString())
 
-    }} disabled={popup != Popup.NONE}/>
+    }} disabled={activeOption != OptionName.NONE}/>
 }

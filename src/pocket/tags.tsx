@@ -61,7 +61,7 @@ export default function Languages() {
         tags, setTags
     }}>
 
-        <ul className='row'>
+        <ul className={style.tags}>
             <li>
                 <h2 className={style.heading}>{t`tags`}</h2>
             </li>

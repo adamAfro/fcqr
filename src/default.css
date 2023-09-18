@@ -43,6 +43,7 @@ body {
     max-width: 100%;
     min-height: 100vh;
     margin: 0 auto;
+    padding-bottom: 25vh;
     box-sizing: border-box;
 
     display: flex;
@@ -56,13 +57,16 @@ body {
     background-color: var(--secondary);
     color: var(--secondary-invert);
 
-    width: 100%; max-width: 48em;
-    margin-top: auto;
+    width: 100%;
 
     display: flex;
     flex-flow: column;
     align-items: center;
     justify-content: center;
+}
+
+.popup:first-child {
+    margin-bottom: auto;
 }
 
 :is(p, h1, h2, h3, h4, h5, h6, button, [role=button])::first-letter { 

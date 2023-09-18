@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext, createContext } from 'react'
+import { useState, useEffect, useContext, JSX } from 'react'
 
 import { read } from '../deck/properties'
 import { Database, read as readAll, readwrite as readwriteAll } 
@@ -8,117 +8,22 @@ import { Data as Tag } from './tags'
 import { useTranslation } from '../localisation'
 import { useMemory } from '../memory'
 
-import { Context, Popup } from '.'
+import { Context, OptionName } from '.'
 
-import { Data } from '../deck'
+import { Data as Deck } from '../deck'
 import { Data as Card } from '../card'
 
 import { Button, Widget } from '../interactions'
 
 import style from './style.module.css'
 
-const ImportContext = createContext({
-    replace: false, setReplace(_:(p:boolean) => boolean) {}
-})
-
-export default function() {
-
-    const { fileInput } = useContext(Context)
-
-    const [replace, setReplace] = useState(false)
-
-    const { t } = useTranslation()
-
-    return <ImportContext.Provider value={{ replace, setReplace }}>
-
-        <div className={style.buttons}>
-
-            <LoadButton/>
-
-            <SaveButton/>
-
-        </div>
-
-        <div className={style.input}>
-
-            {fileInput ? <Changes/> : <>
-            
-                <p>{t`select decks to save them`}</p>
-            
-            </>}
-
-        </div>
-
-    </ImportContext.Provider>
-}
-
-export function Entries() {
-
-    const { activeTagId, decks } = useContext(Context)
-
-    const { fileInput } = useContext(Context)
-
-    const { t } = useTranslation()
-
-    return <ul className={style.decks}>
-
-        <li><Widget symbol='Plus' attention='primary' disabled/></li>
-        
-        {fileInput ? fileInput.decks
-            .map(({ data }) => <li key={Math.random()*data.id!}><Button contents={data.name || t`unnamed deck`} attention='correct'/></li>) : null}
-
-        {(activeTagId >= 0 ? decks.filter(deck => deck.tagId == activeTagId) : decks)
-            .map(deck => <li key={deck.id}><Entry {...deck}/></li>)}
-
-    </ul>
-}
-
-function Entry(deck: Data) {
-
-    const { selection, setSelection } = useContext(Context)
-    
-    const [selected, setSelected] = useState(false)
-    useEffect(() => setSelected(selection.includes(deck.id!)), [selection])
-
-    const { t } = useTranslation()
-
-    return <>{selected ? 
-    
-        <Button contents={deck.name || t`unnamed deck`} attention='primary'
-            key={deck.id} onClick={() => setSelection(selection => selection.filter(id => id != deck.id!))}/>
-        :
-        <Button contents={deck.name || t`unnamed deck`} attention='none'
-            key={deck.id} onClick={() => setSelection(prev => [...prev, deck.id!])}/>
-    }</>
-}
-
-function Changes() {
-
-    const { fileInput, setFileInput } = useContext(Context)
-
-    const { t } = useTranslation()
-
-    return <div>
-
-        {t`will add`} {fileInput?.decks.length} {`of decks with respectively`} {fileInput?.decks.map(({cards}) => cards.length).join(',')} {t`of cards`}
-
-        <ConfirmButton/>
-
-        <Button contents={t`cancel`} attention='removal'
-            onClick={async () => setFileInput(null)}/>
-
-    </div>
-}
-
-function ConfirmButton() {
+export function ConfirmLoadButton() {
     
     const { database } = useMemory()!
 
-    const { fileInput, setFileInput, setDecks, setPopup } = useContext(Context)
+    const { fileInput, setFileInput, setDecks, setActiveOption } = useContext(Context)
 
-    const { t } = useTranslation()
-
-    return <Button contents={t`add`} onClick={async () => {
+    return <Widget symbol='Plus' onClick={async () => {
 
         if (!fileInput) return
 
@@ -126,24 +31,22 @@ function ConfirmButton() {
             .map(({ deckId }) => deckId)
 
         const { done, store } = read(database)
-        const added = await Promise.all(ids.map(async (id) => await store.get(id) as Data))
+        const added = await Promise.all(ids.map(async (id) => await store.get(id) as Deck))
 
         setDecks(p => [...added.reverse(), ...p])
         setFileInput(null)
-        setPopup(Popup.NONE)
+        setActiveOption(OptionName.NONE)
 
         await done
 
     }}/>
 }
 
-function LoadButton() {
+export function LoadButton() {
 
-    const { setFileInput } = useContext(Context)
+    const { activeOption, setFileInput, setActiveOption } = useContext(Context)
 
-    const { t } = useTranslation()
-
-    return <Button contents={t`load`} labeled={<input onChange={async (e) => {
+    return <Widget symbol='FileFrom' active={activeOption == OptionName.LOAD} labeled={<input onChange={async (e) => {
 
         const input = e.target as HTMLInputElement
 
@@ -155,10 +58,12 @@ function LoadButton() {
         if (packed) 
             setFileInput(packed)
 
+        setActiveOption(OptionName.LOAD)
+
     }} type="file"/>}/>
 }
 
-function SaveButton() {
+export function ConfirmSaveButton() {
 
     const { database } = useMemory()!
 
@@ -177,9 +82,62 @@ function SaveButton() {
     }), [selection])
 
     if (selection.length == 0)
-        return <Button contents={t`save`} disabled/>
+        return <Widget symbol='FileAdd' disabled/>
 
-    return <Button contents={t`save`} href={href} download={t`decks-` + new Date().toString().replaceAll(' ', '-') + '.json'}/>
+    return <Widget symbol='FileAdd' href={href} download={t`decks-` + new Date().toString().replaceAll(' ', '-') + '.json'}/>
+}
+
+export function SaveButton() {
+
+    const { activeOption, setActiveOption, setFileInput } = useContext(Context)
+
+    return <Widget symbol='FileAdd' active={activeOption == OptionName.SAVE} onClick={() => {
+
+        if (activeOption == OptionName.NONE)
+            return void setActiveOption(OptionName.SAVE)
+
+        setActiveOption(OptionName.NONE)
+        setFileInput(null)
+
+    }}/>
+}
+
+export function Entries({ button }: {button: JSX.Element}) {
+
+    const { activeOption, activeTagId, decks, fileInput } = useContext(Context)
+
+    const { t } = useTranslation()
+
+    return <ul className={style.decks}>
+
+        <li>{button}</li>
+        
+        {fileInput && activeOption == OptionName.LOAD ? fileInput.decks.reverse()
+            .map(({ data }) => <li key={Math.random()*data.id!}><Button contents={data.name || t`unnamed deck`} attention='correct'/></li>) : null}
+
+        {(activeTagId >= 0 ? decks.filter(deck => deck.tagId == activeTagId) : decks)
+            .map(deck => <li key={deck.id}><Entry {...deck}/></li>)}
+
+    </ul>
+}
+
+function Entry(deck: Deck) {
+
+    const { selection, setSelection } = useContext(Context)
+    
+    const [selected, setSelected] = useState(false)
+    useEffect(() => setSelected(selection.includes(deck.id!)), [selection])
+
+    const { t } = useTranslation()
+
+    return <>{selected ? 
+    
+        <Button contents={deck.name || t`unnamed deck`} attention='primary'
+            key={deck.id} onClick={() => setSelection(selection => selection.filter(id => id != deck.id!))}/>
+        :
+        <Button contents={deck.name || t`unnamed deck`} attention='none'
+            key={deck.id} onClick={() => setSelection(prev => [...prev, deck.id!])}/>
+    }</>
 }
 
 async function createPackage(ids: number[], db: Database) {
@@ -188,7 +146,7 @@ async function createPackage(ids: number[], db: Database) {
 
     const cardIndex = cardStore.index('deckId')
     const decks = await Promise.all(ids.map(async (id) => ({
-        data: await store.get(id) as Data,
+        data: await store.get(id) as Deck,
         cards: await cardIndex.getAll(IDBKeyRange.only(id)) as Card[]
     })))
 
@@ -212,9 +170,9 @@ async function createPackage(ids: number[], db: Database) {
     return { tags, decks }
 }
 
-export type Packed = Awaited <ReturnType <typeof createPackage>>
+export type Data = Awaited <ReturnType <typeof createPackage>>
 
-async function fromPackage(packed: Packed, db: Database, { replace = false } = {}) {
+async function fromPackage(packed: Data, db: Database) {
 
     const { done, store, cardStore, tagStore } = readwriteAll(db)
 

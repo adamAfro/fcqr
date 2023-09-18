@@ -14,7 +14,7 @@ import { links } from '../app'
 
 import { useTranslation } from '../localisation'
 
-import { Button } from '../interactions'
+import { Widget, Button } from '../interactions'
 
 import style from "./style.module.css"
 
@@ -124,6 +124,8 @@ export default function Deck({ id }: { id: number }): JSX.Element {
             onClick={() => setState(State.EDITION)}/>}
 
         <Cards/>
+
+        <Widget symbol="ArrowBack" to={links.pocket}/>
 
     </Context.Provider>
 }

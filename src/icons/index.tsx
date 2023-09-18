@@ -30,6 +30,12 @@ export { ReactComponent as Link } from './link.svg'
 
 export { ReactComponent as Save } from './save.svg'
 
+export { ReactComponent as Reload } from './reload.svg'
+
+export { ReactComponent as Up } from './up.svg'
+
+export { ReactComponent as Down } from './down.svg'
+
 export { ReactComponent as FileFrom } from './file/from.svg'
 export { ReactComponent as FileAdd } from './file/add.svg'
 export { ReactComponent as FileWrite } from './file/write.svg'

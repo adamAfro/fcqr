@@ -10,8 +10,7 @@ import { links } from '../app'
 import { Context, State } from '.'
 
 import { Widget, Button } from '../interactions'
-
-import style from './style.module.css'
+import { useTranslation } from '../localisation'
 
 export function Dangerzone() {
 
@@ -21,9 +20,11 @@ export function Dangerzone() {
 
     const [show, setShow] = useState(false)
 
+    const { t } = useTranslation()
+
     return <p className='row'>
 
-        <Widget symbol={show ? 'ArrowBack' : 'Danger'} attention='removal' active={show}
+        <Button symbol={show ? 'ArrowBack' : 'Danger'} contents={t`remove deck`} attention='removal' active={show}
             onClick={() => setShow(p => !p)}/>
 
         {show ? <Widget symbol='Bin' attention='removal' onClick={async () => {
@@ -49,60 +50,15 @@ export function Dangerzone() {
     </p>
 }
 
-export function EditButton() {
-
-    const { state, setState } = useContext(Context)
-
-    return <Widget big symbol='Pencil' active={state == State.EDITION}
-        onClick={() => setState(state == State.EDITION ? State.EXERCISES : State.EDITION)}/>
-}
-
-export function ShuffleButton() {
-
-    const { id, cards, setCards } = useContext(Context)
-
-    const { database } = useMemory()!
-
-    return <Widget big symbol='Shuffle' onClick={async () => {
-
-        const shuffled = cards?.map(card => ({ ...card, order: Math.random() }))
-            .sort((a, b) => a.order! - b.order!).reverse()
-
-        setCards(shuffled)
-
-        if (!id) return 
-        
-        const { done, cardStore } = readwrite(database)
-
-        const modifications = cards.map(card => cardStore.put(card))
-
-        await Promise.all(modifications)
-        return await done
-
-    }}/>
-}
-
-export function ReferenceButton() {
-
-    const { reference } = useContext(Context)
-
-    try {
-
-        return <Widget big symbol='Link' to={new URL(reference).toString()} target="_blank"/>
-
-    } catch(e) {
-
-        return <Widget big symbol='Link' attention="error" disabled/>
-    }
-}
-
 export function AddButton() {
 
-    const { id, setCards } = useContext(Context)
+    const { id, state, setCards } = useContext(Context)
 
     const { database } = useMemory()!
 
-    return <Widget big symbol='Plus' onClick={async () => {
+    const { t } = useTranslation()
+
+    return <Button symbol='Plus' contents={t`add card`} disabled={state != State.EDITION} onClick={async () => {
 
         if (!id) 
             return void setCards(prev => [{ ...card, id: -1 }, ...prev])

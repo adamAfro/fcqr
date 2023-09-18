@@ -1,6 +1,5 @@
-import { useState, useContext, createContext } from 'react'
+import { useContext } from 'react'
 
-import { Database } from '../memory'
 import { Data, read, readwrite } from '../deck'
 import { Data as Card } from '../card'
 
@@ -16,7 +15,7 @@ import { Button, Widget } from '../interactions'
 
 import style from './style.module.css'
 
-export function Options() {
+export default function() {
 
     const { textInput, setTextInput, selecting, setSelecting } = useContext(Context)
 
@@ -48,14 +47,16 @@ export function Entries() {
     const { activeTagId, decks } = useContext(Context)
 
     return <ul className={style.decks}>
+
+        <li><Widget symbol='Plus' attention='primary' disabled/></li>
         
         {(activeTagId >= 0 ? decks.filter(deck => deck.tagId == activeTagId) : decks)
-            .map(deck => <li key={deck.id}><Option {...deck}/></li>)}
+            .map(deck => <li key={deck.id}><Entry {...deck}/></li>)}
 
     </ul>
 }
 
-function Option(deck: Data) {
+function Entry(deck: Data) {
 
     const navigate = useNavigate()
 

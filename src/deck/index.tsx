@@ -5,14 +5,18 @@ import { Database, Stores, read as readAll } from "../memory"
 import { Data as Language } from '../pocket/tags'
 import { useMemory } from "../memory"
 
-import Quickaccess from '../quickaccess'
-import * as Actions from './actions'
-import Properties from './properties'
+import { Dangerzone, AddButton } from './actions'
+import { Name, TagSelect, MuteButton, SilenceButton } from './properties'
 
 import { default as Card, Data as CardData } from '../card'
 
+import { links } from '../app'
+
+import { useTranslation } from '../localisation'
+
+import { Button } from '../interactions'
+
 import style from "./style.module.css"
-import { useTranslation } from 'react-i18next'
 
 export interface Data {
     id?: number
@@ -20,7 +24,6 @@ export interface Data {
     tagId?: number
     muted?: boolean
     silent?: boolean
-    reference?: string
 }
 
 export enum State {
@@ -51,10 +54,7 @@ export const Context = createContext({
     setMuted(c:boolean|((p:boolean) => boolean)) {},
 
     silent: false,
-    setSilent(c:boolean|((p:boolean) => boolean)) {},
-
-    reference: '',
-    setReference(c:string|((p:string) => string)) {}
+    setSilent(c:boolean|((p:boolean) => boolean)) {}
 })
 
 export default function Deck({ id }: { id: number }): JSX.Element {
@@ -64,7 +64,6 @@ export default function Deck({ id }: { id: number }): JSX.Element {
     const [state, setState] = useState(State.LOADING)
     const [name, setName] = useState <string | undefined> (undefined)
     const [tag, setTag] = useState <Language | undefined | null> (undefined)
-    const [reference, setReference] = useState('')
 
     const [muted, setMuted] = useState(false)
     const [silent, setSilent] = useState(false)
@@ -88,18 +87,18 @@ export default function Deck({ id }: { id: number }): JSX.Element {
 
         return { data, cards, tag }
 
-    })().then(({ data, tag, cards }) => {
+    })().then(({ data, cards, tag }) => {
 
         setName(data.name)
-        setReference(data.reference || '')
         setTag(tag)
-        setCards(cards as CardData[])
+        setCards(cards?.map(card => ({ ...card, order: Math.random() }))
+            .sort((a, b) => a.order! - b.order!).reverse() as CardData[])
         if (data.muted || !(tag && tag.voice))
             setMuted(true)
         if (data.silent || !(tag && tag.code))
             setSilent(true)
 
-        setState(State.EXERCISES)
+        setState(cards.length > 0 ? State.EXERCISES : State.EDITION)
 
     }), [])
 
@@ -110,27 +109,21 @@ export default function Deck({ id }: { id: number }): JSX.Element {
         tag, setTag,
         cards, setCards,
         muted, setMuted,
-        silent, setSilent,
-        reference, setReference
+        silent, setSilent
     }}>
 
-        <Quickaccess popup={state == State.EDITION ? <Properties/> : null}>
+        {state == State.EDITION ? <div className='popup'>
 
-            <div className='stack'>
+            <Options/>
 
-                {state == State.EXERCISES ? 
-                    (cards.length > 1 ? <Actions.ShuffleButton/> : null) :
-                    <Actions.AddButton/>}
+            <Button symbol='Up' attention='none' onClick={() => setState(State.EXERCISES)} style={{
+                width: '100%'
+            }}/>
 
-                {reference ? <Actions.ReferenceButton/> : null}
+        </div> : <Button symbol='Down' className='popup' attention='none' 
+            onClick={() => setState(State.EDITION)}/>}
 
-            </div>
-
-            <Actions.EditButton/>
-
-        </Quickaccess>
-
-        {state >= State.EDITION ? <Cards/> : null}
+        <Cards/>
 
     </Context.Provider>
 }
@@ -158,6 +151,31 @@ function Cards() {
         </li>)}
 
     </ul>
+}
+
+function Options() {
+
+    const { t } = useTranslation()
+
+    return <header className='column'>
+
+        <h1 className='title'><Name/></h1>
+
+        <div className='row'>
+
+            <TagSelect/>
+
+            <MuteButton/>
+
+            <SilenceButton/>
+
+        </div>
+        
+        <Dangerzone/>
+
+        <p><AddButton/></p>
+
+    </header>
 }
 
 export function read(db: Database) {

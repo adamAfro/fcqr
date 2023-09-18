@@ -20,6 +20,7 @@ type Attrs = ButtonAttrs | AnchorAttrs | LinkAttrs | LabelAttrs
 interface Props {
 
     contents?: ReactNode,
+    symbol?: IconName,
 
     active?: boolean,
     attention?: 'primary' | 'removal' | 'error' | 'correct' | 'weak' | 'none',
@@ -33,25 +34,33 @@ export function Button(props: Props & ButtonAttrs): JSX.Element
 export function Button(props: Props & AnchorAttrs): JSX.Element
 export function Button(props: Props & LinkAttrs): JSX.Element
 export function Button(props: Props & LabelAttrs): JSX.Element
-export function Button({ active, attention, contents, href, to, labeled, ...props }: Props & Attrs) {
+export function Button({ active, symbol, attention, contents, href, to, labeled, ...props }: Props & Attrs) {
 
     if (to) return <Link {...props as AnchorAttrs}    
         role='button' to={to} 
         data-attention={attention}
-        data-active={active} >{contents}</Link>
+        data-active={active} >{(symbol && symbol in Icons) ?
+            createElement(Icons[symbol as IconName]) : symbol
+        } {contents}</Link>
 
     if (href) return <a {...props as AnchorAttrs}
         role='button' href={href}
         data-attention={attention}
-        data-active={active} >{contents}</a>
+        data-active={active} >{(symbol && symbol in Icons) ?
+            createElement(Icons[symbol as IconName]) : symbol
+        } {contents}</a>
 
     if (labeled) return <label role='button' {...props as LabelAttrs}
         data-attention={attention} 
-        data-active={active}>{contents}{labeled}</label>
+        data-active={active}>{(symbol && symbol in Icons) ?
+            createElement(Icons[symbol as IconName]) : symbol
+        } {contents}{labeled}</label>
 
     return <button {...props as ButtonAttrs}
         data-attention={attention} 
-        data-active={active} >{contents}</button>
+        data-active={active} >{(symbol && symbol in Icons) ?
+            createElement(Icons[symbol as IconName]) : symbol
+        } {contents}</button>
 }
 
 type IconName = keyof typeof Icons
@@ -67,12 +76,7 @@ export function Widget(props: WidgetProps & LabelAttrs): JSX.Element
 export function Widget({ big, symbol, ...props }: WidgetProps & Attrs) {
 
     return <Button {...props as Props & ButtonAttrs}
-        className={big ? 'widget' : 'box'}
-        contents={symbol in Icons ?
-            createElement(Icons[symbol as IconName]) : 
-            symbol
-        }
-    />
+        className={big ? 'widget' : 'box'} symbol={symbol}/>
 }
 
 export function Input({ active, attention, contents, ...props }: Props & InputAttrs) {

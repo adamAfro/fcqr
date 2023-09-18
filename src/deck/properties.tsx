@@ -7,34 +7,9 @@ import { Data as Language, read as readLanguages } from '../pocket/tags'
 import { useMemory } from "../memory"
 import { Context, Data } from '.'
 
-import { Dangerzone } from './actions'
-
 import { Widget, Input } from '../interactions'
 
-export default function Properties() {
-
-    return <header className='column'>
-
-        <h1 className='title'><Name/></h1>
-
-        <div className='row'>
-
-            <TagSelect/>
-
-            <MuteButton/>
-
-            <SilenceButton/>
-
-        </div>
-
-        <Reference/>
-        
-        <Dangerzone/>
-
-    </header>
-}
-
-function Name() {
+export function Name() {
 
     const context = useContext(Context)
     const { id } = context
@@ -44,7 +19,7 @@ function Name() {
 
     const [name, setName] = useState(context.name)
 
-    return <Input attention='none' onChange={async (e) => {
+    return <Input onChange={async (e) => {
         
         setName(e.target.value)
         
@@ -60,7 +35,7 @@ function Name() {
     }} placeholder={t`unnamed deck`} type="text" value={name}/>
 }
 
-function TagSelect() {
+export function TagSelect() {
 
     const { database } = useMemory()!
 
@@ -102,7 +77,7 @@ function TagSelect() {
     </select>
 }
 
-function MuteButton() {
+export function MuteButton() {
 
     const { database } = useMemory()!
 
@@ -121,7 +96,7 @@ function MuteButton() {
     }} type="checkbox" checked={muted} disabled={!tag || !tag.code}/>}/>
 }
 
-function SilenceButton() {
+export function SilenceButton() {
 
     const { database } = useMemory()!
 
@@ -138,30 +113,6 @@ function SilenceButton() {
         setSilent(p => !p)
     
     }} type="checkbox" checked={silent} disabled={!tag || !tag.code}/>}/>
-}
-
-function Reference() {
-
-    const { database } = useMemory()!
-
-    const { id, reference, setReference } = useContext(Context)
-
-    const { t } = useTranslation()
-
-    return <input placeholder={t`reference link`} data-attention='weak' className='widget'
-        spellCheck={false} type="text" value={reference} onChange={async (e) => {
-
-        const reference = e.target.value
-        
-        setReference(reference)
-        
-        const { done, store } = readwrite(database)
-        const deck = await store.get(id) as Data
-        
-        await store.put({ ...deck, reference })
-        await done
-
-    }}/>
 }
 
 export function readwrite(db: Database) {

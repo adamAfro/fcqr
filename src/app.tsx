@@ -7,7 +7,6 @@ import { Provider as MemoryProvider } from './memory'
 
 import Pocket from './pocket'
 import Deck from './deck'
-import Settings from './options'
 
 import './default.css'
 
@@ -16,8 +15,7 @@ localise()
 export { Link }
 export const links = {
     pocket: '/',
-    decks: `/${t`deck`}/`,
-    options: `/${t`options`}`
+    decks: `/${t`deck`}/`
 }
 
 export default (props: { basename?: string }) => {
@@ -42,10 +40,6 @@ export default (props: { basename?: string }) => {
                     </main>
 
                 }} />
-
-                <Route path={links.options} element={<main className='panel'>
-                    <Settings />
-                </main>} />
 
             </Routes></Router>
 

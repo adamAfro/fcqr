@@ -11,17 +11,17 @@ import { readwrite } from '../deck/properties'
 
 import { Button, Widget } from '../interactions'
 
-import { Context, Options } from '.'
+import { Context, Popup } from '.'
 
 import style from './style.module.css'
 
 export default function Entries() {
 
-    const { options, activeTagId, decks } = useContext(Context)
+    const { activeTagId, decks } = useContext(Context)
 
     return <ul className={style.decks}>
 
-        <li>{options == Options.NONE ? <AddButton/> : null}</li>
+        <li><AddButton/></li>
         
         {(activeTagId >= 0 ? decks.filter(deck => deck.tagId == activeTagId) : decks)
             .map(deck => <li key={deck.id}><Entry {...deck}/></li>)}
@@ -39,7 +39,7 @@ function Entry(deck: Deck.Data) {
 
 function AddButton() {
 
-    const { options } = useContext(Context)
+    const { popup } = useContext(Context)
 
     const navigate = useNavigate()
 
@@ -54,5 +54,5 @@ function AddButton() {
         await done
         return void navigate(links.decks + deckId.toString())
 
-    }} disabled={options != Options.NONE}/>
+    }} disabled={popup != Popup.NONE}/>
 }

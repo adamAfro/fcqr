@@ -4,6 +4,8 @@
     display: flex; gap: 1em;
     flex-flow: row wrap;
     justify-content: center;
+
+    margin-bottom: 1em;
 }
 
 .decks li {
@@ -22,12 +24,15 @@
     width: 100%;
 }
 
-.buttons {
-    display: flex; gap: 2pt; width: 100%;
+.title {
+    display: flex;
+    align-items: baseline;
+    gap: 1em;
 }
 
-.buttons + .buttons {
-    margin-top: 1pt;
+
+.buttons {
+    display: flex; width: 100%;
 }
 
 .buttons :is(button, [role=button]) {
@@ -44,14 +49,18 @@
 }
 
 .tags {
+    box-sizing: border-box;
+    width: 100%; padding: 2em 1em;
+
     font-size: .8em;
     margin-bottom: 8em;
+    background-color: var(--primary);
+    color: var(--primary-invert)
 }
 
 .tag {
     display: flex;
     width: 10em;
-    align-items: flex-end;
     position: relative; --gap: 1em;
 }
 

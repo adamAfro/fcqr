@@ -2,6 +2,9 @@
 
     font-family: var(--handwritten);
 
+    background-color: var(--secondary);
+    color: var(--secondary-invert);
+
     display: flex; gap: 1em;
     flex-flow: column;
     justify-content: center;
@@ -28,6 +31,8 @@
 
 .term, .def {
 
+    color: inherit !important;
+    box-shadow: none !important;
     padding: 0 !important;
     background: none !important;
     width: 100%;

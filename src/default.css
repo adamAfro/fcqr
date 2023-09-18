@@ -2,10 +2,26 @@
 
 :root {
 
-    --background-color: white;
+    --primary: rgb(199, 201, 83);
+    --primary-active: rgb(219, 221, 109);
+    --primary-invert: rgb(34, 34, 34);
 
-    --illuminated: 0 -.25em 2em -1em;
-    --clicked: 0 0 .25em;
+    --secondary: rgb(173, 173, 173);
+    --secondary-active: rgb(219, 221, 109);
+    --secondary-invert: rgb(0, 0, 0);
+
+    --accent: rgb(253, 255, 162);
+    --accent-active: rgb(254, 255, 221);
+    --accent-invert: rgb(34, 34, 34);
+
+    --background: rgb(65, 65, 65);
+    --background-invert: rgb(155, 155, 155);
+
+    color: var(--background-invert);
+    background-color: var(--background);
+
+    --illuminated: 0 -.25em 2em -1em black;
+    --clicked: 0 0 .25em black;
     --handwritten:
         'Itim',
         sans-serif;
@@ -13,6 +29,8 @@
     --button-height-font-size: 1.5em;
 
     font-family: sans;
+
+    --button-radius: .5em;
 }
 
 body {
@@ -26,13 +44,25 @@ body {
     min-height: 100vh;
     margin: 0 auto;
     box-sizing: border-box;
-    padding: 1em;
-    
-    padding-bottom: 12em;
 
     display: flex;
     flex-flow: column;
     align-items: center;
+}
+
+
+.popup {
+
+    background-color: var(--secondary);
+    color: var(--secondary-invert);
+
+    width: 100%; max-width: 48em;
+    margin-top: auto;
+
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
 }
 
 :is(p, h1, h2, h3, h4, h5, h6, button, [role=button])::first-letter { 
@@ -41,7 +71,7 @@ body {
 
 button, a[role=button], [role=button], select, input, input, textarea {
 
-    --padding: .5em;
+    --padding: var(--button-radius);
     text-align: center;
 
     font: inherit;
@@ -62,12 +92,6 @@ button, a[role=button], [role=button], select, input, input, textarea {
     text-decoration: none;
     transition: background .3s;
     
-    --secondary: #b8e0b4;
-    --secondary-active: #9dcfa3;
-
-    --primary: #7cb5ff;
-    --primary-active: #8a8cff;
-    
     --dangerous: #f1974e;
     --dangerous-active: #d41e1e;
     
@@ -84,7 +108,7 @@ input[type=radio] {
 }
 
 :is(button, a[role=button], [role=button], select, input, textarea) {
-    background-color: var(--secondary);
+    background-color: var(--secondary); color: var(--secondary-invert);
 } :is(button, a[role=button], [role=button]):is(:active, [data-active=true]) {
     background-color: var(--secondary-active);
 }
@@ -93,6 +117,12 @@ input[type=radio] {
     background-color: var(--primary);
 } [data-attention=primary]:is(button, a[role=button], [role=button], select, input, textarea):is(:active, [data-active=true]) {
     background-color: var(--primary-active);
+}
+
+[data-attention=accent]:is(button, a[role=button], [role=button], select, input, textarea) {
+    background-color: var(--accent);
+} [data-attention=accent]:is(button, a[role=button], [role=button], select, input, textarea):is(:active, [data-active=true]) {
+    background-color: var(--accent-active);
 }
 
 [data-attention=removal]:is(button, a[role=button], [role=button], select, input, textarea) {
@@ -109,11 +139,11 @@ input[type=radio] {
 }
 
 [data-attention=weak]:is(button, a[role=button], [role=button], select, input, textarea):not(:is(:active, [data-active=true])) {
-    opacity:.5;
+    opacity:.8;
 }
 
 [data-attention=none]:is(button, a[role=button], [role=button], select, input, textarea):not(:is(:active, [data-active=true])) {
-    background: none;
+    background: none; color: var(--background-invert); backdrop-filter: blur(1pt);
 }
 
 [disabled]:is(button, a[role=button], [role=button], select, input, input, textarea) {
@@ -133,7 +163,7 @@ input[type=radio] {
     padding: var(--padding);
 }
 
-.box > svg {
+:is(button, a[role=button], [role=button], select, input, textarea) > svg {
     width: calc(2*var(--padding));
     height: calc(2*var(--padding));
 }

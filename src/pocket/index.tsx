@@ -1,27 +1,24 @@
-import { useState, useEffect, createContext, useContext, useTransition } from 'react'
+import { useState, useEffect, createContext, useContext } from 'react'
 
 import { Database, Stores } from '../memory'
-
 import { useTranslation } from '../localisation'
 import { useMemory } from '../memory'
-
-import Quickaccess from '../quickaccess'
-import Tags from './tags'
+import { unregister } from '../registrar'
+import { Select as LanguageSelect } from '../localisation'
 
 import * as Deck from '../deck'
+import Scanner from '../scanner'
 
-import { Options as TextOptions, Entries as TextEntries } from './text'
-import { Options as PackageOptions, Entries as PackageEntries, Packed } from './package'
+import { default as TextPopup, Entries as TextEntries } from './text'
+import { default as PackagePopup, Entries as PackageEntries, Packed } from './package'
 import Entries from './entries'
+import Tags from './tags'
 
 import { Button, Widget } from '../interactions'
 
 import style from './style.module.css'
 
-import Scanner from '../scanner'
-
-
-export enum Options { NONE, TEXT, PACKAGE, QR }
+export enum Popup { NONE, TEXT, PACKAGE, QR }
 
 export enum Selecting { NONE = 0, ADD, COPY, PASTE }
 
@@ -39,8 +36,8 @@ export const Context = createContext({
     selection: [] as number[], 
         setSelection(_:(p: number[]) => number[]) {},
     
-    options: Options.NONE as Options, 
-        setOptions(_: Options) {},
+    popup: Popup.NONE as Popup, 
+        setPopup(_: Popup) {},
 
     activeTagId: -1,
         setActiveTagId(_:number) {},
@@ -73,7 +70,7 @@ export default function(props: {
     const [fileInput, setFileInput] = useState(null as null | Packed)
 
     const [selection, setSelection] = useState([] as number[])
-    const [options, setOptions] = useState(Options.NONE)
+    const [popup, setPopup] = useState(Popup.NONE)
     const [activeTagId, setActiveTagId] = useState(-1)
     const [selecting, setSelecting] = useState(Selecting.NONE)
 
@@ -86,49 +83,45 @@ export default function(props: {
         fileInput, setFileInput, 
         
         selection, setSelection,
-        options, setOptions,
+        popup, setPopup,
         activeTagId, setActiveTagId,
         selecting, setSelecting
     }}>
 
-        <Quickaccess home={true} popup={options != Options.NONE ? <OptionsPopup/> : null}>
+        <header className={style.title}>
 
-            <OptionsButton/>
+           <Widget symbol='Reload' onClick={() => unregister().then(() => window.location.reload())}/>
 
-        </Quickaccess>
+            <h1 className='title'>{t`flisqs`}</h1>
 
-        <h1 className='title'>{t`flisqs`}</h1>
+            <LanguageSelect/>
+
+        </header>
 
         <section className={style.tags}>
             <Tags/>
         </section>
 
-        {options == Options.NONE || options == Options.QR ? <Entries/> : null}
-        {options == Options.PACKAGE ? <PackageEntries/> : null}
-        {options == Options.TEXT ? <TextEntries/> : null}
+        {popup == Popup.NONE || popup == Popup.QR ? <Entries/> : null}
+        {popup == Popup.PACKAGE ? <PackageEntries/> : null}
+        {popup == Popup.TEXT ? <TextEntries/> : null}
+
+        {popup != Popup.NONE ?<div className='popup'>
+ 
+            <Button symbol='Up' attention='none' onClick={() => setPopup(Popup.NONE)} style={{
+                width: '100%'
+            }}/>
+
+            <PopupPopup/>
+
+        </div> : <Button symbol='Down' className='popup' attention='none' onClick={() => setPopup(Popup.TEXT)}/>}
 
     </Context.Provider>
 }
 
-function OptionsButton() {
+function PopupPopup() {
 
-    const { options, setOptions } = useContext(Context)
-
-    const { t } = useTranslation()
-
-    return <Widget big symbol='FileWrite' contents={t`scanner`} active={options == Options.QR} onClick={() => {
-
-        if (options != Options.QR)
-            return void setOptions(Options.QR)
-
-        setOptions(Options.NONE)
-
-    }}/>
-}
-
-function OptionsPopup() {
-
-    const { options, setTextInput, setFileInput, setOptions } = useContext(Context)
+    const { popup, setTextInput, setFileInput, setPopup } = useContext(Context)
 
     const { t } = useTranslation()
 
@@ -136,17 +129,20 @@ function OptionsPopup() {
 
         <div className={style.buttons}>
 
-            <QRButton/>
-            <TextButton/>
-            <PackageButton/>
+            <Button contents={t`scanner`} active={popup == Popup.QR} 
+                onClick={() => setPopup(Popup.QR)}/>
+            <Button contents={t`text`} active={popup == Popup.TEXT} 
+                onClick={() => setPopup(Popup.TEXT)}/>
+            <Button contents={t`packages`} active={popup == Popup.PACKAGE} 
+                onClick={() => setPopup(Popup.PACKAGE)}/>
     
         </div>
 
-        {options == Options.TEXT ? <TextOptions/> : null}
+        {popup == Popup.TEXT ? <TextPopup/> : null}
 
-        {options == Options.PACKAGE ? <PackageOptions/> : null}
+        {popup == Popup.PACKAGE ? <PackagePopup/> : null}
 
-        {options == Options.QR ? <>
+        {popup == Popup.QR ? <>
             
             <div className={style.buttons}>
                 <Button contents={t`scan QR`} active/>
@@ -157,12 +153,12 @@ function OptionsPopup() {
                 try {
 
                     setFileInput(JSON.parse(txt))
-                    setOptions(Options.PACKAGE)
+                    setPopup(Popup.PACKAGE)
 
                 } catch(er) {
 
                     setTextInput(txt)
-                    setOptions(Options.TEXT)
+                    setPopup(Popup.TEXT)
                 }
 
             }}/>
@@ -170,55 +166,6 @@ function OptionsPopup() {
         </> : null}
 
     </>
-}
-
-function QRButton() {
-
-    const { options, setOptions } = useContext(Context)
-
-    const { t } = useTranslation()
-
-    return <Button contents={t`scanner`} active={options == Options.QR} onClick={() => {
-
-        if (options != Options.QR)
-            return void setOptions(Options.QR)
-
-        setOptions(Options.NONE)
-
-    }}/>
-}
-
-function PackageButton() {
-
-    const { options, setOptions } = useContext(Context)
-
-    const { t } = useTranslation()
-
-    return <Button contents={t`packages`} active={options == Options.PACKAGE} onClick={() => {
-
-        if (options != Options.PACKAGE)
-            return void setOptions(Options.PACKAGE)
-
-        setOptions(Options.NONE)
-
-    }}/>
-}
-
-function TextButton() {
-
-    const { options, setOptions, setTextInput } = useContext(Context)
-
-    const { t } = useTranslation()
-
-    return <Button contents={t`text`} active={options == Options.TEXT} onClick={() => {
-
-        if (options != Options.TEXT)
-            return void setOptions(Options.TEXT)
-
-        setOptions(Options.NONE)
-        setTextInput('')
-
-    }}/>
 }
 
 function read(db: Database) {

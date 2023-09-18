@@ -8,7 +8,7 @@ import { Data as Tag } from './tags'
 import { useTranslation } from '../localisation'
 import { useMemory } from '../memory'
 
-import { Context, Options as CurrentOption } from '.'
+import { Context, Popup } from '.'
 
 import { Data } from '../deck'
 import { Data as Card } from '../card'
@@ -21,7 +21,7 @@ const ImportContext = createContext({
     replace: false, setReplace(_:(p:boolean) => boolean) {}
 })
 
-export function Options() {
+export default function() {
 
     const { fileInput } = useContext(Context)
 
@@ -61,17 +61,19 @@ export function Entries() {
     const { t } = useTranslation()
 
     return <ul className={style.decks}>
+
+        <li><Widget symbol='Plus' attention='primary' disabled/></li>
         
         {fileInput ? fileInput.decks
             .map(({ data }) => <li key={Math.random()*data.id!}><Button contents={data.name || t`unnamed deck`} attention='correct'/></li>) : null}
 
         {(activeTagId >= 0 ? decks.filter(deck => deck.tagId == activeTagId) : decks)
-            .map(deck => <li key={deck.id}><Option {...deck}/></li>)}
+            .map(deck => <li key={deck.id}><Entry {...deck}/></li>)}
 
     </ul>
 }
 
-function Option(deck: Data) {
+function Entry(deck: Data) {
 
     const { selection, setSelection } = useContext(Context)
     
@@ -112,7 +114,7 @@ function ConfirmButton() {
     
     const { database } = useMemory()!
 
-    const { fileInput, setFileInput, setDecks, setOptions } = useContext(Context)
+    const { fileInput, setFileInput, setDecks, setPopup } = useContext(Context)
 
     const { t } = useTranslation()
 
@@ -128,7 +130,7 @@ function ConfirmButton() {
 
         setDecks(p => [...added.reverse(), ...p])
         setFileInput(null)
-        setOptions(CurrentOption.NONE)
+        setPopup(Popup.NONE)
 
         await done
 

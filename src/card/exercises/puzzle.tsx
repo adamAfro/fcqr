@@ -7,10 +7,7 @@ import { randomInt, randomFrom, randomWeighted } from '../../misc'
 import { stringSimilarity as calcSimilarity }
     from 'string-similarity-js'
 
-import { Widget, Button } from '../../interactions'
-
-import style from "../style.module.css"
-
+import Button from '../../button'
 
 const ExerciseContext = createContext({
     index: 0, setIndex: (index:number) => {}, length: 0,
@@ -43,7 +40,7 @@ export default function Puzzle({ guesses, length }: { guesses: [string, number][
         defined, setDefined
     }}>
 
-        <span className={style.selection}>
+        <span className='term' data-is-long={true}>
             {guesses.map(([text, order], i) => <Option 
                 text={text} order={order} key={i}
             />)}
@@ -51,7 +48,7 @@ export default function Puzzle({ guesses, length }: { guesses: [string, number][
 
         <Definition/>
     
-        <span className={style.interactions}>
+        <span>
 
             {!isCorrect && !(audible && defined) ? <HintButton/> : null}
 
@@ -68,8 +65,7 @@ function Definition() {
 
     const { isCorrect, defined } = useContext(ExerciseContext)
 
-    return <textarea className={style.def} 
-        disabled={true} value={(defined || isCorrect) ? def : ''}/>
+    return <textarea className='def' disabled={true} value={(defined || isCorrect) ? def : ''}/>
 }
 
 enum Status { INCORRECT, UNANSWERED, CORRECT }
@@ -135,7 +131,7 @@ function HintButton() {
 
     const { audible, setAudible, defined, setDefined } = useContext(ExerciseContext)
 
-    return <Widget symbol='Bulb' onClick={() => {
+    return <Button symbol='Bulb' onClick={() => {
 
         if (!defined)
             return void setDefined(true)

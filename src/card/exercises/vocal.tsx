@@ -6,9 +6,7 @@ import { Context, Speech, color, Hearing } from '../'
 import { stringSimilarity as calcSimilarity }
     from 'string-similarity-js'
 
-import { Widget, Button } from '../../interactions'
-
-import style from "../style.module.css"
+import Button from '../../button'
 
 const ExerciseContext = createContext({
     audible: false, setAudible: (_:boolean) => {},
@@ -49,7 +47,7 @@ export default function Vocal() {
         defined, setDefined
     }}>
 
-        <input className={style.term} data-is-long={term.length > 15}
+        <input className='term' data-is-long={term.length > 15}
             value={answer} lang={tag?.code} spellCheck={false}
             onChange={e => void respond(e.target.value)} 
             style={{ color: color(similarity) }} 
@@ -57,7 +55,7 @@ export default function Vocal() {
 
         <Definition/>
     
-        <span className={style.interactions}>
+        <span>
 
             {similarity < 1 && (!defined || !audible) ? <HintButton/> : null}
 
@@ -76,15 +74,14 @@ function Definition() {
 
     const { defined } = useContext(ExerciseContext)
 
-    return <textarea className={style.def} 
-        disabled={true} value={defined ? def : ''}/>
+    return <textarea className='def' disabled={true} value={defined ? def : ''}/>
 }
 
 function HintButton() {
 
     const { audible, setAudible, defined, setDefined } = useContext(ExerciseContext)
 
-    return <Widget symbol='Bulb' onClick={() => {
+    return <Button symbol='Bulb' onClick={() => {
 
         if (!defined)
             return void setDefined(true)

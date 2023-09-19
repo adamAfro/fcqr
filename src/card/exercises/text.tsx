@@ -7,9 +7,7 @@ import { randomFrom, indexToSubindex, randomSubstring } from '../../misc'
 import { stringSimilarity as calcSimilarity }
     from 'string-similarity-js'
 
-import { Widget, Button } from '../../interactions'
-
-import style from "../style.module.css"
+import Button from '../../button'
 
 const ExerciseContext = createContext({
     answer: '', respond(_:string) {},
@@ -54,7 +52,7 @@ export default function Text() {
         defined, setDefined
     }}>
 
-        <input className={style.term} data-is-long={term.length > 15}
+        <input className='term' data-is-long={term.length > 15}
             value={answer} lang={tag?.code} spellCheck={false}
             onChange={e => void respond(e.target.value)} 
             style={{ color: color(similarity) }} 
@@ -62,7 +60,7 @@ export default function Text() {
 
         <Definition/>
     
-        <span className={style.interactions}>
+        <span>
 
             {similarity < 1 ? <HintButton/> : null}
 
@@ -79,7 +77,7 @@ function RestartButton() {
 
     const { respond } = useContext(ExerciseContext)
 
-    return <Widget symbol='Keyboard' onClick={e => {
+    return <Button symbol='Keyboard' onClick={e => {
 
         respond('')
 
@@ -99,7 +97,7 @@ function HintButton() {
 
     const { answer, respond } = useContext(ExerciseContext)
 
-    return <Widget symbol='Bulb' attention='weak' onClick={() => {
+    return <Button symbol='Bulb' attention='weak' onClick={() => {
 
         if (!defined)
             return void setDefined(true)
@@ -118,8 +116,7 @@ function Definition() {
 
     const { defined } = useContext(ExerciseContext)
 
-    return <textarea className={style.def} 
-        disabled={true} value={defined ? def : ''}/>
+    return <textarea className='def' disabled={true} value={defined ? def : ''}/>
 }
 
 function hint(answer: string, term: string, { substring = false } = {}) {

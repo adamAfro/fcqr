@@ -7,9 +7,7 @@ import { useTranslation } from 'react-i18next'
 
 import { Context } from './'
 
-import { Button, Widget } from '../interactions'
-
-import style from "./style.module.css"
+import Button from '../button'
 
 export function Term() {
 
@@ -19,7 +17,7 @@ export function Term() {
 
     const { t } = useTranslation()
 
-    return <input className={style.term} onChange={async (e) => {
+    return <input className='term' onChange={async (e) => {
 
         setTerm(e.target.value)
         if (!id) return
@@ -41,7 +39,7 @@ export function Definition() {
 
     const { t } = useTranslation()
 
-    return <textarea className={style.def} onChange={async (e) => {
+    return <textarea className='def' spellCheck={false} onChange={async (e) => {
 
         setDef(e.target.value)
         if (!id) return
@@ -61,22 +59,18 @@ export function Options() {
 
     const { id, setRemoved } = useContext(Context)
 
-    return <span className={style.options}>
+    return <Button symbol='Bin' attention="removal" onClick={async () => {
+
+        setRemoved(true)
+        if (!id) return
+
+        const { done, store } = readwrite(database)
         
-        <Widget symbol='Bin' attention="removal" onClick={async () => {
-
-            setRemoved(true)
-            if (!id) return
-
-            const { done, store } = readwrite(database)
-            
-            await store.delete(id)
-        
-            return await done
-
-        }}/>
+        await store.delete(id)
     
-    </span>
+        return await done
+
+    }}/>
 }
 
 export function read(db: Database) {

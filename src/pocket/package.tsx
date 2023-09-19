@@ -13,9 +13,7 @@ import { Context, OptionName } from '.'
 import { Data as Deck } from '../deck'
 import { Data as Card } from '../card'
 
-import { Button, Widget } from '../interactions'
-
-import style from './style.module.css'
+import Button from '../button'
 
 export function ConfirmLoadButton() {
     
@@ -23,7 +21,7 @@ export function ConfirmLoadButton() {
 
     const { fileInput, setFileInput, setDecks, setActiveOption } = useContext(Context)
 
-    return <Widget symbol='Plus' onClick={async () => {
+    return <Button symbol='Plus' onClick={async () => {
 
         if (!fileInput) return
 
@@ -46,7 +44,7 @@ export function LoadButton() {
 
     const { activeOption, setFileInput, setActiveOption } = useContext(Context)
 
-    return <Widget symbol='FileFrom' active={activeOption == OptionName.LOAD} labeled={<input onChange={async (e) => {
+    return <Button symbol='FileFrom' attention='none' active={activeOption == OptionName.LOAD} labeled={<input onChange={async (e) => {
 
         const input = e.target as HTMLInputElement
 
@@ -82,16 +80,16 @@ export function ConfirmSaveButton() {
     }), [selection])
 
     if (selection.length == 0)
-        return <Widget symbol='FileAdd' disabled/>
+        return <Button symbol='FileAdd' disabled/>
 
-    return <Widget symbol='FileAdd' href={href} download={t`decks-` + new Date().toString().replaceAll(' ', '-') + '.json'}/>
+    return <Button symbol='FileAdd' href={href} download={t`decks-` + new Date().toString().replaceAll(' ', '-') + '.json'}/>
 }
 
 export function SaveButton() {
 
     const { activeOption, setActiveOption, setFileInput } = useContext(Context)
 
-    return <Widget symbol='FileAdd' active={activeOption == OptionName.SAVE} onClick={() => {
+    return <Button symbol='FileAdd' attention='none'  active={activeOption == OptionName.SAVE} onClick={() => {
 
         if (activeOption == OptionName.NONE)
             return void setActiveOption(OptionName.SAVE)
@@ -102,23 +100,23 @@ export function SaveButton() {
     }}/>
 }
 
-export function Entries({ button }: {button: JSX.Element}) {
+export function Entries({ confirmButton }: {confirmButton: JSX.Element}) {
 
     const { activeOption, activeTagId, decks, fileInput } = useContext(Context)
 
     const { t } = useTranslation()
 
-    return <ul className={style.decks}>
-
-        <li>{button}</li>
+    return <div>
         
+        {confirmButton}
+
         {fileInput && activeOption == OptionName.LOAD ? fileInput.decks.reverse()
-            .map(({ data }) => <li key={Math.random()*data.id!}><Button contents={data.name || t`unnamed deck`} attention='correct'/></li>) : null}
+            .map(({ data }) => <Button key={data.id || 0 + Math.random()} contents={data.name || t`unnamed deck`} attention='primary'/>) : null}
 
         {(activeTagId >= 0 ? decks.filter(deck => deck.tagId == activeTagId) : decks)
-            .map(deck => <li key={deck.id}><Entry {...deck}/></li>)}
+            .map(deck => <Entry key={deck.id} {...deck}/>)}
 
-    </ul>
+    </div>
 }
 
 function Entry(deck: Deck) {

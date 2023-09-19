@@ -2,7 +2,7 @@ import { useState, useContext, createContext, useEffect } from 'react'
 
 import { Context as DeckContext, State } from '../deck'
 
-import { Button, Widget } from '../interactions'
+import Button from '../button'
 
 import { listen } from '../recognition'
 import { speak } from '../speech'
@@ -10,8 +10,6 @@ import Color from "color"
 
 import * as Exercises from './exercises'
 import * as Inputs from './inputs'
-
-import style from "./style.module.css"
 
 export interface Data {
     id?: number
@@ -40,7 +38,7 @@ export const Context = createContext({
 
 export default function({ id, ...props}: Data) {
 
-    const { silent } = useContext(DeckContext)
+    const { silent, muted, state, cards } = useContext(DeckContext)
 
     const [removed, setRemoved] = useState(false)
     const [term, setTerm] = useState(props.term)
@@ -56,50 +54,30 @@ export default function({ id, ...props}: Data) {
         def, setDef,
         mode, setMode
 
-    }}>{removed || <p className={style.root} data-testid={`card-${id}`}>
+    }}>{removed || <p className='card' data-testid={`card-${id}`}>
 
-        <Content/>
-
-    </p>}</Context.Provider>
-}
-
-function Content() {
-
-    const { state, cards, muted } = useContext(DeckContext)
-
-    const { mode, term } = useContext(Context)
-
-    if (state == State.EDITION) {
-
-        return <>
+        {state == State.EDITION ? <>
 
             <Inputs.Term/>
-        
+
             <Inputs.Definition/>
-        
+
             <Inputs.Options/>
-        
-            {!muted ? <span className={style.interactions}>
-                <Speech/>
-            </span>:null}
-        </>
-    }
 
-    if (mode == ExerciseMode.TEXT)
-        return <Exercises.Text/>
+            {!muted ? <Speech/>:null}
 
-    if (mode == ExerciseMode.VOCAL)
-        return <Exercises.Vocal/>
+        </> : {
 
-    if (mode == ExerciseMode.SELECTION_TEXT)
-        return <Exercises.Selection.default
-            guesses={Exercises.Selection.randomGuesses(term, cards)}/>
+            [ExerciseMode.TEXT]: <Exercises.Text/>,
+            [ExerciseMode.VOCAL]: <Exercises.Vocal/>,
+            [ExerciseMode.SELECTION_TEXT]: <Exercises.Selection.default
+                guesses={Exercises.Selection.randomGuesses(term, cards)}/>,
+            [ExerciseMode.PUZZLE_TEXT]: <Exercises.Puzzle.default length={term.split(' ').length}
+                guesses={Exercises.Puzzle.randomGuesses(term, cards)}/>
 
-    if (mode == ExerciseMode.PUZZLE_TEXT)
-        return <Exercises.Puzzle.default length={term.split(' ').length}
-            guesses={Exercises.Puzzle.randomGuesses(term, cards)}/>
+        }[mode]}
 
-    return <p>?</p>
+    </p>}</Context.Provider>
 }
 
 export function Hearing({ setResult }: { 
@@ -110,9 +88,9 @@ export function Hearing({ setResult }: {
 
 	const [listening, setListening] = useState(false)
 
-    if (!tag || !tag.code) return <Widget symbol='SpeakerOff'/>
+    if (!tag || !tag.code) return <Button symbol='SpeakerOff'/>
 
-    return <Widget symbol='Microphone' onClick={!listening ? () => {
+    return <Button symbol='Microphone' onClick={!listening ? () => {
         
         setListening(true)
         listen(alts => setResult(alts[0].trim()), { langCode: tag.code! })
@@ -125,7 +103,7 @@ export function Speech() {
 
     const { voice = undefined } = useContext(DeckContext).tag || {}
 
-	return <Widget symbol='Speaker' onClick={() => speak(term, { voice })}/>
+	return <Button symbol='Speaker' onClick={() => speak(term, { voice })}/>
 }
 
 export function color(value = 0) {

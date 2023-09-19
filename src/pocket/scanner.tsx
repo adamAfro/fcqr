@@ -3,9 +3,7 @@ import { useEffect, HTMLAttributes, useState } from 'react'
 import { Html5QrcodeScanner as Scanner, Html5QrcodeSupportedFormats as Formats } 
     from 'html5-qrcode'
 
-import { Widget } from '../interactions'
-
-import style from './style.module.css'
+import Button from '../button'
 
 enum Status {
     NOT_FOUND = 0, 
@@ -73,14 +71,14 @@ export default (props: {
 
     const onError = () => void (setStatus(Status.NOT_FOUND))
 
-    return <div className={style.scanner}>
+    return <div>
 
-        <QR className={style.camera} data-status={status} 
+        <QR data-status={status} 
             onScan={onScan} onError={onError}/>
 
-        <div className={style.checkpoints}>
+        <div>
             {checkPoints.map(state =>
-                <Widget symbol='QR' active={state} labeled={<input type="checkbox" disabled defaultChecked={state}/>}/>)
+                <Button symbol='QR' active={state} labeled={<input type="checkbox" disabled defaultChecked={state}/>}/>)
             }
         </div>
 

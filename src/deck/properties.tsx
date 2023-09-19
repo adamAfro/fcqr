@@ -5,9 +5,9 @@ import { Database, Stores } from "../memory"
 import { useTranslation } from '../localisation'
 import { Data as Language, read as readLanguages } from '../pocket/tags'
 import { useMemory } from "../memory"
-import { Context, Data } from '.'
+import { Context, Data, State } from '.'
 
-import { Widget, Input } from '../interactions'
+import Button from '../button'
 
 export function Name() {
 
@@ -19,7 +19,7 @@ export function Name() {
 
     const [name, setName] = useState(context.name)
 
-    return <Input onChange={async (e) => {
+    return <input value={name} onChange={async (e) => {
         
         setName(e.target.value)
         
@@ -32,7 +32,7 @@ export function Name() {
         await store.put({ ...deck, name: e.target.value })        
         return await done
         
-    }} placeholder={t`unnamed deck`} type="text" value={name}/>
+    }} placeholder={t`unnamed deck`}/>
 }
 
 export function TagSelect() {
@@ -83,7 +83,7 @@ export function MuteButton() {
 
     const { id, muted, setMuted, tag } = useContext(Context)
 
-    return <Widget symbol='SpeakerOff' attention='none' labeled={<input onChange={async () => {
+    return <Button symbol={muted ? 'SpeakerOff' : 'Speaker'} attention='none' onClick={async () => {
 
         const { done, store } = readwrite(database)
         const deck = await store.get(id) as Data
@@ -93,7 +93,7 @@ export function MuteButton() {
         
         setMuted(p => !p)
     
-    }} type="checkbox" checked={muted} disabled={!tag || !tag.code}/>}/>
+    }} disabled={!tag || !tag.code}/>
 }
 
 export function SilenceButton() {
@@ -102,7 +102,7 @@ export function SilenceButton() {
 
     const { id, silent, setSilent, tag } = useContext(Context)
 
-    return <Widget symbol='MicrophoneOff' attention='none' labeled={<input onChange={async () => {
+    return <Button symbol={silent ? 'MicrophoneOff' : 'Microphone'} attention='none' onChange={async () => {
 
         const { done, store } = readwrite(database)
         const deck = await store.get(id) as Data
@@ -112,7 +112,7 @@ export function SilenceButton() {
         
         setSilent(p => !p)
     
-    }} type="checkbox" checked={silent} disabled={!tag || !tag.code}/>}/>
+    }} disabled={!tag || !tag.code}/>
 }
 
 export function readwrite(db: Database) {

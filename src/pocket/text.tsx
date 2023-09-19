@@ -11,9 +11,7 @@ import { useMemory } from '../memory'
 
 import { Context, OptionName } from '.'
 
-import { Button, Widget } from '../interactions'
-
-import style from './style.module.css'
+import Button from '../button'
 
 export function Input() {
 
@@ -23,10 +21,8 @@ export function Input() {
 
     return <>
         
-        <textarea className={style.input} value={textInput}
-            onChange={e => setTextInput(e.target.value)}
-            placeholder={`${t`term`} - ${t`definition`}`}
-            data-attention='none'/>
+        <textarea value={textInput} onChange={e => setTextInput(e.target.value)}
+            placeholder={`${t`term`} - ${t`definition`}`}/>
 
         <p>
             <Button contents={t`paste to selected deck`}
@@ -40,7 +36,7 @@ export function InputButton() {
 
     const { activeOption, setActiveOption } = useContext(Context)
 
-    return <Widget symbol='Pencil'
+    return <Button symbol='Pencil'
         active={activeOption == OptionName.WRITE}
         onClick={() => setActiveOption(activeOption == OptionName.WRITE ? OptionName.NONE : OptionName.WRITE)}/>
 }
@@ -49,7 +45,7 @@ export function CopyButton() {
 
     const { activeOption, setActiveOption } = useContext(Context)
 
-    return <Widget symbol='Copy'
+    return <Button symbol='Copy' attention='none'
         active={activeOption == OptionName.COPY}
         onClick={() => setActiveOption(activeOption == OptionName.COPY ? OptionName.NONE : OptionName.COPY)}/>
 }
@@ -58,14 +54,14 @@ export function Entries() {
 
     const { activeTagId, decks } = useContext(Context)
 
-    return <ul className={style.decks}>
+    return <div>
 
-        <li><Widget symbol='Plus' attention='primary' disabled/></li>
+        <Button symbol='Plus' attention='primary' disabled/>
         
         {(activeTagId >= 0 ? decks.filter(deck => deck.tagId == activeTagId) : decks)
-            .map(deck => <li key={deck.id}><Entry {...deck}/></li>)}
+            .map(deck => <Entry key={deck.id} {...deck}/>)}
 
-    </ul>
+    </div>
 }
 
 function Entry(deck: Data) {

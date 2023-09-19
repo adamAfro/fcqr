@@ -7,9 +7,7 @@ import { getVoices } from '../speech'
 import { useMemory } from '../memory'
 import { Context as PocketContext } from '.'
 
-import { Input, Button, Widget } from '../interactions'
-
-import style from './style.module.css'
+import Button from '../button'
 
 export interface Data {
     id?: number,
@@ -26,7 +24,7 @@ export const Context = createContext({
         setTags: (x: (prev: Data[]) => any[]) => {}
 })
 
-export default function Languages() {
+export default function() {
 
     const { database } = useMemory()!
     
@@ -55,26 +53,15 @@ export default function Languages() {
 
     }, [])
 
-    const { t } = useTranslation()
-
     return <Context.Provider value={{ status, voices, 
         tags, setTags
     }}>
 
-        <ul className={style.tags}>
-            <li>
-                <h2 className={style.heading}>{t`tags`}</h2>
-            </li>
-            <li>
-                <ShowAllButton/>
-            </li>{tags.map((language) =>
-            <li data-testid={`language-${language.id}`} key={language.id}>
-                <Entry {...language}/>
-            </li>)}
-            <li>
-                <AddButton/>
-            </li>
-        </ul>
+        <div style={{fontSize:"80%",marginBottom:'5em'}}>
+            <ShowAllButton/>
+            {tags.map((language) => <Entry {...language}/>)}
+            <AddButton/>
+        </div>
 
     </Context.Provider>
 }
@@ -98,7 +85,7 @@ function AddButton() {
 
     const { t } = useTranslation()
 
-    return <Widget symbol='Plus' onClick={async () => {
+    return <Button symbol='Plus' onClick={async () => {
 
         const added = {
             name: t`new language`,
@@ -115,12 +102,6 @@ function AddButton() {
         await done
         
     }}/>
-}
-
-export function read(db: Database) {
-
-    const t = db.transaction(Stores.TAGS, 'readonly')
-    return { done: t.done, store: t.objectStore(Stores.TAGS) }
 }
 
 const EntryContext = createContext({
@@ -144,15 +125,17 @@ export function Entry({ id, ...props }: Data) {
         id, removed, setRemoved, name, setName
     }}>
         
-        {activeTagId == id ? <div className={style.tag} onClick={() => setActiveTagId(id)}>
+        {activeTagId == id ? <span style={{
+            margin:'var(--button-radius)',position:'relative'
+        }} onClick={() => setActiveTagId(id)}>
 
             <NameInput/>
 
             <RemoveButton/>
-    
+
             <VoiceSelect initValue={props.voice}/>
 
-        </div> : <Button className={style.tag} contents={name} attention='weak' 
+        </span> : <Button style={{width:`${name.length*.8}em`}} contents={name} attention='none'
             onClick={() => setActiveTagId(id!)}/>}
 
     </EntryContext.Provider>
@@ -166,7 +149,7 @@ function NameInput() {
 
     const { t } = useTranslation()
 
-    return <Input active={true} onChange={async (e) => {
+    return <input style={{width:`${name.length*.8}em`}} onChange={async (e) => {
 
         setName(e.target.value)
         if (!id) return
@@ -192,7 +175,7 @@ function VoiceSelect({ initValue }: { initValue: undefined | string }) {
 
     const { t } = useTranslation()
 
-    return <select value={value}
+    return <select value={value} 
         disabled={status == Status.LOADED ? false : true}
         className={status == Status.FAILED ? 'wrong' : ''}
         onChange={async (e) => {
@@ -211,6 +194,9 @@ function VoiceSelect({ initValue }: { initValue: undefined | string }) {
 
         return await done
 
+    }} style={{
+        position:'absolute', top: '100%',left:0,zIndex:100,
+        backgroundColor: 'var(--background)',width:'100%'
     }}><option key={crypto.randomUUID()} value={undefined}>{t`no voice`}</option>{voices.map((voice) =>
         <option key={crypto.randomUUID()} value={voice.name}>{voice.name}</option>
     )}</select>
@@ -222,7 +208,7 @@ function RemoveButton() {
 
     const { id, setRemoved } = useContext(EntryContext)
 
-    return <Widget symbol='Bin' attention='removal' onClick={async () => {
+    return <Button symbol='Bin' attention='removal' onClick={async () => {
 
         setRemoved(true)
         if (!id) return
@@ -233,7 +219,15 @@ function RemoveButton() {
 
         return await done
 
+    }} style={{
+        position:'absolute',bottom:'100%',right:'-1em',zIndex:100
     }}/>
+}
+
+export function read(db: Database) {
+
+    const t = db.transaction(Stores.TAGS, 'readonly')
+    return { done: t.done, store: t.objectStore(Stores.TAGS) }
 }
 
 export function readwrite(db: Database) {

@@ -5,10 +5,10 @@ import { BrowserRouter as Router, Routes, Route, Link, useParams }
 import { default as localise, t } from './localisation'
 import { Provider as MemoryProvider } from './memory'
 
+import './default.css'
+
 import Pocket from './pocket'
 import Deck from './deck'
-
-import './default.css'
 
 localise()
 
@@ -27,19 +27,11 @@ export default (props: { basename?: string }) => {
 
             <Router basename={props.basename || '/'}><Routes>
 
-                <Route path={links.pocket} element={<main className='panel'>
-                    <Pocket />
-                </main>} />
+                <Route path={links.pocket}
+                    element={<Pocket/>} />
 
-                <Route path={links.decks + ':id'} Component={() => {
-
-                    const { id } = useParams()
-
-                    return <main className='panel'>
-                        <Deck id={Number(id)} />
-                    </main>
-
-                }} />
+                <Route path={links.decks + ':id'} 
+                    Component={() => <Deck id={Number(useParams().id)} />} />
 
             </Routes></Router>
 

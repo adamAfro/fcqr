@@ -9,24 +9,21 @@ import { useMemory } from '../memory'
 import * as Deck from '../deck'
 import { readwrite } from '../deck/properties'
 
-import { Button, Widget } from '../interactions'
+import Button from '../button'
 
 import { Context, OptionName } from '.'
-
-import style from './style.module.css'
 
 export default function Entries() {
 
     const { activeTagId, decks } = useContext(Context)
 
-    return <ul className={style.decks}>
+    return <div>
 
-        <li><AddButton/></li>
-        
+        <AddButton/> 
         {(activeTagId >= 0 ? decks.filter(deck => deck.tagId == activeTagId) : decks)
-            .map(deck => <li key={deck.id}><Entry {...deck}/></li>)}
+            .map(deck => <Entry {...deck}/>)}
 
-    </ul>
+    </div>
 }
 
 function Entry(deck: Deck.Data) {
@@ -45,7 +42,7 @@ function AddButton() {
 
     const { database } = useMemory()!
 
-    return <Widget symbol='Plus' attention='primary' onClick={async () => {
+    return <Button symbol='Plus' attention='primary' onClick={async () => {
 
         const { done, store } = readwrite(database)
         

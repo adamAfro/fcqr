@@ -2,217 +2,249 @@
 
 :root {
 
-    --primary: rgb(199, 201, 83);
-    --primary-active: rgb(219, 221, 109);
-    --primary-invert: rgb(34, 34, 34);
+    font: min(1em, 3.2vw) sans;
+}
 
-    --secondary: rgb(173, 173, 173);
-    --secondary-active: rgb(219, 221, 109);
+body {
+
+    --button-height-font-size: 1.5em;
+    --button-radius: .5em;
+
+    --illuminated: 0 -.25em 2em -1em black;
+    --clicked: 0 0 .25em black;
+    --handwritten: 'Itim', sans-serif;
+}
+
+#root {
+
+    --primary: rgb(36, 32, 32);
+    --primary-active: rgb(0, 0, 0);
+    --primary-invert: rgb(255, 255, 255);
+
+    --secondary: rgb(248, 248, 229);
+    --secondary-active: rgb(172, 180, 223);
     --secondary-invert: rgb(0, 0, 0);
 
-    --accent: rgb(253, 255, 162);
+    --accent: rgb(56, 189, 67);
     --accent-active: rgb(254, 255, 221);
     --accent-invert: rgb(34, 34, 34);
 
     --background: rgb(65, 65, 65);
     --background-invert: rgb(155, 155, 155);
 
+    --dangerous: #f1974e;
+    --dangerous-active: #d41e1e;
+
+    fill: var(--background-invert);
     color: var(--background-invert);
     background-color: var(--background);
-
-    --illuminated: 0 -.25em 2em -1em black;
-    --clicked: 0 0 .25em black;
-    --handwritten:
-        'Itim',
-        sans-serif;
-
-    --button-height-font-size: 1.5em;
-
-    font-family: sans;
-
-    --button-radius: .5em;
-}
-
-body {
-
-    font-size: min(1em, 3.2vw);
-
-} #root {} .panel {
 
     position: relative;
     max-width: 100%;
     min-height: 100vh;
     margin: 0 auto;
-    padding-bottom: 25vh;
     box-sizing: border-box;
 
-    display: flex;
-    flex-flow: column;
-    align-items: center;
-}
-
-
-.popup {
-
-    background-color: var(--secondary);
-    color: var(--secondary-invert);
-
-    width: 100%;
-
-    display: flex;
-    flex-flow: column;
-    align-items: center;
-    justify-content: center;
-}
-
-.popup:first-child {
-    margin-bottom: auto;
-}
-
-:is(p, h1, h2, h3, h4, h5, h6, button, [role=button])::first-letter { 
-    text-transform: uppercase;
-}
-
-button, a[role=button], [role=button], select, input, input, textarea {
-
-    --padding: var(--button-radius);
     text-align: center;
-
-    font: inherit;
-
-    display: block;
-    padding: var(--padding) calc(3.2*var(--padding));
-    border: none;
-    border-radius: var(--padding);
-    box-sizing: border-box;
-    width: min-content;
-    white-space: nowrap;
-    
-    cursor: pointer;
-    background: none;
-    outline: none;
-
-    color: inherit;
-    text-decoration: none;
-    transition: background .3s;
-    
-    --dangerous: #f1974e;
-    --dangerous-active: #d41e1e;
-    
-    --positive: #24ff48;
-    --positive-active: #40c901;
 }
 
-input[type=file] {
-    display: none;
-} input[type=checkbox],
-input[type=radio] { 
-    display: inline-block; 
-    width: min-content; 
+#headline {
+    position: relative; padding: 2em 1em;
 }
-
-:is(button, a[role=button], [role=button], select, input, textarea) {
-    background-color: var(--secondary); color: var(--secondary-invert);
-} :is(button, a[role=button], [role=button]):is(:active, [data-active=true]) {
-    background-color: var(--secondary-active);
-}
-
-[data-attention=primary]:is(button, a[role=button], [role=button], select, input, textarea) {
-    background-color: var(--primary);
-} [data-attention=primary]:is(button, a[role=button], [role=button], select, input, textarea):is(:active, [data-active=true]) {
-    background-color: var(--primary-active);
-}
-
-[data-attention=accent]:is(button, a[role=button], [role=button], select, input, textarea) {
-    background-color: var(--accent);
-} [data-attention=accent]:is(button, a[role=button], [role=button], select, input, textarea):is(:active, [data-active=true]) {
-    background-color: var(--accent-active);
-}
-
-[data-attention=removal]:is(button, a[role=button], [role=button], select, input, textarea) {
-    background-color: var(--dangerous);
-} [data-attention=error]:is(button, a[role=button], [role=button], select, input, textarea),
-[data-attention=removal]:is(button, a[role=button], [role=button], select, input, textarea):is(:active, [data-active=true]) {
-    background-color: var(--dangerous-active);
-}
-
-[data-attention=correct]:is(button, a[role=button], [role=button], select, input, textarea) {
-    background-color: var(--positive);
-} [data-attention=correct]:is(button, a[role=button], [role=button], select, input, textarea):is(:active, [data-active=true]) {
-    background-color: var(--positive-active);
-}
-
-[data-attention=weak]:is(button, a[role=button], [role=button], select, input, textarea):not(:is(:active, [data-active=true])) {
-    opacity:.8;
-}
-
-[data-attention=none]:is(button, a[role=button], [role=button], select, input, textarea):not(:is(:active, [data-active=true])) {
-    background: none; color: var(--background-invert); backdrop-filter: blur(1pt);
-}
-
-[disabled]:is(button, a[role=button], [role=button], select, input, input, textarea) {
-    pointer-events: none;
-    filter: contrast(.5);
-    opacity: 1;
-}
-
-    :is(button, a[role=button], [role=button], select, input, input, textarea):is(:focus, :hover, :active) {
-        box-shadow: var(--clicked);
+    #headline > button:not(h1):first-child {
+        position: absolute; left: 0; bottom: 0;
     }
 
-.box:is(button, a[role=button], [role=button], select, input, textarea) {
+    #headline > select:not(h1):last-child {
+        position: absolute; bottom: 1em; left: 50%;
+    }
 
-    line-height: 0;
-    width: min-content;
-    padding: var(--padding);
-}
+    #headline > h1 {
+        margin: 0; font: 2em var(--handwritten);
+    }
 
-:is(button, a[role=button], [role=button], select, input, textarea) > svg {
-    width: calc(2*var(--padding));
-    height: calc(2*var(--padding));
-}
-
-.widget:is(button, a[role=button], [role=button], select, input, textarea) {
-
-    min-width: 3.2em;
-    line-height: 0;
-    text-align: center;
-    width: min-content;
-    border-radius: 3.2em;
-    padding: calc(2*var(--padding));
-}
-
-.removed {
-    display:none;
-}
-
-.title {
-    font: 2em var(--handwritten);
-    text-align: center;
-}
-
-.stack {
-    font-size: 80%;
-    display: flex;
-    flex-flow: column nowrap;
-    gap: 1em;
-}
-
-.row {
-    display: flex; gap: 1em;
-    flex-flow: row wrap;
-    align-items: flex-end;
-    justify-content: flex-start;
-}
-
-.column {
-    display: flex; gap: 1em;
-    flex-flow: column nowrap;
-    align-items: center;
-    justify-content: flex-start;
+#interactions {
+    display: flex; width: 100%;
+    justify-content: space-evenly;
+    align-items: flex-start;
+    margin: 1em 0;
+    font-size: 120%;
 }
 
 ul {
     list-style: none;
     margin: 0; padding: 0;
 } ul > li:empty { display: none; }
+
+input[type=file] { display: none; }
+button, [role=button], select, textarea, input {
+
+    
+    font: inherit; text-align: center;
+    color: inherit; text-decoration: none;
+    
+    display: inline-block; margin: var(--padding);
+    
+    border: none;
+    box-sizing: border-box;
+
+    width: min-content; white-space: nowrap;
+    background: none; outline: none;
+
+}
+
+    textarea {
+
+        padding: 1em;
+        border-radius: 0;
+        white-space: pre;
+        overflow-x: wrap;
+        text-align: left;
+        resize: none;
+        width: 100%;
+    }
+
+button, [role=button] {
+    
+    
+    --padding: var(--button-radius);
+    border-radius: var(--padding);
+    padding: var(--padding) calc(3.2*var(--padding));
+    
+    background-color: var(--secondary);
+    color: var(--secondary-invert);
+    fill: var(--secondary-invert);
+    transition: background .3s, color .3s, fill .3s;
+
+    cursor: pointer;
+
+} button::first-letter, [role=button]::first-letter { 
+    text-transform: uppercase;
+}
+
+button.icon, .icon[role=button] {
+
+    line-height: 0;
+    width: min-content;
+    padding: var(--padding);
+}
+
+        button > svg, [role=button] > svg {
+            width: calc(2*var(--padding));
+            height: calc(2*var(--padding));
+        }
+
+    button:is(:active, [data-active=true]),
+    [role=button]:is(:active, [data-active=true]) {
+        background-color: var(--secondary-active);
+    }
+
+    button:is(:focus, :hover, :active),
+    [role=button]:is(:focus, :hover, :active) {
+        box-shadow: var(--clicked);
+    }
+
+    [disabled]:is(button, [role=button]) {
+        pointer-events: none;
+        filter: contrast(.5);
+        opacity: 1;
+    }
+
+[data-attention=primary]:is(button, [role=button]) {
+    background-color: var(--primary); 
+    color: var(--primary-invert);
+    fill: var(--primary-invert);
+} 
+
+    [data-attention=primary]:is(button, [role=button]):is(:active, [data-active=true]) {
+        background-color: var(--primary-active);
+    }
+
+[data-attention=accent]:is(button, [role=button]) {
+    background-color: var(--accent);
+} 
+
+    [data-attention=accent]:is(button, [role=button]):is(:active, [data-active=true]) {
+        background-color: var(--accent-active);
+    }
+
+[data-attention=removal]:is(button, [role=button]) {
+    background-color: var(--dangerous);
+} 
+
+    [data-attention=error]:is(button, [role=button]),
+    [data-attention=removal]:is(button, [role=button]):is(:active, [data-active=true]) {
+        background-color: var(--dangerous-active);
+    }
+
+[data-attention=none]:is(button, [role=button]) {
+    background: transparent;
+    color: var(--background-invert);
+    fill: var(--background-invert);
+    backdrop-filter: blur(1pt);
+} 
+
+    [data-attention=none]:is(button, [role=button]):is(:active, [data-active=true]) {
+        background: var(--background);
+        color: var(--background-invert);
+        fill: var(--background-invert);
+    }
+
+.card {
+
+    font-family: var(--handwritten);
+
+    background-color: var(--secondary);
+    color: var(--secondary-invert);
+
+    display: inline-flex;
+    flex-flow: column;
+    justify-content: center;
+
+    box-sizing: border-box;
+
+    --size: 24em;
+
+    width: var(--size);
+    height: var(--size);
+    box-shadow: var(--illuminated);
+
+    --padding: 2.4em;
+    border-radius: var(--padding);
+    padding: var(--padding);
+    padding-bottom: 0;
+    margin: var(--padding);
+
+    position: relative;
+}
+
+.term, .def {
+
+    display: block;
+    color: inherit;
+    box-shadow: none;
+    padding: 0; margin: 0;
+    background: none;
+    width: 100%;
+    flex-basis: 50%;
+    
+    text-align: center;
+    border: 0; resize: none;
+    outline: none;
+
+    white-space: pre-wrap;
+
+} .term[data-is-long=true] { font-size: 1.2em;}
+    
+    .term > button { padding: var(--padding); }
+    .term { 
+
+        font-size: 2em;
+        margin-top: auto; 
+    }
+    
+    .def {
+        margin-bottom: auto;
+        border-top: solid thin;
+        padding-top: 1em;
+    }

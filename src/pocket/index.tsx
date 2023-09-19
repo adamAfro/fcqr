@@ -14,9 +14,7 @@ import * as Package from './package'
 import Entries from './decks'
 import Tags from './tags'
 
-import { Button, Widget } from '../interactions'
-
-import style from './style.module.css'
+import Button from '../button'
 
 export enum OptionName { NONE, COPY, WRITE, SAVE, LOAD, PASTE, QR }
 
@@ -75,33 +73,46 @@ export default function(props: {
         decks, setDecks,
 
         textInput, setTextInput,
-        fileInput, setFileInput, 
+        fileInput, setFileInput,
         
         selection, setSelection,
         activeOption, setActiveOption,
         activeTagId, setActiveTagId
     }}>
 
-        <header className={style.title}>
+        <header id='headline'>
 
-           <Widget symbol='Reload' onClick={() => unregister().then(() => window.location.reload())}/>
+            <Button symbol='Reload' attention='none' onClick={() => unregister().then(() => window.location.reload())}/>
 
-            <h1 className='title'>{t`flisqs`}</h1>
+            <h1>{t`flisqs`}</h1>
 
             <LanguageSelect/>
 
         </header>
 
-        <OptionsButtons/>
+        <div id='interactions'>
+
+            <Text.InputButton/>
+            <Button symbol='QR' active={activeOption == OptionName.QR} 
+                onClick={() => setActiveOption(activeOption == OptionName.QR ? 
+                    OptionName.NONE : 
+                    OptionName.QR)}/>
+
+            <Text.CopyButton/> 
+            <Package.LoadButton/>
+            <Package.SaveButton/>
+
+        </div>
 
         {{
             [OptionName.NONE]: <><Tags/><Entries/></>,
             [OptionName.COPY]: <><Tags/><Text.Entries/></>,
             [OptionName.PASTE]: <><Tags/><Text.Entries/></>,
+            [OptionName.SAVE]: <><Tags/><Package.Entries confirmButton={<Package.ConfirmSaveButton/>}/></>,
+            [OptionName.LOAD]: <><Tags/><Package.Entries confirmButton={<Package.ConfirmLoadButton/>}/></>,
+            
             [OptionName.WRITE]: <Text.Input/>,
-            [OptionName.SAVE]: <><Tags/><Package.Entries button={<Package.ConfirmSaveButton/>}/></>,
-            [OptionName.LOAD]: <><Tags/><Package.Entries button={<Package.ConfirmLoadButton/>}/></>,
-            [OptionName.QR]: <Scanner className={style.input} handleData={(txt: string) => {
+            [OptionName.QR]: <Scanner handleData={(txt: string) => {
 
                 try {
     
@@ -118,25 +129,6 @@ export default function(props: {
         }[activeOption]}
 
     </Context.Provider>
-}
-
-function OptionsButtons() {
-
-    const { activeOption, setActiveOption } = useContext(Context)
-
-    return <div className={style.buttons}>
-
-        <Widget symbol='QR' active={activeOption == OptionName.QR} 
-            onClick={() => setActiveOption(activeOption == OptionName.QR ? 
-                OptionName.NONE : 
-                OptionName.QR)}/>
-
-        <Text.CopyButton/> 
-        <Text.InputButton/>
-        <Package.SaveButton/>
-        <Package.LoadButton/>
-
-    </div>
 }
 
 function read(db: Database) {

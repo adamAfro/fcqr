@@ -106,12 +106,14 @@ function HintButton() {
 
     const { audible, setAudible, defined, setDefined } = useContext(ExerciseContext)
 
+    const { muted } = useContext(DeckContext)
+
     return <Button symbol='Bulb' onClick={() => {
 
         if (!defined)
             return void setDefined(true)
 
-        if (!audible)
+        if (!audible && !muted)
             return void setAudible(true)
 
     }}/>

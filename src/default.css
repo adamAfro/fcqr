@@ -48,6 +48,13 @@ body {
     text-align: center;
 }
 
+
+#headline, #interactions {
+    width: 32em; max-width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
 #headline {
     position: relative; padding: 2em 1em;
 }
@@ -63,11 +70,14 @@ body {
         margin: 0; font: 2em var(--handwritten);
     }
 
+    #headline > h1 > * { padding-top: 0; padding-bottom: 0; }
+
 #interactions {
-    display: flex; width: 100%;
+    display: flex; 
+    width: 32em; max-width: 100%;
     justify-content: space-evenly;
     align-items: flex-start;
-    margin: 1em 0;
+    margin: 1em auto;
     font-size: 120%;
 }
 
@@ -105,7 +115,7 @@ button, [role=button], select, textarea, input {
     }
 
 button, [role=button] {
-    
+
     
     --padding: var(--button-radius);
     border-radius: var(--padding);
@@ -185,66 +195,7 @@ button.icon, .icon[role=button] {
 } 
 
     [data-attention=none]:is(button, [role=button]):is(:active, [data-active=true]) {
-        background: var(--background);
-        color: var(--background-invert);
-        fill: var(--background-invert);
-    }
-
-.card {
-
-    font-family: var(--handwritten);
-
-    background-color: var(--secondary);
-    color: var(--secondary-invert);
-
-    display: inline-flex;
-    flex-flow: column;
-    justify-content: center;
-
-    box-sizing: border-box;
-
-    --size: 24em;
-
-    width: var(--size);
-    height: var(--size);
-    box-shadow: var(--illuminated);
-
-    --padding: 2.4em;
-    border-radius: var(--padding);
-    padding: var(--padding);
-    padding-bottom: 0;
-    margin: var(--padding);
-
-    position: relative;
-}
-
-.term, .def {
-
-    display: block;
-    color: inherit;
-    box-shadow: none;
-    padding: 0; margin: 0;
-    background: none;
-    width: 100%;
-    flex-basis: 50%;
-    
-    text-align: center;
-    border: 0; resize: none;
-    outline: none;
-
-    white-space: pre-wrap;
-
-} .term[data-is-long=true] { font-size: 1.2em;}
-    
-    .term > button { padding: var(--padding); }
-    .term { 
-
-        font-size: 2em;
-        margin-top: auto; 
-    }
-    
-    .def {
-        margin-bottom: auto;
-        border-top: solid thin;
-        padding-top: 1em;
+        background: var(--background-invert);
+        color: var(--background);
+        fill: var(--background);
     }

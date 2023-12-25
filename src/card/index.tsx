@@ -4,6 +4,8 @@ import { Context as DeckContext, State } from '../deck'
 
 import Button from '../button'
 
+import './default.css'
+
 import { listen } from '../recognition'
 import { speak } from '../speech'
 import Color from "color"
@@ -62,9 +64,11 @@ export default function({ id, ...props}: Data) {
 
             <Inputs.Definition/>
 
-            <Inputs.Options/>
+            <span>
+                <Inputs.Options/>
 
-            {!muted ? <Speech/>:null}
+                {!muted ? <Speech/>:null}
+            </span>
 
         </> : {
 

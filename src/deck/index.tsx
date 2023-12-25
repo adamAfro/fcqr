@@ -54,7 +54,7 @@ export const Context = createContext({
     setSilent(c:boolean|((p:boolean) => boolean)) {}
 })
 
-export default function Deck({ id }: { id: number }): JSX.Element {
+export default function Deck({ id }: { id: number }): JSX.Element | null {
 
     const { database } = useMemory()!
 
@@ -99,6 +99,9 @@ export default function Deck({ id }: { id: number }): JSX.Element {
 
     }), [])
 
+    if (state < State.EDITION)
+        return null
+
     return <Context.Provider value={{ 
         id, 
         state, setState,
@@ -110,7 +113,7 @@ export default function Deck({ id }: { id: number }): JSX.Element {
     }}>
 
         <header id='headline'>
-            <h1>{state >= State.EDITION ? <Name/> : null}</h1>
+            <h1><Name/></h1>
 
             <TagSelect/>
         </header>
@@ -129,7 +132,9 @@ export default function Deck({ id }: { id: number }): JSX.Element {
 
         </div>
 
-        <Cards/>
+        <div style={{display:"flex", flexFlow: "wrap row", justifyContent: "center" }}>
+            <Cards/>
+        </div>
 
     </Context.Provider>
 }
@@ -150,7 +155,7 @@ function Dangerzone() {
 
     const [show, setShow] = useState(false)
 
-    return <div>
+    return <div style={{ position: 'relative' }}>
 
         <Button symbol={show ? 'ArrowBack' : 'Danger'} attention='none' active={show}
             onClick={() => setShow(p => !p)}/>
@@ -173,7 +178,7 @@ function Dangerzone() {
 
             return await done
 
-        }} to={links.pocket} style={{ position:"absolute" }}/> : null}
+        }} to={links.pocket} style={{ position:"absolute", top: '100%', left: '0', zIndex: '100' }}/> : null}
 
     </div>
 }

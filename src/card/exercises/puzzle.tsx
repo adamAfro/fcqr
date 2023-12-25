@@ -96,7 +96,7 @@ function Option({ text, order }: { text: string, order: number }) {
 
             return setStatus(Status.INCORRECT)
         }
-    }>{text}</button>
+    }>{text} ({isCorrect && order >= 0 ? (order + 1) : '?'})</button>
 }
 
 export function randomGuesses(term: string, cards: { term: string }[]) {
@@ -129,6 +129,8 @@ export function randomGuesses(term: string, cards: { term: string }[]) {
 
 function HintButton() {
 
+    const { muted } = useContext(DeckContext)
+
     const { audible, setAudible, defined, setDefined } = useContext(ExerciseContext)
 
     return <Button symbol='Bulb' onClick={() => {
@@ -136,7 +138,7 @@ function HintButton() {
         if (!defined)
             return void setDefined(true)
 
-        if (!audible)
+        if (!audible && !muted)
             return void setAudible(true)
 
     }}/>

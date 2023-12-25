@@ -36,7 +36,10 @@ export default function Vocal() {
         setAnswer(value)
         setSimilarity(sim)
         if (sim == 1) {
-            setAudible(true)
+            
+            if (!muted)
+                setAudible(true)
+
             setDefined(true)
             setAnswer(term)
         }
@@ -79,6 +82,8 @@ function Definition() {
 
 function HintButton() {
 
+    const { muted } = useContext(DeckContext)
+
     const { audible, setAudible, defined, setDefined } = useContext(ExerciseContext)
 
     return <Button symbol='Bulb' onClick={() => {
@@ -86,7 +91,7 @@ function HintButton() {
         if (!defined)
             return void setDefined(true)
 
-        if (!audible)
+        if (!audible && !muted)
             return void setAudible(true)
 
     }}/>

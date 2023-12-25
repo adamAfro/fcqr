@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext, ChangeEvent } from 'react';
 import { createContext } from 'react'
 
 import { Database, Stores } from '../memory'
@@ -149,7 +149,7 @@ function NameInput() {
 
     const { t } = useTranslation()
 
-    return <input style={{width:`${name.length*.8}em`}} onChange={async (e) => {
+    return <input style={{width:`${name.length*.8}em`}} onChange={async (e: ChangeEvent<HTMLInputElement>) => {
 
         setName(e.target.value)
         if (!id) return

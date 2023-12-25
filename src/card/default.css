@@ -1,0 +1,62 @@
+.card {
+
+    font-family: var(--handwritten);
+
+    background-color: var(--secondary);
+    color: var(--secondary-invert);
+
+    display: inline-flex;
+    flex-flow: column;
+    justify-content: center;
+
+    box-sizing: border-box;
+
+    --size: 24em;
+
+    width: var(--size);
+    height: var(--size);
+    box-shadow: var(--illuminated);
+
+    --padding: 2.4em;
+    border-radius: var(--padding);
+    padding: var(--padding);
+    padding-bottom: 0;
+    margin: var(--padding);
+
+    position: relative;
+}
+
+.term, .def {
+
+    display: block;
+    color: inherit;
+    box-shadow: none;
+    padding: 0; margin: 0;
+    background: none;
+    width: 100%;
+    flex-basis: 50%;
+    
+    text-align: center;
+    border: 0; resize: none;
+    outline: none;
+
+    white-space: pre-wrap;
+
+    max-height: 50%;
+    overflow: auto;
+}
+
+    .term > button { padding: var(--padding); }
+    .term { 
+        font-size: 2em;
+        margin-top: auto; 
+    }
+
+    /* make longer text fit in card */
+    .term[data-is-long=true] { font-size: 1.2em;}
+    
+    .def {
+        margin-bottom: auto;
+        border-top: solid thin;
+        padding-top: 1em;
+    }

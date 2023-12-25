@@ -39,7 +39,9 @@ export default function Text() {
         setAnswer(value)
         setSimilarity(sim)
         if (sim == 1) {
-            setAudible(true)
+            
+            if (!muted)
+                setAudible(true)
             setDefined(true)
             setAnswer(term)
         }
@@ -91,6 +93,8 @@ function RestartButton() {
 
 function HintButton() {
 
+    const { muted } = useContext(DeckContext)
+
     const { term } = useContext(Context)
 
     const { defined, setDefined, audible, setAudible } = useContext(ExerciseContext)
@@ -102,7 +106,7 @@ function HintButton() {
         if (!defined)
             return void setDefined(true)
 
-        if (!audible)
+        if (!audible && !muted)
             return void setAudible(true)
 
         return void respond(hint(answer, term, { substring: true }))

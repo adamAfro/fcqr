@@ -48,7 +48,7 @@ export default function Selection({ guesses }: { guesses: [string, number][]}) {
 
             {!isCorrect && !(audible && defined) ? <HintButton/> : null}
 
-            {(audible || isCorrect) ? <Speech/> : null}
+            {audible ? <Speech/> : null}
 
         </span>
 
@@ -108,7 +108,7 @@ function HintButton() {
 
     const { muted } = useContext(DeckContext)
 
-    return <Button symbol='Bulb' onClick={() => {
+    return <Button symbol='Bulb' attention='removal' onClick={() => {
 
         if (!defined)
             return void setDefined(true)

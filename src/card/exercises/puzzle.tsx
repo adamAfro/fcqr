@@ -52,7 +52,7 @@ export default function Puzzle({ guesses, length }: { guesses: [string, number][
 
             {!isCorrect && !(audible && defined) ? <HintButton/> : null}
 
-            {(audible || isCorrect) ? <Speech/> : null}
+            {audible ? <Speech/> : null}
 
         </span>
 
@@ -133,7 +133,7 @@ function HintButton() {
 
     const { audible, setAudible, defined, setDefined } = useContext(ExerciseContext)
 
-    return <Button symbol='Bulb' onClick={() => {
+    return <Button symbol='Bulb' attention='removal' onClick={() => {
 
         if (!defined)
             return void setDefined(true)

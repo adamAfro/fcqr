@@ -101,7 +101,7 @@ function HintButton() {
 
     const { answer, respond } = useContext(ExerciseContext)
 
-    return <Button symbol='Bulb' attention='weak' onClick={() => {
+    return <Button symbol='Bulb' attention='removal' onClick={() => {
 
         if (!defined)
             return void setDefined(true)

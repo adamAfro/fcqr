@@ -84,7 +84,7 @@ function RestartButton() {
         respond('')
 
         const btn = e.target as HTMLButtonElement
-        const input = (btn.parentElement?.previousElementSibling) as HTMLElement
+        const input = (btn.parentElement?.parentElement?.previousElementSibling) as HTMLElement
 
         input.focus()
 

@@ -17,6 +17,9 @@ const ExerciseContext = createContext({
     defined: false, setDefined: (_:boolean) => {}
 })
 
+/**
+ * @deprecated
+ */
 export default function Selection({ guesses }: { guesses: [string, number][]}) {
 
     const { muted } = useContext(DeckContext)

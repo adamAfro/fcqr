@@ -21,13 +21,6 @@ export interface Data {
     order?: number
 }
 
-export enum ExerciseMode {
-    TEXT = 'text',
-    VOCAL = 'vocal',
-    SELECTION_TEXT = 'selection-text',
-    PUZZLE_TEXT = 'puzzle-text'
-}
-
 export const Context = createContext({
 
     id: -1,
@@ -35,12 +28,12 @@ export const Context = createContext({
     def: '', setDef(_:string) {},
     removed: false, setRemoved(_:boolean) {},
         
-    mode: ExerciseMode.TEXT, setMode: (_:ExerciseMode) => {}
+    mode: Exercises.Key.TEXT, setMode: (_:Exercises.Key) => {}
 })
 
 export default function({ id, ...props}: Data) {
 
-    const { silent, muted, state, cards } = useContext(DeckContext)
+    const { silent, muted, state } = useContext(DeckContext)
 
     const [removed, setRemoved] = useState(false)
     const [term, setTerm] = useState(props.term)
@@ -70,16 +63,7 @@ export default function({ id, ...props}: Data) {
                 {!muted ? <Speech/>:null}
             </span>
 
-        </> : {
-
-            [ExerciseMode.TEXT]: <Exercises.Text/>,
-            [ExerciseMode.VOCAL]: <Exercises.Vocal/>,
-            [ExerciseMode.SELECTION_TEXT]: <Exercises.Selection.default
-                guesses={Exercises.Selection.randomGuesses(term, cards)}/>,
-            [ExerciseMode.PUZZLE_TEXT]: <Exercises.Puzzle.default length={term.split(' ').length}
-                guesses={Exercises.Puzzle.randomGuesses(term, cards)}/>
-
-        }[mode]}
+        </> : Exercises.Dictionary[mode]}
 
     </p>}</Context.Provider>
 }

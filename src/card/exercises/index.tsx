@@ -1,21 +1,27 @@
-import { ExerciseMode } from '../'
 import { randomFrom } from '../../misc'
 
-export { default as Text } from './text'
-export { default as Vocal } from './vocal'
-export * as Selection from './selection'
-export * as Puzzle from './puzzle'
+import { default as Text } from './text'
+import { default as Vocal } from './vocal'
+//import * as Selection from './selection'
+//import * as Puzzle from './puzzle'
 
 export function random({ silent }: { silent: boolean }) {
  
     return randomFrom(!silent ? [
-        ExerciseMode.TEXT,
-        ExerciseMode.VOCAL,
-        ExerciseMode.SELECTION_TEXT,
-        ExerciseMode.PUZZLE_TEXT
+        Key.TEXT,
+        Key.VOCAL
     ] : [
-        ExerciseMode.TEXT,
-        ExerciseMode.SELECTION_TEXT,
-        ExerciseMode.PUZZLE_TEXT
+        Key.TEXT
     ])
+}
+
+export enum Key {
+    TEXT = 'text',
+    VOCAL = 'vocal'
+}
+
+export const Dictionary = {
+
+    [Key.TEXT]: <Text/>,
+    [Key.VOCAL]: <Vocal/>
 }

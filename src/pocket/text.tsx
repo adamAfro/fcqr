@@ -13,6 +13,8 @@ import { Context, OptionName } from '.'
 
 import Button from '../button'
 
+import { handleText } from '../parsing'
+
 export function Input() {
 
     const { textInput, setTextInput, setActiveOption } = useContext(Context)
@@ -107,39 +109,4 @@ function Entry(deck: Data) {
         }
 
     }}/>
-}
-
-const separators = [
-    ' — ', ' - ', ' | ', ', ', ' , ', ' ; ', '; ',
-    '—', '-', '|', ',', ';', '\t', ' '
-]
-
-function getProbableSeparator(lines: string[]) {
-
-    return separators.find(separator => {
-
-        let count = 0;
-        for (const line of lines)
-            if (line.includes(separator)) count++
-
-        if (count >= 0.80 * lines.length)
-            return true
-
-    }) || ','
-}
-
-function handleText(text: string, meta?: any) {
-
-    const { endline = '\n' } = meta?.characters || {}
-    let lines = text.split(endline)
-        .filter(line => line.trim() || line == endline)
-    const { separator = getProbableSeparator(lines) } = meta?.characters || {}
-
-    lines.filter(line => line.length <= 2 || line == separator)
-
-    let cardsData = lines
-        .map(line => line.split(separator) as [string, string])
-        .map(([term, ...def]: [string, string]) => ({ term, def: def.join(', ') }))
-
-    return cardsData
 }

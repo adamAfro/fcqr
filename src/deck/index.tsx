@@ -5,7 +5,7 @@ import { Database, Stores, read as readAll } from "../memory"
 import { Data as Language } from '../pocket/tags'
 import { useMemory } from "../memory"
 
-import { Name, TagSelect, MuteButton, SilenceButton } from './properties'
+import { Name, TagSelect, MuteButton, SilenceButton, Resource } from './properties'
 
 import { default as Card, Data as CardData } from '../card'
 
@@ -20,7 +20,8 @@ export interface Data {
     name: string
     tagId?: number
     muted?: boolean
-    silent?: boolean
+    silent?: boolean,
+    resource?: string
 }
 
 export enum State {
@@ -51,7 +52,10 @@ export const Context = createContext({
     setMuted(c:boolean|((p:boolean) => boolean)) {},
 
     silent: false,
-    setSilent(c:boolean|((p:boolean) => boolean)) {}
+    setSilent(c:boolean|((p:boolean) => boolean)) {},
+
+    resource: '',
+    setResource(c:string|((p:string) => string)) {}
 })
 
 export default function Deck({ id }: { id: number }): JSX.Element | null {
@@ -64,6 +68,7 @@ export default function Deck({ id }: { id: number }): JSX.Element | null {
 
     const [muted, setMuted] = useState(false)
     const [silent, setSilent] = useState(false)
+    const [resource, setResource] = useState('')
 
     const [cards, setCards] = useState <CardData[]> ([])
 
@@ -87,6 +92,8 @@ export default function Deck({ id }: { id: number }): JSX.Element | null {
     })().then(({ data, cards, tag }) => {
 
         setName(data.name)
+        if (data.resource)
+            setResource(data.resource)
         setTag(tag)
         setCards(cards?.map(card => ({ ...card, order: Math.random() }))
             .sort((a, b) => a.order! - b.order!).reverse() as CardData[])
@@ -109,7 +116,8 @@ export default function Deck({ id }: { id: number }): JSX.Element | null {
         tag, setTag,
         cards, setCards,
         muted, setMuted,
-        silent, setSilent
+        silent, setSilent,
+        resource, setResource
     }}>
 
         <header id='headline'>
@@ -131,6 +139,8 @@ export default function Deck({ id }: { id: number }): JSX.Element | null {
             <Dangerzone />
 
         </div>
+
+        <Resource/>
 
         <div style={{display:"flex", flexFlow: "wrap row", justifyContent: "center" }}>
             <Cards/>

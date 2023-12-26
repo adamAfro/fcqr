@@ -5,9 +5,11 @@ import { Database, Stores } from "../memory"
 import { useTranslation } from '../localisation'
 import { Data as Language, read as readLanguages } from '../pocket/tags'
 import { useMemory } from "../memory"
-import { Context, Data, State } from '.'
+import { Context, Data } from '.'
 
 import Button from '../button'
+
+import FetchButton from './fetch'
 
 export function Name() {
 
@@ -113,6 +115,38 @@ export function SilenceButton() {
         setSilent(p => !p)
     
     }} disabled={!tag || !tag.code}/>
+}
+
+export function Resource() {
+
+    const { database } = useMemory()!
+
+    const { id, resource, setResource } = useContext(Context)
+
+    const { t } = useTranslation()
+
+    return <div>
+
+        <input value={resource} onChange={async (e) => {
+        
+            setResource(e.target.value)
+            
+            if (!id) return
+
+            const { done, store } = readwrite(database)
+
+            const deck = await store.get(id) as Data
+
+            await store.put({ ...deck, resource: e.target.value })    
+            return await done
+
+        }} placeholder={t`resource`}/>
+
+        {resource.startsWith('http://') || resource.startsWith('https://') ? 
+            <FetchButton/> : <Button symbol="ABC" attention='none'/>
+        }
+
+    </div>   
 }
 
 export function readwrite(db: Database) {

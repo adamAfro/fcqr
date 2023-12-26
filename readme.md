@@ -32,6 +32,11 @@ Pocket provides functionalities for importing and exporting cards, decks and tag
 
 - using QR code scanner [mebjas/html5-qrcode](https://github.com/mebjas/html5-qrcode) (input only)
 
+### Deck's resource
+
+Deck can have a resource - if it is an URL then you can try importing whatever is on the other side, 
+if it is CSV it will replace cards in the deck.
+
 ### Import/Export using QR scanner and/or text input
 
 For now, QR scanner and text input support only CSV with separator being dash `— `, hyphen-minus `-`, tab, vertical line `|`, comma, semicolon or space. Additionally they may be surrounded with spaces for clarity like so ` — `.
